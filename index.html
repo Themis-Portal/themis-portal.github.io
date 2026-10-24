@@ -230,6 +230,8 @@ button.day.wd-0:hover, button.day.wd-6:hover, button.day.hol:hover { background:
 .day .tm { font-family: var(--f-num); font-size: 11px; color: var(--stamp); font-variant-numeric: tabular-nums; }
 .day .plan { font-size: 10px; letter-spacing: .1em; color: var(--ink-soft); border: 1px dashed var(--ink-soft); border-radius: 4px; padding: 0 4px; align-self: flex-start; }
 .day .tr { font-size: 11px; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* a planned day is filled in pale blue (a worked one in the green below), so it reads as taken at a glance */
+.day.planned, .day.planned:hover { background: color-mix(in srgb, var(--sat) 14%, var(--card)); }
 .day.worked { background: var(--today); }
 .day.worked:hover { background: var(--today); filter: brightness(.97); }
 .day .live { margin-left: 4px; }
@@ -308,7 +310,7 @@ button.hc:not(:disabled):hover { filter: brightness(.97); }
 .lg.worked::before { background: var(--today); }
 .lg.absent::before { background: var(--stamp-red); border-color: var(--stamp-red); }
 .lg.hol::before { background: var(--hol-bg); border-color: var(--sun); }
-.lg.planned::before { background: var(--card); border-style: dashed; border-color: var(--ink-soft); }
+.lg.planned::before { background: color-mix(in srgb, var(--sat) 14%, var(--card)); }
 .foot { display: flex; flex-wrap: wrap; gap: 8px 16px; justify-content: space-between; align-items: center; font-size: 12px; color: var(--ink-soft); }
 
 /* Invoice workspace */
@@ -386,7 +388,17 @@ label.check { -webkit-tap-highlight-color: transparent; }
   .brand-who { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
   .who-tags { order: -1; display: flex; gap: 4px; }
   .who-tags .who-tag { margin-left: 0; font-size: 10px; padding: 0 7px; }
-  .who-name { padding: 4px 14px; }
+  /* the name and the TP both in full: a slimmer badge, the TP a little smaller */
+  .who-name { padding: 4px 10px; font-size: 14px; letter-spacing: .02em; }
+  .who-nm { flex: none; }
+  .who-tp { font-size: 12px; margin-left: 6px; padding-left: 6px; }
+}
+/* a narrow phone: the logo side gives a little room so a long name with its TP still fits */
+@media (max-width: 380px) {
+  .brand .logo { height: 34px; }
+  .brand .brand-name { font-size: 14px; padding-left: 8px; }
+  .brand .brand-mark { gap: 8px; }
+  .brand .who-name { font-size: 13px; padding: 4px 8px; }
 }
 /* address and bank details are split into one field each, grouped under a heading */
 .grp { display: grid; gap: 8px; border-top: 1px dashed var(--rule); padding-top: 10px; }
@@ -432,9 +444,28 @@ fieldset:disabled .f input, fieldset:disabled .f textarea, fieldset:disabled .f 
 @media (max-width: 560px) { .bar-tabs .tabs button { padding: 7px 2px; font-size: 13px; letter-spacing: 0; } }
 /* ホーム: the day's plan and the clock; シフト: シフト表 / シフト希望 picked at the top (no choice when only one is shown);
    メニュー: its list, and 請求書 / 給与明細 under a way back to it; the month bar wherever there is a month */
-#member-ui:not([data-tab="home"]) > :is(.shifts, .clock, .bell-row) { display: none; }
+#member-ui:not([data-tab="home"]) > :is(.shifts, .clock, .bell-row, .nt-home) { display: none; }
 #member-ui:not([data-tab="card"]):not([data-tab="hope"]) > #shift-seg, #shift-seg:not(:has(#tab-hope:not([hidden]))) { display: none; }
-#member-ui:is([data-tab="home"], [data-tab="menu"], [data-tab="notice"]) > .bar-month { display: none; }
+#member-ui:is([data-tab="home"], [data-tab="menu"], [data-tab="notice"], [data-tab="point"]) > .bar-month { display: none; }
+/* シフト表 and シフト希望 move by ‹ › only (no 今月 / 来月 button) */
+#member-ui:is([data-tab="card"], [data-tab="hope"]) #m-now { display: none; }
+/* ホーム: 未読のお知らせが〇件あります, and the newest お知らせ under the clock */
+.nt-unread { font-size: 14px; font-weight: 700; color: #c62f35; background: color-mix(in srgb, #e5373d 9%, var(--card)); border: 1px solid color-mix(in srgb, #e5373d 40%, var(--rule)); border-radius: 999px; padding: 6px 14px; }
+.nt-unread b { font-family: var(--f-num); font-size: 16px; margin: 0 2px; }
+.nt-home { display: grid; gap: 8px; }
+.nt-home-h { display: flex; justify-content: space-between; align-items: center; }
+.nt-home-h b { font-size: 15px; letter-spacing: .06em; }
+/* ポイント: the balance large, then the exchange and the requests */
+.tp-card { background: var(--card); border: 1px solid var(--rule); border-radius: var(--r); padding: 18px; display: grid; gap: 12px; }
+.tp-bal { font-family: var(--f-num); font-size: 40px; font-weight: 700; line-height: 1.1; color: var(--accent); }
+.tp-bal small { font-size: 18px; margin-left: 4px; }
+.tp-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tp-row select { font: inherit; font-size: 16px; padding: 8px 10px; border-radius: var(--r); border: 1px solid var(--rule); background: var(--paper); color: var(--ink); }
+.tp-list { display: grid; gap: 0; background: var(--card); border: 1px solid var(--rule); border-radius: var(--r); overflow: hidden; }
+.tp-list > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 10px; padding: 10px 14px; font-size: 14px; }
+.tp-list > div + div { border-top: 1px solid var(--rule); }
+.tp-list .muted { color: var(--ink-soft); font-size: 12px; }
+.who-tp { margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--rule); font-family: var(--f-num); font-size: .9em; color: var(--accent); white-space: nowrap; }
 #member-ui:not([data-tab="inv"]):not([data-tab="pay"]):not([data-tab="notice"]) > .sub-back { display: none; }
 /* the bell, small at the top left of ホーム; its count in a red circle as on LINE */
 .bell-row { margin-bottom: -14px; }
@@ -491,7 +522,7 @@ fieldset:disabled .f input, fieldset:disabled .f textarea, fieldset:disabled .f 
 body:has(#admin:not([hidden])) :is(#chpass, #logout) { display: none; }
 .menu-item:active { background: color-mix(in srgb, var(--ink) 6%, transparent); }
 /* the bar at the foot, like a game's: three big buttons, the one on screen lifted and coloured */
-body:has(#member-ui:not([hidden])) #scroller { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+body:has(#member-ui:not([hidden])) #scroller { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
 /* the bar and its messages are outside the member screens, so they are hidden with them */
 body:has(#member-ui[hidden]) :is(.bnav, .toast), body.gate :is(.bnav, .toast) { display: none !important; }
 body:has(#member-ui:not([hidden])) .brand-btns { display: none; }
@@ -501,20 +532,20 @@ body:has(#member-ui:not([hidden])) .brand-btns { display: none; }
   body:has(:is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea):focus) :is(.bnav, .toast) { display: none; }
 }
 .bnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 15; transform: translate3d(0, 0, 0); will-change: transform; -webkit-backface-visibility: hidden; backface-visibility: hidden; background: var(--card); border-top: 1px solid var(--rule);
-  box-shadow: 0 -6px 18px -10px rgb(31 42 58 / .3); padding: 6px max(10px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px)); }
-.bnav-in { max-width: 520px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.bnav button { display: grid; justify-items: center; gap: 2px; padding: 7px 4px 6px; border: 0; border-radius: 14px; background: transparent; color: var(--ink-soft); font-size: 12px; font-weight: 700; letter-spacing: .04em; }
-.bnav svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  box-shadow: 0 -6px 18px -10px rgb(31 42 58 / .3); padding: 4px max(8px, env(safe-area-inset-right, 0px)) calc(4px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+.bnav-in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.bnav button { display: grid; justify-items: center; gap: 1px; padding: 4px 2px 3px; border: 0; border-radius: 12px; background: transparent; color: var(--ink-soft); font-size: 11px; font-weight: 700; letter-spacing: .02em; }
+.bnav svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .bnav button[data-g="home"] svg { fill: currentColor; fill-opacity: .15; }
 .bnav button[aria-current="page"] { color: #fff; background: var(--accent); background-image: linear-gradient(180deg, rgb(255 255 255 / .22), rgb(0 0 0 / .06));
   box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 3px 0 color-mix(in srgb, var(--accent) 55%, #000); transform: translateY(-3px); }
 .bnav button[aria-current="page"] svg { fill-opacity: .25; }
 /* a new お知らせ: a red dot on ホーム too */
 .bnav button { position: relative; }
-.bnav button.has-new::after { content: ""; position: absolute; top: 6px; left: calc(50% + 10px); width: 10px; height: 10px; border-radius: 50%; background: #e5373d; border: 2px solid var(--card); }
+.bnav button.has-new::after { content: ""; position: absolute; top: 2px; left: calc(50% + 10px); width: 10px; height: 10px; border-radius: 50%; background: #e5373d; border: 2px solid var(--card); }
 .bnav button:active { transform: translateY(0); }
 /* a message said off the ホーム screen shows for a moment just above the bar */
-.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(88px + env(safe-area-inset-bottom, 0px)); z-index: 16; width: max-content; max-width: min(92vw, 520px);
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(70px + env(safe-area-inset-bottom, 0px)); z-index: 16; width: max-content; max-width: min(92vw, 520px);
   background: var(--ink); color: var(--card); font-size: 13.5px; line-height: 1.5; padding: 10px 14px; border-radius: 12px; box-shadow: 0 6px 18px rgb(0 0 0 / .25); }
 .same-last { font-weight: 700; }
 .set-sum { margin: 0; font-size: 13px; color: var(--ink-soft); background: var(--paper); border-radius: 8px; padding: 8px 10px; }
@@ -939,9 +970,10 @@ body.gate #scroller { overflow: hidden; }
 .ad-space { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-bottom: 10px; border-radius: 12px; background: var(--paper); border: 1px solid var(--rule); box-shadow: var(--sink); }
 /* each part has its own colour (管理画面 green, 運営画面 purple): the one on screen is filled and says 表示中, and the
    tabs below take the same colour, so it is plain which part is open */
-:root { --kanri: #2b7a72; --unei: #6a4fb3; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --kanri: #6cc4b8; --unei: #b39cf2; } }
-:root[data-theme="dark"] { --kanri: #6cc4b8; --unei: #b39cf2; }
+/* 管理者画面 blue, 運営画面 orange: neither is the green of the normal screen, nor like each other */
+:root { --kanri: #2f62b5; --unei: #c4661a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --kanri: #8fb1ee; --unei: #f0a868; } }
+:root[data-theme="dark"] { --kanri: #8fb1ee; --unei: #f0a868; }
 .ad-space button { --sp: var(--kanri); border: 1.5px dashed color-mix(in srgb, var(--sp) 45%, var(--rule)); border-radius: 9px; background: transparent;
   padding: 8px 4px; font-size: 14px; font-weight: 700; color: var(--sp); letter-spacing: .04em; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .ad-space button[data-s="unei"] { --sp: var(--unei); }
@@ -953,6 +985,7 @@ body.gate #scroller { overflow: hidden; }
 #admin[data-space="kanri"] .ad-tabs button[aria-selected="true"] { background: var(--kanri); }
 #admin[data-space="unei"] .ad-tabs button[aria-selected="true"] { background: var(--unei); }
 #admin[data-space="unei"] .ad-tabs button[aria-selected="true"] { box-shadow: inset 0 1px 0 rgb(255 255 255 / .25), 0 3px 0 color-mix(in srgb, var(--unei) 55%, #000); }
+#admin[data-space="kanri"] .ad-tabs button[aria-selected="true"] { box-shadow: inset 0 1px 0 rgb(255 255 255 / .25), 0 3px 0 color-mix(in srgb, var(--kanri) 55%, #000); }
 @media (max-width: 560px) { .tabs.ad-tabs button { font-size: 12.5px; letter-spacing: 0; } }
 /* people as cards: name and badge on top, then label / value lines; no sideways scrolling */
 .ad-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(330px, 100%), 1fr)); gap: 10px; }
@@ -1282,6 +1315,7 @@ button.pcal-c { cursor: pointer; }
         <button type="button" role="tab" data-t="bills" aria-selected="false" aria-label="他社への請求書">他社請求</button>
         <button type="button" role="tab" data-t="members" aria-selected="false">メンバー</button>
         <button type="button" role="tab" data-t="sales" aria-selected="false" aria-label="売上・利益">売上</button>
+        <button type="button" role="tab" data-t="points" aria-selected="false" aria-label="ポイント（TP）">ポイント</button>
       </div>
       <div class="month-nav">
         <span class="month-nav" id="ad-month"><button type="button" id="ad-prev" aria-label="前の月">‹</button><b id="ad-label">—</b><button type="button" id="ad-next" aria-label="次の月">›</button></span>      </div>
@@ -1392,8 +1426,8 @@ button.pcal-c { cursor: pointer; }
     </div>
   </div>
   <div class="sub-back" id="sub-back"><button type="button" class="tool" id="back-menu">‹ 戻る</button><span id="sub-act"></span></div>
-  <!-- ホーム: the bell, with the number of お知らせ not yet seen -->
-  <div class="bell-row"><button type="button" class="bell" id="bell" aria-label="お知らせ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg><span class="bell-n" id="bell-n" hidden></span></button></div>
+  <!-- ホーム: a line at the top only while some お知らせ are not yet read -->
+  <div class="bell-row" id="nt-unread-row" hidden><button type="button" class="nt-unread" id="nt-unread">未読のお知らせが<b id="nt-unread-n">0</b>件あります　›</button></div>
   <section class="shifts" aria-label="予定">
     <div class="shift-today big" id="shift-today">
       <span class="st-label">今日の予定</span>
@@ -1432,6 +1466,11 @@ button.pcal-c { cursor: pointer; }
       <div><dt>実働</dt><dd id="t-work">0:00</dd></div>
     </dl>
     <div class="msg" id="msg" role="status" aria-live="polite"></div>
+  </section>
+  <!-- ホーム: the newest お知らせ under the clock -->
+  <section class="nt-home" id="nt-home" aria-label="お知らせ">
+    <div class="nt-home-h"><b>お知らせ</b><button type="button" class="tool" id="nt-all">すべて見る</button></div>
+    <div class="nt-list" id="nt-home-list"></div>
   </section>
 
   <div class="bar bar-month">
@@ -1591,6 +1630,11 @@ button.pcal-c { cursor: pointer; }
     <div id="nt-body"></div>
   </section>
 
+  <!-- ポイント（TP）: the balance, an exchange for えらべるPay, the requests made -->
+  <section class="panel" id="p-point" aria-label="ポイント" hidden>
+    <div id="tp-body"></div>
+  </section>
+
   </div>
 </div>
 </div>
@@ -1600,6 +1644,7 @@ button.pcal-c { cursor: pointer; }
   <div class="bnav-in">
     <button type="button" data-g="home" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>ホーム</span></button>
     <button type="button" data-g="shift"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>シフト</span></button>
+    <button type="button" data-g="point"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 9h7M12 9v7"/></svg><span>ポイント</span></button>
     <button type="button" data-g="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>メニュー</span></button>
   </div>
 </nav>
@@ -1623,7 +1668,7 @@ button.pcal-c { cursor: pointer; }
       <div class="sec wide first sec-row"><span>稼働店舗</span><button type="button" class="tool fold-btn" id="f-plantoggle" aria-expanded="false" aria-label="開く"></button></div>
       <p class="abs-note wide" id="f-absnote" hidden></p>
       <p class="foldsum wide" id="f-plansum"></p>
-      <label class="f wide pl-f">店舗名<input type="text" id="f-store" maxlength="60" placeholder="例：〇〇電機 新宿西口店"></label>
+      <label class="f wide pl-f">店舗名<input type="text" id="f-store" maxlength="60" placeholder="例：〇〇デンキ 新宿西口店"></label>
       <div class="chips wide pl-f" id="store-chips" role="group" aria-label="前に入れた店舗"></div>
       <label class="f pl-f"><span>出勤 <small class="tsrc" id="f-insrc"></small></span><input type="time" id="f-pin" step="300"></label>
       <label class="f pl-f"><span>退勤 <small class="tsrc" id="f-outsrc"></small></span><input type="time" id="f-pout" step="300"></label>
@@ -2025,10 +2070,12 @@ window.addEventListener("error", function (e) {
   // ---- punches ----
   // the message line sits under the clock on ホーム; on the other screens it shows for a moment above the bar
   let toastTimer = null;
+  // (a message said on another screen goes only to the toast, so it is not left waiting under the clock)
   const msg = (t) => {
-    $("msg").textContent = t;
+    const home = tab === "home";
+    $("msg").textContent = home || !t ? t : "";
     clearTimeout(toastTimer);
-    $("toast").textContent = t; $("toast").hidden = !t || tab === "home";
+    $("toast").textContent = t; $("toast").hidden = !t || home;
     if (t) toastTimer = setTimeout(() => { $("toast").hidden = true; }, 5000);
   };
   async function punch(kind) {
@@ -2092,7 +2139,7 @@ window.addEventListener("error", function (e) {
   // the page opens on ホーム; the bar at the foot picks ホーム, シフト (シフト表 / シフト希望) or メニュー (請求書 / 給与明細 in it)
   let tab = "home", shiftTab = "card";
   // お知らせ belongs to wherever it was opened from: ホーム (the bell) or メニュー (お問い合わせ)
-  const GROUP = { home: "home", card: "shift", hope: "shift", menu: "menu", inv: "menu", pay: "menu", notice: "home" };
+  const GROUP = { home: "home", card: "shift", hope: "shift", point: "point", menu: "menu", inv: "menu", pay: "menu", notice: "home" };
   function setTab(t) {
     // each tab keeps its own month: the shift calendar opens on this month, invoices on last month
     if (t !== tab) { tabView[tab] = view; tab = t; }
@@ -2100,9 +2147,10 @@ window.addEventListener("error", function (e) {
     view = tabView[t]; clampView(); watchView(); fillForms(true);
     $("m-now").textContent = { inv: "先月分", pay: "先月分", hope: "来月" }[t] || "今月";
     for (const k of ["card", "hope"]) $("tab-" + k).setAttribute("aria-selected", t === k);
-    for (const k of ["card", "hope", "inv", "pay", "menu", "notice"]) $("p-" + k).hidden = t !== k;
+    for (const k of ["card", "hope", "inv", "pay", "menu", "notice", "point"]) $("p-" + k).hidden = t !== k;
     $("sub-act").replaceChildren();
     if (t === "notice") renderNotice();
+    if (t === "point") { renderPoint(); loadTp(); }
     for (const b of document.querySelectorAll(".bnav button")) {
       if (b.dataset.g === GROUP[t]) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
     }
@@ -2112,7 +2160,7 @@ window.addEventListener("error", function (e) {
     saveView();
   }
   for (const b of document.querySelectorAll(".bnav button")) b.onclick = () => {
-    pickTab({ home: "home", shift: tabOk(shiftTab) ? shiftTab : "card", menu: "menu" }[b.dataset.g]);
+    pickTab({ home: "home", shift: tabOk(shiftTab) ? shiftTab : "card", point: "point", menu: "menu" }[b.dataset.g]);
     scrollToY(0);
   };
   // 戻る: from 請求書 / 給与明細 to メニュー; inside お知らせ back to its list, then to where it was opened from
@@ -2131,12 +2179,24 @@ window.addEventListener("error", function (e) {
   try { const c = JSON.parse(localStorage.getItem(INBOX_KEY) || "null"); if (c?.items) inbox = c; } catch (e) {}
   let nt = { view: "list", id: null, from: "home", fromList: false };
   const ntAt = (s) => { const m = /^\d{4}-(\d{2})-(\d{2}) (\d{2}:\d{2})$/.exec(s || ""); return m ? `${Number(m[1])}/${Number(m[2])} ${m[3]}` : ""; };
-  // the count shows on the bell and, so it is seen from every screen, as a dot on ホーム in the bar
+  // ホーム: 「未読のお知らせが〇件あります」 at the top (only while there are some), the newest five under the clock,
+  // and a dot on ホーム in the bar so it is seen from every screen
   function paintBell() {
     const n = inbox.items.filter((x) => x.unread).length;
-    $("bell-n").hidden = !n; $("bell-n").textContent = n > 99 ? "99+" : String(n);
-    $("bell").setAttribute("aria-label", n ? `お知らせ（新着${n}件）` : "お知らせ");
+    $("nt-unread-row").hidden = !n; $("nt-unread-n").textContent = n > 99 ? "99+" : String(n);
     document.querySelector('.bnav [data-g="home"]').classList.toggle("has-new", n > 0);
+    const top = inbox.items.slice(0, 5);
+    $("nt-home-list").innerHTML = top.length ? top.map((x) => ntRow(x, x.unread)).join("") : `<p class="nt-empty">お知らせはまだありません。</p>`;
+    for (const b of $("nt-home-list").querySelectorAll("[data-open]")) b.onclick = () => { const x = inbox.items.find((y) => y.id === b.dataset.open); showNotice(x.kind, x.id, "home"); };
+  }
+  // one row of a list: a red dot while new, 重要 / お問い合わせ tags, the date, and the start of the text
+  function ntRow(x, dot) {
+    const imp = x.kind === "n" && x.important, last = x.kind === "q" ? x.msgs[x.msgs.length - 1] : null;
+    const title = x.kind === "n" ? x.title : askTitle(x);
+    const sub = x.kind === "n" ? x.text : `${last.admin ? "Themis" : last.by}：${last.text}`;
+    return `<button type="button" class="nt-item${dot ? " unread" : ""}" data-open="${esc(x.id)}">` +
+      `<b>${imp ? `<span class="nt-tag imp">重要</span>` : x.kind === "q" ? `<span class="nt-tag ask">お問い合わせ</span>` : ""}${esc(title)}</b>` +
+      `<span class="nt-at">${esc(ntAt(x.last || x.at))}</span><span class="nt-sub">${esc(sub)}</span></button>`;
   }
   function setInbox(v) {
     inbox = v; inboxAt = Date.now();
@@ -2166,10 +2226,49 @@ window.addEventListener("error", function (e) {
     if (tab !== "notice") pickTab("notice"); else { setTab("notice"); }
     scrollToY(0);
   }
-  $("bell").onclick = () => { showNotice("list", null, "home"); loadInbox(); };
+  $("nt-unread").onclick = $("nt-all").onclick = () => { showNotice("list", null, "home"); loadInbox(); };
   $("m-ask").onclick = () => showNotice("new", null, "menu");
+  // ---- ポイント（TP）: 1TP = 1円; 100TP for each day's 稼働実績 after 退勤; exchanged for えらべるPay on request ----
+  let tp = { bal: null, item: "えらべるPay", amounts: [500, 1000, 3000, 5000], reqs: [] };
+  const tpN = (n) => Number(n || 0).toLocaleString("ja-JP");
+  async function loadTp() {
+    if (!CRED || mode === "login") return;
+    try { Object.assign(tp, JSON.parse(await call("api_tp"))); } catch (e) { return; }
+    paintWho();
+    if (tab === "point") renderPoint();
+  }
+  // the server pays once per day, only for a day clocked out with its 稼働実績 written (asking again does nothing)
+  function tpForResult(key) {
+    const r = rec(key);
+    if (!r?.out || !String(r.result || "").trim()) return;
+    call("api_tpResult", key).then((s) => {
+      const v = JSON.parse(s); tp.bal = v.bal; paintWho();
+      if (v.added) msg(`稼働実績を保存しました。${v.added}TPもらいました。`);
+    }).catch(() => {});
+  }
+  function renderPoint() {
+    const bal = tp.bal ?? 0, reqs = (tp.reqs || []).slice().sort((a, b) => String(b.at).localeCompare(String(a.at)));
+    $("tp-body").innerHTML =
+      `<div class="tp-card"><span class="hint">あなたのポイント</span><div class="tp-bal">${tp.bal == null ? "—" : tpN(bal)}<small>TP</small></div>` +
+      `<p class="hint">退勤後に稼働実績を提出すると100TPもらえます。1TP＝1円分です。</p></div>` +
+      `<div class="tp-card"><b>${esc(tp.item)}に交換</b><p class="hint">申請するとポイントが減り、Themisから${esc(tp.item)}が届きます。</p>` +
+      `<div class="tp-row"><select id="tp-amt" aria-label="交換する金額">${tp.amounts.map((a) => `<option value="${a}"${a > bal ? " disabled" : ""}>${tpN(a)}円分（${tpN(a)}TP）</option>`).join("")}</select>` +
+      `<button type="button" class="btn primary" id="tp-go"${bal < Math.min(...tp.amounts) ? " disabled" : ""}>交換を申請</button></div>` +
+      (bal < Math.min(...tp.amounts) ? `<p class="hint">${tpN(Math.min(...tp.amounts))}TPから交換できます。</p>` : "") + `</div>` +
+      (reqs.length ? `<h4 class="bl-h">交換の申請</h4><div class="tp-list">` + reqs.map((x) =>
+        `<div><span>${esc(x.item)} ${tpN(x.amount)}円分</span><span class="muted">${esc(ntAt(x.at))}　${esc(x.status)}</span></div>`).join("") + `</div>` : "");
+    const sel = $("tp-amt"), ok = [...sel.options].find((o) => !o.disabled);
+    if (ok) sel.value = ok.value;
+    $("tp-go").onclick = async () => {
+      const a = Number(sel.value);
+      if (!(a <= bal) || !await ask("交換を申請しますか？", `${tp.item} ${tpN(a)}円分（${tpN(a)}TP）`, "申請する")) return;
+      try { const v = JSON.parse(await call("api_tpExchange", a)); tp.bal = v.bal; msg("交換を申請しました。Themisから届くまでお待ちください。"); await loadTp(); }
+      catch (e) { msg(errText(e)); }
+    };
+  }
+
   // an お問い合わせ is 「お問い合わせについて」 to the person who sent it; 管理者以上 see who sent it and its 種類
-  const askTitle = (x) => inbox.admin && !x.mine ? `${x.name}さん：${x.topic}` : "お問い合わせについて";
+  function askTitle(x) { return inbox.admin && !x.mine ? `${x.name}さん：${x.topic}` : "お問い合わせについて"; }
   function renderNotice() {
     const box = $("nt-body"), items = inbox.items, it = items.find((x) => x.id === nt.id);
     if (nt.view === "list") {
@@ -2177,16 +2276,9 @@ window.addEventListener("error", function (e) {
       markSeen(items.filter((x) => x.unread && !(x.kind === "n" && x.important)).map((x) => x.id));
       // お問い合わせ is started from メニュー, not here; only 運営 and 代表 post お知らせ, from the top row beside 戻る
       $("sub-act").innerHTML = inbox.owner ? `<button type="button" class="tool" data-nt="post">＋ お知らせを出す</button>` : "";
-      box.innerHTML = `<div class="nt-list">` + (items.length ? items.map((x) => {
-          const imp = x.kind === "n" && x.important, last = x.kind === "q" ? x.msgs[x.msgs.length - 1] : null;
-          const title = x.kind === "n" ? x.title : askTitle(x);
-          const sub = x.kind === "n" ? x.text : `${last.admin ? "Themis" : last.by}：${last.text}`;
-          // a 重要 one shown as new keeps its dot until it is opened; others were just marked seen above
-          const isNew = imp && x.unread;
-          return `<button type="button" class="nt-item${isNew ? " unread" : ""}" data-open="${esc(x.id)}">` +
-            `<b>${imp ? `<span class="nt-tag imp">重要</span>` : x.kind === "q" ? `<span class="nt-tag ask">お問い合わせ</span>` : ""}${esc(title)}</b>` +
-            `<span class="nt-at">${esc(ntAt(x.last || x.at))}</span><span class="nt-sub">${esc(sub)}</span></button>`;
-        }).join("") : `<p class="nt-empty">お知らせはまだありません。</p>`) + `</div>`;
+      // a 重要 one shown as new keeps its dot until it is confirmed; the others were just marked seen above
+      box.innerHTML = `<div class="nt-list">` + (items.length ? items.map((x) => ntRow(x, x.unread && x.kind === "n" && x.important)).join("")
+        : `<p class="nt-empty">お知らせはまだありません。</p>`) + `</div>`;
       for (const b of box.querySelectorAll("[data-open]")) b.onclick = () => { const x = items.find((y) => y.id === b.dataset.open); showNotice(x.kind, x.id); };
       for (const b of $("sub-act").querySelectorAll("[data-nt]")) b.onclick = () => showNotice(b.dataset.nt);
       return;
@@ -2233,7 +2325,7 @@ window.addEventListener("error", function (e) {
       return;
     }
     if (nt.view === "new") {
-      box.innerHTML = `<form class="nt-form nt-doc" id="nt-ask"><h3>お問い合わせ</h3><p class="hint">Themisの担当者に届きます。返事はホームのベル（お知らせ）に届きます。</p>` +
+      box.innerHTML = `<form class="nt-form nt-doc" id="nt-ask"><h3>お問い合わせ</h3><p class="hint">Themisの担当者に届きます。返事はホームのお知らせに届きます。</p>` +
         `<label class="f">種類<select id="nt-topic">${(inbox.topics.length ? inbox.topics : ["勤怠・シフト", "請求書・給与", "アプリの使い方", "その他"]).map((t) => `<option>${esc(t)}</option>`).join("")}</select></label>` +
         `<label class="f">内容<textarea id="nt-text" rows="6" maxlength="1000" placeholder="質問や連絡したいことを書いてください"></textarea></label>` +
         `<button type="submit" class="btn primary">送信</button></form>`;
@@ -2247,7 +2339,7 @@ window.addEventListener("error", function (e) {
           await call("api_askSend", $("nt-topic").value, text);
           $("nt-text").value = "";
           pickTab(nt.from); scrollToY(0);
-          msg("お問い合わせを送りました。返事はホームのベルに届きます。");
+          msg("お問い合わせを送信しました");
           loadInbox();
         } catch (err) { msg(errText(err)); if (e.submitter) e.submitter.disabled = false; }
       };
@@ -2285,7 +2377,7 @@ window.addEventListener("error", function (e) {
   // 常勤 staff hand in no shift wishes, so they never see that tab; 社員 send no invoice and hand in no wishes:
   // they get their 給与明細 instead
   // 代表 has no 勤務形態 and sees every tab
-  const tabOk = (t) => t === "card" || t === "home" || t === "menu" || t === "notice" || !!window.TC_REP || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
+  const tabOk = (t) => t === "card" || t === "home" || t === "menu" || t === "notice" || t === "point" || !!window.TC_REP || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
   function applyWork() {
     $("tab-hope").hidden = !tabOk("hope"); $("tab-inv").hidden = !tabOk("inv"); $("tab-pay").hidden = !tabOk("pay");
     if (!tabOk(tab)) setTab("card");
@@ -2294,7 +2386,7 @@ window.addEventListener("error", function (e) {
   $("tab-pay").onclick = () => pickTab("pay");
 
   let view = new Date(); view = new Date(view.getFullYear(), view.getMonth(), 1);
-  const tabView = { home: view, menu: view, notice: view, card: view, inv: new Date(view.getFullYear(), view.getMonth() - 1, 1), pay: new Date(view.getFullYear(), view.getMonth() - 1, 1), hope: new Date(view.getFullYear(), view.getMonth() + 1, 1) };
+  const tabView = { home: view, menu: view, notice: view, point: view, card: view, inv: new Date(view.getFullYear(), view.getMonth() - 1, 1), pay: new Date(view.getFullYear(), view.getMonth() - 1, 1), hope: new Date(view.getFullYear(), view.getMonth() + 1, 1) };
   const viewYm = () => `${view.getFullYear()}-${pad(view.getMonth() + 1)}`;
   function watchView() {
     if (!backend) return;
@@ -3308,7 +3400,7 @@ ${v.addr}`;
     if (inMs != null && !outMs && !state().openDate) state().openDate = key;
     closeSheet(); render();
     msg(`${key.slice(5).replace("-", "/")} の記録を保存しました。`);
-    await persist("m-" + ymOf(key), "state", "billing");
+    if (await persist("m-" + ymOf(key), "state", "billing")) tpForResult(key);
   });
   // right after clocking out: a small sheet with only the day's results, saved into the same record
   let resKey = null;
@@ -3337,7 +3429,7 @@ ${v.addr}`;
     $("res-sheet").hidden = true;
     render();
     msg(r.result ? "稼働実績を保存しました。" : "稼働実績は空のまま保存しました。");
-    await persist("m-" + ymOf(key));
+    if (await persist("m-" + ymOf(key))) tpForResult(key);
   });
   function lock(el, locked) {
     el.classList.toggle("locked", locked);
@@ -3706,7 +3798,8 @@ ${v.addr}`;
     const tags = (window.TC_ADMIN ? tag(window.TC_REP ? "代表" : window.TC_OWNER ? "運営" : "管理者", window.TC_REP ? "role rep" : "role") : "") +
       (window.TC_WORK ? tag(esc(window.TC_WORK), { 常勤: "full", 週末: "wkend" }[window.TC_WORK] || "staff") : "");
     // the name in a round badge
-    $("who").innerHTML = name ? `<span class="who-name"><span class="who-nm">${esc(name)}</span></span>` + (tags ? `<span class="who-tags">${tags}</span>` : "") : "";
+    // the ポイント (TP) sit right of the name, inside the same badge
+    $("who").innerHTML = name ? `<span class="who-name"><span class="who-nm">${esc(name)}</span>${tp.bal == null ? "" : `<span class="who-tp">${tpN(tp.bal)} TP</span>`}</span>` + (tags ? `<span class="who-tags">${tags}</span>` : "") : "";
   }
   function showPerson(me) {
     window.TC_NAME = me.name; window.TC_WORK = me.workType || "";
@@ -4024,14 +4117,14 @@ ${v.addr}`;
   const DH = { name: 0, date: 1, kind: 3, store: 4, pIn: 5, pOut: 6, in: 7, out: 8, work: 9, absWhy: 10, wake: 11, dep: 12,
     transport: 13, ride: 14, km: 15, imgs: 16, result: 17, memo: 18, early: 20, earlyWhy: 21 };
   let adTab = "today", adData = null, adKey = "";
-  const adMonth = (() => { const d = new Date(), m = (n) => ymOf(dayKey(new Date(d.getFullYear(), d.getMonth() + n, 1))); return { work: m(0), inv: m(-1), hope: m(1), today: m(0), members: m(0), bills: m(0), sales: m(0) }; })();
+  const adMonth = (() => { const d = new Date(), m = (n) => ymOf(dayKey(new Date(d.getFullYear(), d.getMonth() + n, 1))); return { work: m(0), inv: m(-1), hope: m(1), today: m(0), members: m(0), bills: m(0), sales: m(0), points: m(0) }; })();
   const adMsg = (t) => { $("ad-msg").textContent = t || ""; };
   const minOf = (hm) => { const m = /^(\d+):(\d{2})$/.exec(hm || ""); return m ? Number(m[1]) * 60 + Number(m[2]) : 0; };
   const ymLabel = (ym) => { const [y, m] = ym.split("-").map(Number); return `${y}年${m}月`; };
   const link = (url, text) => (url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : "");
 
   // the money tabs make up the 運営画面 (運営 only); the rest is the 管理画面. Which one shows follows the open tab
-  const UNEI_TABS = ["inv", "bills", "members", "sales"];
+  const UNEI_TABS = ["inv", "bills", "members", "sales", "points"];
   const spaceOf = (t) => (UNEI_TABS.includes(t) ? "unei" : "kanri");
   const adLast = { kanri: "today", unei: "inv" };
   function paintAdTabs() {
@@ -4077,6 +4170,7 @@ ${v.addr}`;
       try { await adBills(); } catch (e) { adMsg(`画面を作れませんでした：${e.message}`); }
       saveView(); return;
     }
+    if (adTab === "points") { await adPoints(); saveView(); return; }
     const key = adKeyNow();
     if (force || key !== adKey || !adData) {
       // the tab tapped shows at once, empty, so the tap never looks ignored while the read finishes
@@ -4211,7 +4305,7 @@ ${v.addr}`;
     $("ad-body").innerHTML =
       `<div class="ad-stats"><div class="ad-stat"><span>提出済み</span><b class="num">${sent} / ${live.length}</b></div>` +
       `<div class="ad-stat${live.length - sent ? " warn" : ""}"><span>未提出</span><b class="num">${live.length - sent}</b></div></div>` +
-      `<h3 class="ad-grp">全員のシフト希望</h3><p class="hint">日付を押すと、その日に入れる人の名前が出ます。数字は ○ の人数（遠方可を含む）と △ の人数です。</p>` +
+      `<h3 class="ad-grp">全員のシフト希望</h3>` +
       monthCal(ym, (key) => {
         const ok = who(key, "○").length + who(key, "○遠方可").length, maybe = who(key, "△").length;
         return ok || maybe ? { cls: ok ? "v-ok" : "v-maybe", html: (ok ? `<span class="pcal-n">○${ok}</span>` : "") + (maybe ? `<span class="pcal-n maybe">△${maybe}</span>` : "") } : {};
@@ -4826,41 +4920,88 @@ ${v.addr}`;
   // the members' September invoices. All 税抜 (交通費 included). The months before the app (past, from the work sheets in
   // 「稼働」) show only those figures, so an invoice also made in the app for such a month is not counted twice
   // 売上 and 報酬 (cost) by work month, this month's and the whole
+  // 経費 (exp) = the えらべるPay sent for ポイント that month; 利益 = 売上 − 人件費 − 経費
   function salesMonths() {
-    const costs = blData.costs || {}, past = blData.past || {}, months = {};
-    const at = (ym) => (months[ym] ||= { sales: 0, cost: 0 });
+    const costs = blData.costs || {}, past = blData.past || {}, tpc = blData.tpCosts || {}, months = {};
+    const at = (ym) => (months[ym] ||= { sales: 0, cost: 0, exp: 0 });
     for (const b of blData.bills) if (!past[workYm(b.date)]) at(workYm(b.date)).sales += b.total - (b.taxAmount ?? billTotals(b).tax);
     for (const [ym, v] of Object.entries(costs)) if (!past[ym]) at(ym).cost += v;
     for (const [ym, v] of Object.entries(past)) { at(ym).sales += v.sales || 0; at(ym).cost += v.cost || 0; }
-    const all = Object.values(months).reduce((s, m) => ({ sales: s.sales + m.sales, cost: s.cost + m.cost }), { sales: 0, cost: 0 });
-    return { months, all, now: months[workYm(dayKey(new Date()))] || { sales: 0, cost: 0 } };
+    for (const [ym, v] of Object.entries(tpc)) at(ym).exp += v;
+    const all = Object.values(months).reduce((s, m) => ({ sales: s.sales + m.sales, cost: s.cost + m.cost, exp: s.exp + m.exp }), { sales: 0, cost: 0, exp: 0 });
+    return { months, all, now: months[workYm(dayKey(new Date()))] || { sales: 0, cost: 0, exp: 0 } };
   }
   const signed = (v) => `${v < 0 ? "−" : ""}${yen(Math.abs(v))}`;
-  const profitRate = (m) => (m.sales ? `${((m.sales - m.cost) / m.sales * 100).toFixed(1)}%` : "—");
+  const profitOf = (m) => m.sales - m.cost - (m.exp || 0);
+  const profitRate = (m) => (m.sales ? `${(profitOf(m) / m.sales * 100).toFixed(1)}%` : "—");
   const salesBox = (m) => `<div class="ad-stats bl-stats">` +
-    [["売上", yen(m.sales)], ["利益", signed(m.sales - m.cost), m.sales < m.cost], ["利益率", profitRate(m), m.sales < m.cost]].map(([t, v, warn]) =>
+    [["売上", yen(m.sales)], ["経費", yen(m.exp || 0)], ["利益", signed(profitOf(m)), profitOf(m) < 0], ["利益率", profitRate(m), profitOf(m) < 0]].map(([t, v, warn]) =>
       `<div class="ad-stat${warn ? " warn" : ""}"><span>${t}</span><b class="num">${v}</b></div>`).join("") + `</div>`;
   // this calendar month's figures, from what is in the app now (the work sheets of 「稼働」 are not used):
   // 売上見込 = the 他社請求 made this month (for last month's work, 税抜), 人件費 = what the members invoice for that work
   // (the confirmed amount plus their own lines such as 交通費, before 源泉徴収) and the 社員's 総支給 + 会社負担
   function liveBox(ym) {
     const sales = blData.bills.filter((b) => workYm(b.date) === ym).reduce((s, b) => s + b.total - (b.taxAmount ?? billTotals(b).tax), 0);
-    const pay = (blData.costs || {})[ym] || 0, profit = sales - pay, warn = sales < pay ? " warn" : "";
+    // 経費 here is what was sent this calendar month
+    const pay = (blData.costs || {})[ym] || 0, exp = (blData.tpCosts || {})[ymOf(dayKey(new Date()))] || 0;
+    const profit = sales - pay - exp, warn = profit < 0 ? " warn" : "";
     return `<div class="ad-stats bl-stats">` +
-      [["売上見込", yen(sales), ""], ["人件費", yen(pay), ""], ["利益", signed(profit), warn], ["利益率", profitRate({ sales, cost: pay }), warn]]
+      [["売上見込", yen(sales), ""], ["人件費", yen(pay), ""], ["経費", yen(exp), ""], ["利益", signed(profit), warn], ["利益率", profitRate({ sales, cost: pay, exp }), warn]]
         .map(([t, v, w]) => `<div class="ad-stat${w}"><span>${t}</span><b class="num">${v}</b></div>`).join("") + `</div>`;
   }
   function adSales() {
     const { months, all } = salesMonths();
     const rows = Object.keys(months).sort().reverse().map((ym) => {
       const m = months[ym], [y, mo] = ym.split("-").map(Number);
-      return `<tr${m.sales < m.cost ? ` class="warn"` : ""}><th>${y}年${mo}月</th><td>${yen(m.sales)}</td><td>${yen(m.cost)}</td><td>${signed(m.sales - m.cost)}</td><td>${profitRate(m)}</td></tr>`;
+      return `<tr${profitOf(m) < 0 ? ` class="warn"` : ""}><th>${y}年${mo}月</th><td>${yen(m.sales)}</td><td>${yen(m.cost)}</td><td>${yen(m.exp)}</td><td>${signed(profitOf(m))}</td><td>${profitRate(m)}</td></tr>`;
     });
     $("ad-body").innerHTML =
       `<h4 class="bl-h">${new Date().getFullYear()}年${new Date().getMonth() + 1}月</h4>` + liveBox(workYm(dayKey(new Date()))) +
       `<h4 class="bl-h">全体</h4>` + salesBox(all) +
-      (rows.length ? `<h4 class="bl-h">月ごと</h4><div class="sl-wrap"><table class="sl-tbl num"><thead><tr><th>月</th><th>売上</th><th>人件費</th><th>利益</th><th>利益率</th></tr></thead>` +
+      (rows.length ? `<h4 class="bl-h">月ごと</h4><div class="sl-wrap"><table class="sl-tbl num"><thead><tr><th>月</th><th>売上</th><th>人件費</th><th>経費</th><th>利益</th><th>利益率</th></tr></thead>` +
         `<tbody>${rows.join("")}</tbody></table></div>` : "");
+  }
+  // 運営画面 › ポイント: the exchange requests to send, giving TP to someone, everyone's balance and the log
+  // (the log is shown here only, to 運営 and 代表)
+  async function adPoints() {
+    $("ad-body").innerHTML = `<p class="ad-loading">読み込んでいます…</p>`;
+    let d;
+    try { d = JSON.parse(await call("api_tpAdmin")); } catch (e) { $("ad-body").innerHTML = ""; adMsg(errText(e)); return; }
+    if (mode !== "admin" || adTab !== "points") return;
+    const pend = d.reqs.filter((x) => x.status === "申請中").sort((a, b) => String(a.at).localeCompare(String(b.at)));
+    const opts = d.members.map((m) => `<option value="${esc(m.id)}">${esc(m.name)}（${tpN(m.bal)}TP）</option>`).join("");
+    $("ad-body").innerHTML =
+      `<h4 class="bl-h">交換の申請</h4>` + (pend.length ? `<div class="tp-list">` + pend.map((x) =>
+        `<div><span><b>${esc(x.name)}</b>　${esc(x.item)} ${tpN(x.amount)}円分<br><span class="muted">${esc(ntAt(x.at))} 申請</span></span>` +
+        `<span class="ad-acts"><button type="button" class="tool" data-sent="${esc(x.id)}">送付済みにする</button><button type="button" class="tool danger" data-ng="${esc(x.id)}">却下</button></span></div>`).join("") + `</div>`
+        : `<p class="hint">いま申請はありません。</p>`) +
+      `<p class="hint">えらべるPayを購入して本人に送ったら「送付済みにする」を押してください。その月の経費になります。却下するとポイントが本人に戻ります。</p>` +
+      `<h4 class="bl-h">ポイントを付与</h4><div class="tp-card"><div class="fields">` +
+      `<label class="f wide">メンバー<select id="tg-who">${opts}</select></label>` +
+      `<label class="f">ポイント（TP）<input type="number" id="tg-n" inputmode="numeric" step="1" placeholder="100"></label>` +
+      `<label class="f">理由<input type="text" id="tg-why" maxlength="60" placeholder="例：店舗表彰"></label></div>` +
+      `<p class="hint">マイナスを入れるとポイントを減らせます。付与した記録は下の履歴に残ります。</p>` +
+      `<button type="button" class="btn primary" id="tg-go">付与する</button></div>` +
+      `<h4 class="bl-h">全員のポイント</h4><div class="tp-list">` + d.members.map((m) => `<div><span>${esc(m.name)}</span><b class="num">${tpN(m.bal)} TP</b></div>`).join("") + `</div>` +
+      `<h4 class="bl-h">ポイント履歴（新しい順・運営と代表だけが見られます）</h4>` + (d.log.length
+        ? `<div class="sl-wrap"><table class="sl-tbl"><thead><tr><th>日時</th><th>氏名</th><th>増減</th><th>残高</th><th>内容</th><th>操作した人</th></tr></thead><tbody>` +
+          d.log.map((r) => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td class="num">${esc(r[2])}</td><td class="num">${esc(r[3])}</td><td style="text-align:left">${esc(r[4])}</td><td>${esc(r[5])}</td></tr>`).join("") + `</tbody></table></div>`
+        : `<p class="hint">まだ履歴はありません。</p>`);
+    const settle = async (id, sent) => {
+      const x = pend.find((y) => y.id === id);
+      if (!await ask(sent ? "送付済みにしますか？" : "却下しますか？", `${x.name}さん　${x.item} ${tpN(x.amount)}円分${sent ? "" : "（ポイントは本人に戻ります）"}`, sent ? "送付済みにする" : "却下する", !sent)) return;
+      try { await call("api_tpSettle", id, sent); adMsg(sent ? "送付済みにしました。" : "却下しました。"); adPoints(); } catch (e) { adMsg(errText(e)); }
+    };
+    for (const b of $("ad-body").querySelectorAll("[data-sent]")) b.onclick = () => settle(b.dataset.sent, true);
+    for (const b of $("ad-body").querySelectorAll("[data-ng]")) b.onclick = () => settle(b.dataset.ng, false);
+    $("tg-go").onclick = async () => {
+      const id = $("tg-who").value, n = Math.trunc(Number($("tg-n").value)), why = $("tg-why").value.trim(), who = d.members.find((m) => m.id === id);
+      if (!n) { $("tg-n").focus(); adMsg("ポイントの数を入れてください。"); return; }
+      if (!why) { $("tg-why").focus(); adMsg("理由を入力してください。"); return; }
+      if (!await ask("ポイントを付与しますか？", `${who.name}さんに ${n > 0 ? "+" : ""}${tpN(n)}TP（${why}）`, "付与する")) return;
+      try { await call("api_tpGrant", id, n, why); adMsg(`${who.name}さんに${n > 0 ? "+" : ""}${tpN(n)}TPを付与しました。`); adPoints(); if (id === CRED.slice(0, 32)) loadTp(); }
+      catch (e) { adMsg(errText(e)); }
+    };
   }
   async function adBills() {
     // only a first read clears the message line, so 「保存しました」 and the like stay after a redraw
@@ -5082,7 +5223,10 @@ ${v.addr}`;
   function bootNames() {
     const d = new Date(), cur = ymOf(dayKey(d)), prev = ymOf(dayKey(new Date(d.getFullYear(), d.getMonth() - 1, 1)));
     const next = ymOf(dayKey(new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)));
-    return ["state", "billing", "contract", "m-" + cur, "m-" + prev, "inv-" + cur, "inv-" + prev].concat(next !== cur ? ["m-" + next] : []);
+    // next month's シフト希望 too, so its calendar shows at once when opened
+    // (the month after it as well, which is the first one open once this month's deadline has passed)
+    const hope = (n) => "hope-" + ymOf(dayKey(new Date(d.getFullYear(), d.getMonth() + n, 1)));
+    return ["state", "billing", "contract", "m-" + cur, "m-" + prev, "inv-" + cur, "inv-" + prev, hope(1), hope(2)].concat(next !== cur ? ["m-" + next] : []);
   }
   (async () => {
     if (mustInstall()) { installGate(); return; }
@@ -5111,6 +5255,7 @@ ${v.addr}`;
     try {
       const r = JSON.parse(await rawCall("api_boot", names));
       if (r.inbox) setInbox(r.inbox);
+      if (typeof r.tp === "number") tp.bal = r.tp;
       return [r.me, r.docs && { docs: r.docs, names }];
     } catch (e) {
       if (!/使えない操作/.test(String(e?.message || e))) throw e;
@@ -5140,6 +5285,7 @@ ${v.addr}`;
     if (window.TC_ADMIN) adPrefetch();
     cacheSoon();
     if (!inboxAt) loadInbox();   // the opening call brings it; asked separately only when it did not
+    if (tp.bal == null) loadTp();
   }
   // first the name, address and 勤務形態, then the contract; both block the app (admins too) until done
   function needsSetup() {
