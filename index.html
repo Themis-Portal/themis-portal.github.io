@@ -1360,6 +1360,87 @@ button.pcal-c { cursor: pointer; }
 .nt-tag.tp { color: #6b4a00; background: var(--gold); border-color: var(--gold); }
 .nt-reward { justify-self: start; font-family: var(--f-num); font-size: 12px; font-weight: 800; color: #6b4a00; background: var(--gold); border-radius: 999px; padding: 2px 10px; }
 .nt-get { justify-self: start; text-decoration: none; }
+.nt-reward.over { color: #fff; background: #6b7280; }
+
+/* ---- お知らせ: a timeline in deep violet, set apart from the navy plates. A glowing line runs down the left; each
+   お知らせ hangs from it by a round mark that says what it is ---- */
+.nt-home { border: 1px solid #4b3b8a; background: linear-gradient(165deg, #2b2158, #171433 70%); box-shadow: 0 12px 28px -14px rgb(40 20 90 / .7), inset 0 1px 0 rgb(255 255 255 / .08); }
+.nt-home-h { background: none; padding: 12px 16px 6px; }
+.nt-home-h .nt-pin { width: auto; height: auto; background: none; box-shadow: none; font-size: 18px; filter: drop-shadow(0 0 6px rgb(255 200 80 / .6)); }
+.nt-home-h b { font-size: 16px; letter-spacing: .18em; background: linear-gradient(90deg, #fff, #c9b8ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.nt-home-n { margin-left: auto; font-family: var(--f-num); font-size: 11px; font-weight: 800; color: #fff; background: #e5373d; border-radius: 999px; padding: 2px 9px; box-shadow: 0 0 10px rgb(229 55 61 / .6); }
+.nt-board { background: none; padding: 6px 12px 14px 34px; position: relative; max-height: 320px; }
+.nt-board::before { content: ""; position: absolute; left: 17px; top: 10px; bottom: 10px; width: 2px; border-radius: 2px; background: linear-gradient(180deg, #a78bfa, rgb(167 139 250 / .1)); box-shadow: 0 0 8px rgb(167 139 250 / .6); }
+.nt-note { position: relative; overflow: visible; background: rgb(255 255 255 / .06); border: 1px solid rgb(255 255 255 / .1); border-radius: 14px; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.nt-note > .nt-item { border-radius: 14px; }
+.nt-note::before { position: absolute; left: -26px; top: 12px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; line-height: 1;
+  content: "📢"; background: #3b2f73; border: 1.5px solid #a78bfa; box-shadow: 0 0 8px rgb(167 139 250 / .55); }
+.nt-note[data-k="imp"]::before { content: "!"; color: #fff; font-weight: 900; font-family: var(--f-num); background: #e5373d; border-color: #ff9a9a; box-shadow: 0 0 10px rgb(229 55 61 / .7); }
+.nt-note[data-k="tp"]::before { content: "★"; color: #5a3d00; background: var(--gold); border-color: #fff1c2; box-shadow: 0 0 10px rgb(246 210 122 / .7); }
+.nt-note[data-k="gift"]::before { content: "🎁"; background: #1f6b5f; border-color: #7fe0cf; box-shadow: 0 0 10px rgb(127 224 207 / .7); }
+.nt-note[data-k="ask"]::before { content: "💬"; background: #22344a; border-color: #8fb1ee; }
+.nt-note.new { border-color: rgb(167 139 250 / .55); background: rgb(167 139 250 / .12); }
+.nt-note.open { border-color: #a78bfa; background: rgb(30 22 66 / .9); box-shadow: 0 0 18px -4px rgb(167 139 250 / .7); }
+.nt-board .nt-item .nt-sub, .nt-board .nt-item .nt-at { color: #b8a9e6; }
+.nt-board .nt-item.unread b::before { background: #ff6b6b; box-shadow: 0 0 6px #ff6b6b; }
+.nt-open { color: #e7e0ff; }
+.nt-open .nt-meta, .nt-open .nt-msg .nt-who { color: #b8a9e6; }
+
+/* ---- the rest of the screens in the same game look ---- */
+/* the name: a dark plate like the TP beside it */
+.who-name { background: var(--plate); border: 1px solid var(--plate-line); color: #fff; box-shadow: inset 0 1px 0 rgb(255 255 255 / .12), 0 3px 8px -4px rgb(10 20 35 / .6); }
+.who-tag { background: var(--card); }
+/* tomorrow's plan: a lighter plate with a gold edge */
+.shift-today.small { background: linear-gradient(160deg, #2a3a52, #1b2738); border-color: var(--plate-line); border-left-color: var(--gold); color: var(--plate-ink); }
+.shift-today.small .st-label { color: var(--gold); }
+.shift-today.small .st-store, .shift-today.small .st-time b { color: #fff; }
+.shift-today.small .st-time { color: var(--plate-soft); }
+.shift-today.small .st-fix { color: #1f2a3a; background: #fff; }
+/* the clock: a dark console, the time glowing, the punch keys lit in their colours */
+.clock { background: radial-gradient(130% 120% at 100% 0%, #2c3d5c 0%, transparent 55%), var(--plate); border-color: var(--plate-line); color: var(--plate-ink); box-shadow: 0 14px 30px -16px rgb(10 20 35 / .7), inset 0 1px 0 rgb(255 255 255 / .08) !important; }
+.clock .date { color: var(--plate-soft); }
+.clock .time { color: #fff; text-shadow: 0 0 22px rgb(127 224 207 / .35) !important; }
+.clock .time .sec { color: var(--plate-soft); }
+.clock .key { background: rgb(255 255 255 / .05); border-color: rgb(255 255 255 / .14); color: var(--plate-soft); box-shadow: none; background-image: none; }
+.clock .key small { color: inherit; opacity: .7; }
+.clock .key:disabled { opacity: .3; }
+.clock .key.brk:not(:disabled) { color: #fff; border-color: #f2c14e; background: linear-gradient(180deg, #d9a23b, #9c6c14); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 5px 0 #6b480a, 0 0 18px -2px rgb(242 193 78 / .55); }
+.clock .key.dep:not(:disabled) { color: #fff; border-color: #a5adf2; background: linear-gradient(180deg, #7b84e0, #4a52a8); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 5px 0 #2f3577, 0 0 18px -2px rgb(123 132 224 / .55); }
+.clock .key.in:not(:disabled) { color: #fff; border-color: #7fe0cf; background: linear-gradient(180deg, #3fb6a5, #217066); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 5px 0 #0f3d37, 0 0 18px -2px rgb(63 182 165 / .6); }
+.clock .key.out:not(:disabled) { color: #fff; border-color: #ff9a8a; background: linear-gradient(180deg, #e8664f, #a8382a); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 5px 0 #6b1f15, 0 0 18px -2px rgb(232 102 79 / .6); }
+.clock .key:not(:disabled):active { transform: translateY(5px); box-shadow: none; }
+.clock .today { border-top-color: rgb(255 255 255 / .15); }
+.clock .today dt { color: var(--plate-soft); }
+.clock .today dd { color: #fff; }
+.clock .today dd.in { color: #7fe0cf; } .clock .today dd.out { color: #ff9a8a; }
+.clock .msg { color: var(--plate-soft); }
+.clock .pill { background: rgb(255 255 255 / .06); }
+.clock .pill[data-s="off"] { color: var(--plate-soft); }
+.clock .pill[data-s="work"] { color: #7fe0cf; }
+/* シフト表: the month bar and the totals as plates, the calendar framed dark */
+.month-nav b { font-family: var(--f-num); font-weight: 800; letter-spacing: .06em; }
+.month-nav button { background: var(--plate); border-color: var(--plate-line); color: #fff; box-shadow: inset 0 1px 0 rgb(255 255 255 / .12), 0 3px 0 #0b111b; }
+.totals { background: var(--plate); border: 1px solid var(--plate-line); border-radius: 12px; padding: 10px 14px; color: var(--plate-soft); }
+.totals b { color: var(--gold); }
+.cal { background: #1a2536; border-color: var(--plate-line); box-shadow: 0 12px 26px -16px rgb(10 20 35 / .7); }
+.cal-wd div { color: var(--plate-soft); border-bottom-color: rgb(255 255 255 / .1); font-weight: 700; }
+.cal-wd div:first-child { color: #ff9a8a; } .cal-wd div:last-child { color: #8fb1ee; }
+.cal-grid { gap: 2px; background: #1a2536; padding: 2px; }
+.day { border-radius: 6px; }
+.day.is-today { box-shadow: inset 0 0 0 2px #3fb6a5, 0 0 12px rgb(63 182 165 / .5); }
+/* 管理者画面 / 運営画面: a dark switch, the one on show lit in its colour */
+.ad-space { background: var(--plate); border-color: var(--plate-line); box-shadow: inset 0 2px 6px rgb(0 0 0 / .35); }
+.ad-space button { border-color: rgb(255 255 255 / .16); color: var(--sp); background: rgb(255 255 255 / .04); }
+.ad-space button[data-s="kanri"] { --sp: #8fb1ee; } .ad-space button[data-s="unei"] { --sp: #f0a868; }
+#admin .ad-space button[aria-selected="true"][data-s="kanri"] { color: #fff; border-color: #8fb1ee; background: linear-gradient(180deg, #4f86dd, #2a539c); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 0 16px rgb(79 134 221 / .55); }
+#admin .ad-space button[aria-selected="true"][data-s="unei"] { color: #fff; border-color: #f0a868; background: linear-gradient(180deg, #e98b3c, #a9540f); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 0 16px rgb(233 139 60 / .55); }
+/* member cards and the like: a dark name band across the top of a light card */
+.ad-card { padding: 0 0 12px; overflow: hidden; border-color: var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
+.ad-card > * { margin-inline: 14px; }
+.ad-card > .ad-card-h { margin: 0; padding: 10px 14px; background: var(--plate); color: #fff; }
+.ad-card.dim > .ad-card-h { color: var(--plate-soft); }
+/* the 戻る of the admin screen */
+#adminbtn { background: var(--plate); color: #fff !important; }
 </style>
 </head>
 <body>
@@ -1576,7 +1657,7 @@ button.pcal-c { cursor: pointer; }
   </section>
   <!-- ホーム: the お知らせ board under the clock; only its inside scrolls -->
   <section class="nt-home" id="nt-home" aria-label="お知らせ">
-    <div class="nt-home-h"><span class="nt-pin" aria-hidden="true"></span><b>お知らせ</b></div>
+    <div class="nt-home-h"><span class="nt-pin" aria-hidden="true">📣</span><b>お知らせ</b><span class="nt-home-n" id="nt-home-n" hidden></span></div>
     <div class="nt-board" id="nt-home-list"></div>
   </section>
 
@@ -2301,7 +2382,10 @@ window.addEventListener("error", function (e) {
     $("ad-tabs").querySelector('[data-t="ask"]').classList.toggle("has-new", open > 0);
     // drawn again in place: the board keeps where it was scrolled to, and the one opened stays open
     const board = $("nt-home-list"), y = board.scrollTop, top = inbox.items.slice(0, 50);
-    board.innerHTML = top.length ? top.map((x) => `<div class="nt-note${x.id === ntOpen ? " open" : ""}">` + ntRow(x, x.unread) + (x.id === ntOpen ? ntOpenHTML(x) : "") + `</div>`).join("")
+    $("nt-home-n").hidden = !n; $("nt-home-n").textContent = `未読 ${n}`;
+    // each note's kind (重要 / えらべるPay / TP付き / お問い合わせ / ふつう) gives it its own mark on the timeline
+    const kind = (x) => (x.kind === "q" ? "ask" : x.url ? "gift" : x.important ? "imp" : x.reward > 0 ? "tp" : "info");
+    board.innerHTML = top.length ? top.map((x) => `<div class="nt-note${x.id === ntOpen ? " open" : ""}${x.unread ? " new" : ""}" data-k="${kind(x)}">` + ntRow(x, x.unread) + (x.id === ntOpen ? ntOpenHTML(x) : "") + `</div>`).join("")
       : `<p class="nt-empty">お知らせはまだありません。</p>`;
     board.scrollTop = y;
     // a tap opens it right there on the board (and a second tap closes it); reading it marks it read, but a 重要
@@ -2326,7 +2410,7 @@ window.addEventListener("error", function (e) {
       `</div><button type="button" class="tool" id="nt-home-reply" data-id="${esc(x.id)}">返信する</button></div>`;
     const waiting = x.important && x.unread;
     return `<div class="nt-open"><span class="nt-meta">${esc(ntAt(x.at))}　${esc(x.by)}</span>` +
-      (x.reward > 0 ? `<span class="nt-reward">${x.important ? "確認すると" : "読むと"} +${tpN(x.reward)} TP</span>` : "") +
+      rewardTag(x) +
       `<div class="nt-text">${esc(x.text)}</div>` +
       (x.url ? `<a class="btn primary nt-get" href="${esc(x.url)}" target="_blank" rel="noopener">受け取る</a>` : "") +
       (waiting ? `<button type="button" class="btn primary" id="nt-home-ok" data-id="${esc(x.id)}">確認しました</button>` : x.important ? `<span class="nt-ok">✓ 確認済み</span>` : "") + `</div>`;
@@ -2346,7 +2430,16 @@ window.addEventListener("error", function (e) {
     `<label class="f">内容<textarea id="nt-text" rows="6" maxlength="2000"></textarea></label>` +
     `<label class="check"><input type="checkbox" id="nt-imp"> 重要（「確認しました」を押すまで未読のまま）</label>` +
     `<label class="f">読んだ人に付与するTP（なしは0）<input type="number" id="nt-reward" inputmode="numeric" min="0" max="10000" step="1" value="0"></label>` +
+    `<label class="f">TPの受け取り期限<select id="nt-period"><option value="week">1週間</option><option value="month">1か月</option><option value="year">1年</option></select></label>` +
     `<button type="submit" class="btn primary">お知らせを出す</button>`;
+  // the TP for reading, with its deadline (none after it)
+  const rewardTag = (x) => {
+    if (!(x.reward > 0)) return "";
+    const over = x.until && x.until < ntNow(), d = ntAt(x.until).split(" ")[0];
+    return over ? `<span class="nt-reward over">受け取り期限切れ</span>`
+      : `<span class="nt-reward">${x.important ? "確認すると" : "読むと"} +${tpN(x.reward)} TP${d ? `　${d}まで` : ""}</span>`;
+  };
+  const ntNow = () => { const d = new Date(); return `${dayKey(d)} ${hm(d.getTime())}`; };
   function bindNoticeForm(form, done, say) {
     form.onsubmit = async (e) => {
       e.preventDefault();
@@ -2355,7 +2448,7 @@ window.addEventListener("error", function (e) {
       if (!text) { $("nt-text").focus(); say("内容を入力してください。"); return; }
       if (e.submitter) e.submitter.disabled = true;
       try {
-        await call("api_noticePost", title, text, $("nt-imp").checked, reward);
+        await call("api_noticePost", title, text, $("nt-imp").checked, reward, $("nt-period").value);
         $("nt-title").value = ""; $("nt-text").value = ""; say("お知らせを出しました。");
         await loadInbox(); done();
       } catch (err) { say(errText(err)); if (e.submitter) e.submitter.disabled = false; }
@@ -2431,7 +2524,11 @@ window.addEventListener("error", function (e) {
     $("tp-go").onclick = async () => {
       const a = Number(sel.value);
       if (!(a <= bal) || !await ask("交換を申請しますか？", `${tp.item} ${tpN(a)}円分（${tpN(a)}TP）`, "申請する")) return;
-      try { const v = JSON.parse(await call("api_tpExchange", a)); tp.bal = v.bal; msg("交換を申請しました。Themisから届くまでお待ちください。"); await loadTp(); }
+      try {
+        const v = JSON.parse(await call("api_tpExchange", a));
+        tp.bal = v.bal; if (v.req) tp.reqs = [...(tp.reqs || []), v.req];
+        paintWho(); renderPoint(); msg("交換を申請しました。Themisから届くまでお待ちください。");
+      }
       catch (e) { msg(errText(e)); }
     };
   }
@@ -2459,7 +2556,7 @@ window.addEventListener("error", function (e) {
       const waiting = it.important && it.unread;
       if (!it.important) markSeen([it.id]);
       box.innerHTML = `<article class="nt-doc${it.important ? " imp" : ""}">${it.important ? `<span><span class="nt-tag imp">重要</span></span>` : ""}<h3>${esc(it.title)}</h3>` +
-        `<span class="nt-meta">${esc(ntAt(it.at))}　${esc(it.by)}</span>${it.reward > 0 ? `<span class="nt-reward">${it.important ? "確認すると" : "読むと"} +${tpN(it.reward)} TP</span>` : ""}<div class="nt-text">${esc(it.text)}</div>` +
+        `<span class="nt-meta">${esc(ntAt(it.at))}　${esc(it.by)}</span>${rewardTag(it)}<div class="nt-text">${esc(it.text)}</div>` +
         (it.url ? `<a class="btn primary nt-get" href="${esc(it.url)}" target="_blank" rel="noopener">受け取る</a>` : "") +
         `<div class="nt-tools">` + (waiting ? `<button type="button" class="btn primary" id="nt-ok">確認しました</button>` : it.important ? `<span class="nt-ok">✓ 確認済み</span>` : "") + `</div></article>`;
       if (waiting) $("nt-ok").onclick = () => { markSeen([it.id]); renderNotice(); };
@@ -5468,6 +5565,7 @@ ${v.addr}`;
       const r = JSON.parse(await rawCall("api_boot", names));
       if (r.inbox) setInbox(r.inbox);
       if (typeof r.tp === "number") tp.bal = r.tp;
+      if (Array.isArray(r.tpReqs)) tp.reqs = r.tpReqs;
       return [r.me, r.docs && { docs: r.docs, names }];
     } catch (e) {
       if (!/使えない操作/.test(String(e?.message || e))) throw e;
