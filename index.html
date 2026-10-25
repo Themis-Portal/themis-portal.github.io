@@ -1801,7 +1801,7 @@ button.pcal-c { cursor: pointer; }
       <div><dt>出発</dt><dd id="t-dep">--:--</dd></div>
       <div><dt>出勤</dt><dd class="in" id="t-in">--:--</dd></div>
       <div><dt>退勤</dt><dd class="out" id="t-out">--:--</dd></div>
-      <div><dt>実働</dt><dd id="t-work">0:00</dd></div>
+      <div><dt>稼働</dt><dd id="t-work">0:00</dd></div>
     </dl>
     <div class="msg" id="msg" role="status" aria-live="polite"></div>
   </section>
@@ -2462,7 +2462,7 @@ window.addEventListener("error", function (e) {
     if (kind === "out") {
       for (const b of r.breaks || []) if (b.e == null) b.e = now;
       r.out = now; state().openDate = null;
-      msg(`${hm(now)} 退勤しました。本日の実働 ${dur(workMin(r, now))}。お疲れさまでした。`);
+      msg(`${hm(now)} 退勤しました。本日の稼働 ${dur(workMin(r, now))}。お疲れさまでした。`);
     }
     render();
     // after clocking out, open the day so the results can be written down right away
@@ -2671,7 +2671,8 @@ window.addEventListener("error", function (e) {
     tpKept = s;
     try { localStorage.setItem(TP_KEY, JSON.stringify({ tok: CRED.split(".")[0], bal: tp.bal, reqs: tp.reqs || [] })); } catch (e) {}
   }
-  const tpN = (n) => Number(n || 0).toLocaleString("ja-JP");
+  // a declaration, so the お知らせ drawn from this device's copy at start (a TP付き one) can use it before this line
+  function tpN(n) { return Number(n || 0).toLocaleString("ja-JP"); }
   async function loadTp() {
     if (!CRED || mode === "login") return;
     try { Object.assign(tp, JSON.parse(await call("api_tp"))); } catch (e) { return; }
@@ -3545,7 +3546,7 @@ ${v.addr}`;
     if (!a || !z || $("f-early-box").hidden) { $("f-work").textContent = ""; return; }
     let min = (atTime("2000-01-01", z) - atTime("2000-01-01", a)) / 60000;
     if (min < 0) min += 1440;
-    $("f-work").textContent = `実働 ${dur(min)}${atTime("2000-01-01", z) < atTime("2000-01-01", a) ? "（退勤は翌日）" : ""}`;
+    $("f-work").textContent = `稼働 ${dur(min)}${atTime("2000-01-01", z) < atTime("2000-01-01", a) ? "（退勤は翌日）" : ""}`;
   }
   const TRANSPORTS = ["車", "電車", "バス", "新幹線", "徒歩", "自転車", "同乗"];
   function chip(text) {
@@ -3838,7 +3839,7 @@ ${v.addr}`;
   function openResult(key) {
     resKey = key;
     const r = rec(key);
-    $("r-sub").textContent = `${key.slice(5).replace("-", "/")}${r?.store ? "　" + r.store : ""}　実働 ${dur(workMin(r, Date.now()))}`;
+    $("r-sub").textContent = `${key.slice(5).replace("-", "/")}${r?.store ? "　" + r.store : ""}　稼働 ${dur(workMin(r, Date.now()))}`;
     $("r-text").value = r?.result || "";
     $("r-early").checked = !!r?.early || leftEarly(key, r?.planIn, r?.planOut, r?.out);
     $("r-early-reason").value = r?.earlyReason || "";
@@ -4719,7 +4720,7 @@ ${v.addr}`;
     $("ad-body").innerHTML = byWork(live).map(([t, g]) =>
       `<h3 class="ad-grp">${esc(groupName(t))}（${g.length}人）</h3><div class="ad-cards">` + g.map((m, i) => {
         const s = workSum(rows.filter((r) => r[DH.name] === m.name));
-        return personCard(m, i, `<span>出勤 <b class="num">${s.days}</b>日</span><span>実働 <b class="num">${dur(s.total)}</b></span>` +
+        return personCard(m, i, `<span>出勤 <b class="num">${s.days}</b>日</span><span>稼働 <b class="num">${dur(s.total)}</b></span>` +
           `<span>欠勤 <b class="num">${s.abs}</b></span><span>早退 <b class="num">${s.early}</b></span><span>距離 <b class="num">${s.km}</b>km</span>`, !s.days && !s.abs);
       }).join("") + `</div>`).join("");
     bindPeople();
@@ -4803,7 +4804,7 @@ ${v.addr}`;
       const keys = Object.keys(rows).sort(), s = workSum(keys.map((k) => rows[k]));
       const sel = adPerson.day.startsWith(ym) ? adPerson.day : rows[adData.today] ? adData.today : keys[0] || "";
       $("ad-body").innerHTML = head +
-        `<div class="ad-stats row5">` + [["出勤", `${s.days}日`], ["実働", dur(s.total)], ["欠勤", s.abs], ["早退", s.early], ["距離", `${s.km}km`]]
+        `<div class="ad-stats row5">` + [["出勤", `${s.days}日`], ["稼働", dur(s.total)], ["欠勤", s.abs], ["早退", s.early], ["距離", `${s.km}km`]]
           .map(([t, v]) => `<div class="ad-stat"><span>${t}</span><b class="num">${v}</b></div>`).join("") + `</div>` +
         `<h3 class="pcal-ym">${esc(ymLabel(ym))}</h3>` +
         monthCal(ym, (key) => {
@@ -4836,7 +4837,7 @@ ${v.addr}`;
     const title = `<h3 class="ad-h3">${mo}月${d}日（${WD[wd]}）${holidayName(key) ? `<small>${esc(holidayName(key))}</small>` : ""}</h3>`;
     if (!r) return title + `<p class="hint">この日の記録はありません。</p>` + plan;
     const items = [["区分", `${r[DH.kind]}${r[DH.early] ? "・早退" : ""}`], ["稼働店舗", r[DH.store]], ["予定", r[DH.pIn] ? `${r[DH.pIn]}–${r[DH.pOut]}` : ""],
-      ["起床", r[DH.wake]], ["出発", r[DH.dep]], ["出勤", r[DH.in]], ["退勤", r[DH.out]], ["実働", r[DH.work]],
+      ["起床", r[DH.wake]], ["出発", r[DH.dep]], ["出勤", r[DH.in]], ["退勤", r[DH.out]], ["稼働", r[DH.work]],
       ["交通機関", r[DH.transport]], ["同乗者", r[DH.ride]], ["距離", r[DH.km] ? `${r[DH.km]} km` : ""],
       ["欠勤理由", r[DH.absWhy]], ["早退理由", r[DH.earlyWhy]], ["稼働実績", r[DH.result]], ["メモ", r[DH.memo]]].filter(([, v]) => v);
     const imgs = r[DH.imgs] ? r[DH.imgs].split("\n").map((u, i) => link(u, `画像${i + 1}`)).join(" ") : "";
