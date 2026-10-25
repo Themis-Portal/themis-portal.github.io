@@ -1658,6 +1658,38 @@ button.pcal-c { cursor: pointer; }
 .bl-items-h select { color: var(--ink); }
 .bl-sum { background: var(--plate); color: var(--plate-ink); border-radius: 12px; padding: 10px 14px; }
 .bl-sum dd, .bl-sum b { color: var(--gold); }
+
+/* a large TP (6 digits and more) gets smaller figures, so it fits beside the name */
+.who-tp.mid b { font-size: 14.5px; letter-spacing: 0; }
+.who-tp.long b { font-size: 12.5px; letter-spacing: -.01em; }
+.who-tp.mid, .who-tp.long { padding-right: 8px; }
+
+/* while an お知らせ is open the page under it does not move (a double tap outside it scrolled the page) */
+body.pop-open #scroller { overflow: hidden; touch-action: none; }
+.nt-pop-bg { touch-action: none; overscroll-behavior: contain; }
+.nt-pop { touch-action: pan-y; overscroll-behavior: contain; -webkit-user-select: none; user-select: none; }
+.nt-pop .nt-text { -webkit-user-select: text; user-select: text; }
+
+/* no TP for the day: the same card, calm, with the reason and 分かりました */
+.tp-fx.miss { background: rgb(6 10 18 / .65); animation: tpfx-in .2s ease-out; }
+.tp-fx.miss .tp-fx-card { width: min(360px, calc(100% - 32px)); border-color: #8fb1ee; box-shadow: 0 30px 60px -20px rgb(0 0 0 / .7); animation: tpfx-pop .4s ease-out; gap: 10px; }
+.tp-fx.miss .tp-fx-coin { filter: grayscale(1) brightness(.85); animation: none; width: 52px; height: 52px; font-size: 18px; }
+.tp-fx.miss h3 { margin: 0; font-size: 17px; color: #fff; }
+.tp-fx.miss p { font-size: 13.5px; line-height: 1.8; color: var(--plate-ink); }
+.tp-fx.miss .tp-fx-rule { font-size: 11.5px; color: var(--plate-soft); padding: 8px 10px; border-radius: 10px; background: rgb(255 255 255 / .05); }
+.tp-fx.miss .btn { width: 100%; margin-top: 4px; padding: 12px; font-weight: 800; }
+
+/* 今日の稼働実績 (right after 退勤): the title on a dark band, the day as a line under it, the TP in gold */
+#res-form { padding-top: 0; overflow-x: hidden; border-color: var(--plate-line); }
+#res-form > h3 { margin: 0 -22px; padding: 16px 22px 14px; background: radial-gradient(120% 140% at 90% 0%, #2c3d5c 0%, transparent 60%), var(--plate); color: #fff; font-size: 17px;
+  border-bottom: 3px solid #3fb6a5; display: flex; align-items: center; gap: 8px; }
+#res-form > h3::before { content: "✓"; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #3fb6a5; color: #fff; font-size: 14px; box-shadow: 0 0 10px rgb(63 182 165 / .6); }
+#res-form .r-sub { margin: 0; font-family: var(--f-num); font-size: 13px; font-weight: 700; color: var(--ink); }
+#res-form .r-tp { margin: 0; padding: 8px 12px; border-radius: 10px; background: var(--plate); color: var(--plate-ink); font-size: 13px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; }
+#res-form .r-tp b { font-family: var(--f-num); color: var(--gold); font-size: 16px; }
+#res-form .r-tp small { color: var(--plate-soft); font-size: 11px; }
+#res-form textarea { min-height: 120px; }
+#res-form .modal-actions .btn { padding: 11px 18px; font-weight: 800; }
 </style>
 </head>
 <body>
@@ -2122,7 +2154,8 @@ button.pcal-c { cursor: pointer; }
 <div class="modal-bg" id="res-sheet" hidden>
   <form class="modal" id="res-form" novalidate>
     <h3>今日の稼働実績</h3>
-    <p class="hint" id="r-sub"></p>
+    <p class="hint r-sub" id="r-sub"></p>
+    <p class="r-tp">提出すると <b>+50TP</b><small>（打刻どおり・遅刻なし・稼働8時間以上の日）</small></p>
     <label class="f">この日の成果・対応内容<textarea id="r-text" maxlength="500" rows="5" placeholder="例：来店対応 12件、新規契約 3件、デモ実施 5回"></textarea></label>
     <label class="check"><input type="checkbox" id="r-early"> 早退</label>
     <label class="f" id="r-early-wrap" hidden>早退理由<input type="text" id="r-early-reason" maxlength="100" placeholder="例：体調不良のため"></label>
@@ -2654,7 +2687,7 @@ window.addEventListener("error", function (e) {
     box.dataset.k = ntKind(x);
     box.innerHTML = (tags ? `<div class="nt-pop-tags">${tags}</div>` : "") + `<h3 class="nt-pop-t">${esc(x.kind === "n" ? x.title : askTitle(x))}</h3><hr class="nt-rule">` + body +
       `<div class="nt-pop-acts">${acts}<button type="button" class="btn nt-pop-x" id="nt-pop-x">閉じる</button></div>`;
-    $("nt-pop").hidden = false;
+    $("nt-pop").hidden = false; document.body.classList.add("pop-open");
     // an お問い合わせ's answer counts as read once opened
     if (x.kind === "q") markSeen([x.id]);
     $("nt-pop-x").onclick = closePop;
@@ -2673,7 +2706,7 @@ window.addEventListener("error", function (e) {
     const re = $("nt-pop-reply");
     if (re) re.onclick = () => { closePop(); showNotice("q", x.id, popFrom); };
   }
-  const closePop = () => { $("nt-pop").hidden = true; popId = null; };
+  const closePop = () => { $("nt-pop").hidden = true; popId = null; document.body.classList.remove("pop-open"); };
   // one row of a list: 未読 while not yet confirmed, 重要 / お問い合わせ tags, the TP while it can still be received,
   // the date, and the start of the text
   function ntRow(x, dot) {
@@ -2689,7 +2722,7 @@ window.addEventListener("error", function (e) {
     `<label class="f">題名<input type="text" id="nt-title" maxlength="60" placeholder="例：年末年始の稼働について"></label>` +
     `<label class="f">内容<textarea id="nt-text" rows="6" maxlength="2000"></textarea></label>` +
     `<label class="check"><input type="checkbox" id="nt-imp"> 重要（「確認しました」を押すまで未読のまま）</label>` +
-    `<label class="f">読んだ人に付与するTP（なしは0）<input type="number" id="nt-reward" inputmode="numeric" min="0" max="10000" step="1" value="0"></label>` +
+    `<label class="f">読んだ人に付与するTP（なしは空欄）<input type="number" id="nt-reward" inputmode="numeric" min="0" max="10000" step="1" placeholder="0"></label>` +
     `<label class="f">TPの受け取り期限<select id="nt-period"><option value="week">1週間</option><option value="month">1カ月</option><option value="year">1年</option></select></label>` +
     `<button type="submit" class="btn primary">お知らせを出す</button>`;
   // the TP for reading, with its deadline (none after it)
@@ -2709,7 +2742,7 @@ window.addEventListener("error", function (e) {
       if (e.submitter) e.submitter.disabled = true;
       try {
         await call("api_noticePost", title, text, $("nt-imp").checked, reward, $("nt-period").value);
-        $("nt-title").value = ""; $("nt-text").value = ""; say("お知らせを出しました。");
+        $("nt-title").value = ""; $("nt-text").value = ""; $("nt-reward").value = ""; say("お知らせを出しました。");
         await loadInbox(); done();
       } catch (err) { say(errText(err)); if (e.submitter) e.submitter.disabled = false; }
     };
@@ -2790,6 +2823,26 @@ window.addEventListener("error", function (e) {
     setTimeout(() => fx.classList.add("out"), 2200);
     setTimeout(() => fx.remove(), 2700);
   }
+  // no TP for the day: why, in words that ask for the punches next time, in a box that waits for 分かりました
+  function tpMiss(why) {
+    const w = String(why || "");
+    const [head, body] = w.includes("打刻忘れ")
+      ? ["出勤の打刻が遅れていました", "予定の出勤時間から5分以上たってからの打刻だったため、今日はTPが付きませんでした。<br>現場に着いたら、すぐに「出勤」を押してください。"]
+      : w.includes("打刻がない")
+      ? ["打刻がありませんでした", "出勤・退勤を打刻ボタンで押していなかったため、今日はTPが付きませんでした。<br>次からは、出勤と退勤をアプリのボタンで押してください。"]
+      : w.includes("早退")
+      ? ["早退の日はTPの対象外です", "今日はTPが付きませんでした。<br>また次の稼働で、TPをもらってください。"]
+      : w.includes("8時間")
+      ? ["稼働が8時間に届きませんでした", "TPは、打刻した稼働が8時間以上の日に付きます。<br>出勤・退勤は、その場でボタンを押して打刻してください。"]
+      : ["今日はTPが付きませんでした", esc(w)];
+    const fx = document.createElement("div");
+    fx.className = "tp-fx miss"; fx.setAttribute("role", "alertdialog");
+    fx.innerHTML = `<div class="tp-fx-card"><span class="tp-fx-coin">TP</span><h3>${head}</h3><p>${body}</p>` +
+      `<p class="tp-fx-rule">TPがもらえる日：出勤・退勤をボタンで打刻し、遅刻なし・稼働8時間以上で、稼働実績を提出した日</p>` +
+      `<button type="button" class="btn primary">分かりました</button></div>`;
+    document.body.appendChild(fx);
+    fx.querySelector("button").onclick = () => fx.remove();
+  }
   // the server pays once per day, only for a day clocked out with its 稼働実績 written (asking again does nothing)
   function tpForResult(key) {
     const r = rec(key);
@@ -2797,7 +2850,7 @@ window.addEventListener("error", function (e) {
     call("api_tpResult", key).then((s) => {
       const v = JSON.parse(s); tp.bal = v.bal; paintWho();
       if (v.added) { msg(`稼働実績を保存しました。${v.added}TPもらいました。`); tpFx(v.added, "稼働実績の提出ありがとうございます"); }
-      else if (v.why) msg(`稼働実績を保存しました。（${v.why}のため、TPは付きません）`);
+      else if (v.why) { msg("稼働実績を保存しました。"); tpMiss(v.why); }
     }).catch(() => {});
   }
   function renderPoint() {
@@ -2897,7 +2950,7 @@ window.addEventListener("error", function (e) {
     }
     if (nt.view === "post") {
       box.innerHTML = `<form class="nt-form nt-doc" id="nt-post"><h3>お知らせを出す</h3><p class="hint">全員のホームのお知らせに届きます。</p>` + noticeFormHTML() + `</form>`;
-      bindNoticeForm($("nt-post"), () => showNotice("list"), msg);
+      bindNoticeForm($("nt-post"), () => { pickTab(nt.from); scrollToY(0); }, msg);   // posted: back to the screen it was started from
     }
   }
   // the account's buttons live in the header on the admin screen; on the normal screen メニュー has the same ones
@@ -4353,7 +4406,7 @@ ${v.addr}`;
     // the name in a round badge
     // the ポイント sit right of the name in a badge of their own: "TP" stacked upright, the number beside it
     keepTp();
-    const tpChip = tp.bal == null ? "" : `<span class="who-tp" aria-label="${tpN(tp.bal)} TP"><i aria-hidden="true"><span>T</span><span>P</span></i><b>${tpN(tp.bal)}</b></span>`;
+    const tpChip = tp.bal == null ? "" : `<span class="who-tp${tpN(tp.bal).length > 6 ? " long" : tpN(tp.bal).length > 5 ? " mid" : ""}" aria-label="${tpN(tp.bal)} TP"><i aria-hidden="true"><span>T</span><span>P</span></i><b>${tpN(tp.bal)}</b></span>`;
     $("who").innerHTML = name ? `<span class="who-row"><span class="who-name"><span class="who-nm">${esc(name)}</span></span>${tpChip}</span>` + (tags ? `<span class="who-tags">${tags}</span>` : "") : "";
   }
   function showPerson(me) {
