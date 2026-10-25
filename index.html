@@ -331,16 +331,7 @@ button.hc:not(:disabled):hover { filter: brightness(.97); }
 @media (max-width: 720px) { .forms { grid-template-columns: 1fr; } }
 /* on a wide screen: the invoice's contents on the left; on the right the shared settings (often folded to one line),
    then the preview and the submit button, so neither column is left mostly empty */
-@media (min-width: 721px) {
-  #p-inv { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
-  #p-inv > .forms { display: contents; }
-  #p-inv > .inv-head { grid-area: 1 / 1 / 2 / 3; }
-  #fs-bill { grid-area: 2 / 1 / 5 / 2; }
-  #fs-set { grid-area: 2 / 2 / 3 / 3; }
-  #p-inv > .sheet-scroll { grid-area: 3 / 2 / 4 / 3; }
-  #p-inv > .inv-actions { grid-area: 4 / 2 / 5 / 3; }
-  #p-inv > .hint { grid-area: 5 / 1 / 6 / 3; }
-}
+#p-inv > .forms { grid-template-columns: minmax(0, 1fr); }
 /* fieldset only groups the boxes (so a sent invoice can lock them all at once) and draws nothing: iPhone paints a
    styled fieldset's top dark. The card look is on .fs-card inside it */
 fieldset { margin: 0; border: 0; padding: 0; min-width: 0; background: none; box-shadow: none; }
@@ -1767,6 +1758,58 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 .iv-steps b { flex: none; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: #3fb6a5; color: #fff; font-family: var(--f-num); }
 .iv-entered { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .iv-enter input { font: inherit; font-size: 18px; letter-spacing: .2em; text-transform: uppercase; padding: 8px 10px; border-radius: var(--r); border: 1px solid var(--plate-line); background: #0f1724; color: #fff; flex: 1 1 140px; min-width: 0; }
+.iv-closed { padding: 12px 14px; border-radius: 12px; background: var(--card); border: 1px solid var(--rule); margin: 0; }
+
+/* ポイント › TPを使う: the amount is typed */
+.tp-in { flex: 1 1 160px; min-width: 0; display: flex; align-items: center; gap: 6px; padding: 0 12px; border-radius: var(--r); border: 1px solid var(--plate-line); background: #0f1724; }
+.tp-in input { flex: 1; min-width: 0; font: inherit; font-family: var(--f-num); font-size: 18px; padding: 9px 0; border: 0; background: none; color: #fff; outline: none; }
+.tp-in small { color: var(--plate-soft); font-size: 12px; }
+.tp-in:focus-within { border-color: #7fe0cf; box-shadow: 0 0 0 2px rgb(63 182 165 / .35); }
+/* ポイント › みんなの獲得ログ */
+.tp-feed { list-style: none; margin: 0; padding: 6px; display: grid; gap: 3px; border-radius: var(--r); background: var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
+.tp-feed li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: rgb(255 255 255 / .04); }
+.tp-feed li.me { background: rgb(63 182 165 / .2); box-shadow: inset 0 0 0 1px rgb(127 224 207 / .5); }
+.tf-at { font-size: 11px; color: var(--plate-soft); white-space: nowrap; }
+.tf-who { min-width: 0; display: grid; }
+.tf-who b { color: #fff; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tf-who small { color: var(--plate-soft); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tf-tp { color: var(--gold); font-size: 15px; white-space: nowrap; }
+.tf-tp small { font-size: 10px; margin-left: 2px; color: var(--plate-soft); }
+
+/* 請求書の内容: shown as lines, nothing to type */
+.inv-sum .is-wait { margin: 0; padding: 10px 12px; border-radius: 10px; font-size: 13px; background: color-mix(in srgb, var(--gold) 16%, var(--card)); border: 1px dashed #c99a2e; }
+.is-meta { display: grid; gap: 0; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+.is-meta > div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 12px; font-size: 13.5px; }
+.is-meta > div + div { border-top: 1px solid var(--rule); }
+.is-meta span, .is-bank span { color: var(--ink-soft); flex: none; }
+.is-meta b { font-weight: 600; text-align: right; min-width: 0; overflow-wrap: anywhere; }
+.is-lines { display: grid; gap: 2px; }
+.is-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 6px 2px; font-size: 14.5px; }
+.is-row b { font-size: 16px; }
+.is-row.tp { padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--gold) 16%, var(--card)); border: 1px solid #e3c06a; }
+.is-row.tp span::before { content: "🪙 "; }
+.is-row.sub { border-top: 1px solid var(--rule); margin-top: 4px; padding-top: 10px; }
+.is-row.small { font-size: 12.5px; color: var(--ink-soft); }
+.is-row.small b { font-size: 13px; font-weight: 600; }
+.is-total { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: var(--plate); color: #fff; }
+.is-total span { font-weight: 700; }
+.is-total b { color: var(--gold); font-size: 24px; }
+.is-bank { display: grid; gap: 2px; font-size: 13px; }
+.is-bank p { margin: 0; font-weight: 600; }
+
+/* 運営 › 売上 › 月ごと: one card per month */
+.sm-list { display: grid; gap: 8px; }
+.sm-card { display: grid; gap: 8px; padding: 12px 14px; border-radius: var(--r); background: var(--plate); border: 1px solid var(--plate-line); color: var(--plate-ink); box-shadow: 0 6px 14px -10px rgb(10 20 35 / .6); }
+.sm-card.warn { border-color: rgb(255 154 138 / .6); }
+.sm-h { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+.sm-h > b { color: #fff; font-size: 15px; }
+.sm-h span { font-size: 12.5px; color: var(--plate-soft); }
+.sm-h span b { color: var(--gold); font-size: 17px; }
+.sm-card.warn .sm-h span b { color: #ff9a8a; }
+.sm-g { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.sm-g div { padding: 6px 8px; border-radius: 8px; background: rgb(255 255 255 / .05); min-width: 0; }
+.sm-g dt { font-size: 11px; color: var(--plate-soft); }
+.sm-g dd { margin: 0; color: #fff; font-size: 13.5px; overflow-wrap: anywhere; }
 </style>
 </head>
 <body>
@@ -2050,25 +2093,6 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
     </div>
 
     <div class="forms">
-      <fieldset id="fs-bill"><div class="fs-card">
-        <h3 class="fs-h">請求書の内容（<span id="fs-month">—</span>）</h3>
-        <div class="f2">
-          <label class="f">請求番号<input id="i-no" type="text" maxlength="30"></label>
-          <label class="f">請求日<input id="i-date" type="date"></label>
-        </div>
-        <label class="f">件名<input id="i-subject" type="text" maxlength="60"></label>
-        <label class="f">請求金額（円・税込・Themisが入力）<input id="i-amount" type="text" readonly tabindex="-1" class="locked" placeholder="まだ入力されていません">
-          <span class="hint" id="i-amount-note"></span></label>
-        <div class="f">
-          追加の明細（交通費など、税込金額）
-          <div class="extras" id="extras"></div>
-          <div class="tp-lines" id="tp-lines" hidden></div>
-          <button type="button" class="tool" id="x-add" style="justify-self:start">＋ 明細を追加</button>
-        </div>
-        <label class="f">備考<textarea id="i-note" maxlength="300" placeholder="例：御社都合の交通費の為"></textarea></label>
-        <div class="hours"><span>この月の稼働日数（シフト表から）</span><b id="i-hours">0日</b></div>
-      </div></fieldset>
-
       <fieldset id="fs-set"><div class="fs-card">
         <h3 class="fs-h">毎月共通の設定</h3>
         <!-- most months nothing here changes: ticked, it folds down to a one-line summary; unticked, it opens for changes -->
@@ -2077,7 +2101,6 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
         <div class="set-body" id="set-body">
         <div class="f">請求先<span class="fixed-to">株式会社Themis 御中</span></div>
         <label class="f">あなたの氏名・屋号<input id="b-from" type="text" maxlength="60"></label>
-        <label class="f">メールアドレス（控えの送り先・Themisからの返信先・任意）<input id="b-mail" type="email" maxlength="80" inputmode="email"></label>
         <div class="grp">
           <div class="grp-h">住所・連絡先</div>
           <div class="zip-row">
@@ -2109,22 +2132,21 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
         </div>
         </div>
       </div></fieldset>
+
+      <!-- what the invoice will say, shown as it is (nothing here is typed in) -->
+      <div class="fs-card inv-sum" id="inv-sum"></div>
     </div>
 
-    <div class="sheet-scroll">
-      <button type="button" class="thumb" id="inv-thumb" aria-label="請求書を大きく表示"><img id="inv-img" alt="請求書の見本"></button>
-      <span class="thumb-cap" id="inv-cap">請求書を作成しています…</span>
-    </div>
     <!-- sending (or confirming the payment) comes after the invoice has been looked over -->
     <div class="inv-actions">
       <div class="actions">
-        <button type="button" class="btn okay" id="a-submit">内容を確認して提出</button>
+        <button type="button" class="btn okay" id="a-submit">提出する</button>
         <button type="button" class="btn okay" id="a-paid" hidden>入金を確認しました</button>
         <button type="button" class="btn danger" id="a-undo" hidden>提出を取り消す</button>
       </div>
       <div class="msg" id="inv-msg" role="status" aria-live="polite"></div>
     </div>
-    <p class="hint">提出すると、請求書PDFがThemisの担当者にメールで届きます。メールアドレスを入れておくと、控えがあなたにも届きます。交通費の証明画像は、シフト表の日付から添付してください（請求書とは別にThemisに届きます）。</p>
+    <p class="hint">提出すると、この内容の請求書PDFがThemisに届きます。交通費の証明画像は、シフト表の日付から添付してください（請求書とは別にThemisに届きます）。</p>
   </section>
 
   <section class="panel menu" id="p-menu" aria-label="メニュー" hidden>
@@ -2267,17 +2289,6 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
   </form>
 </div>
 <!-- the last look before an invoice goes out -->
-<div class="modal-bg" id="sub-sheet" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="sub-h">
-    <h3 id="sub-h">請求書を提出</h3>
-    <div id="sub-body"></div>
-    <span class="hint perr" id="sub-err" role="alert"></span>
-    <div class="modal-actions">
-      <button type="button" class="btn" id="sub-cancel">戻る</button>
-      <div><button type="button" class="btn okay" id="sub-go">この内容で提出する</button></div>
-    </div>
-  </div>
-</div>
 <div class="modal-bg" id="setup-sheet" hidden>
   <form class="modal" id="setup-form" novalidate>
     <h3>初めに</h3>
@@ -2455,10 +2466,6 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
       <div><button type="submit" class="btn primary" id="c-submit">署名して締結する</button></div>
     </div>
   </form>
-</div>
-<div class="modal-bg viewer" id="inv-view" hidden>
-  <button type="button" class="tool viewer-close" id="v-close">‹ 戻る</button>
-  <div class="viewer-scroll" role="dialog" aria-label="請求書"><img id="inv-big" alt="請求書"></div>
 </div>
 <div id="pdf-host" aria-hidden="true"></div>
 
@@ -2964,6 +2971,7 @@ window.addEventListener("error", function (e) {
   function paintRank() {
     const box = $("tp-rank");
     if (!box) return;
+    if ($("tp-feed")) $("tp-feed").innerHTML = feedHTML();
     const at = $("rk-track")?.scrollLeft || 0;
     box.innerHTML = rankHTML();
     const tr = $("rk-track");
@@ -2974,33 +2982,40 @@ window.addEventListener("error", function (e) {
     tr.addEventListener("scroll", mark, { passive: true }); mark();
     for (const d of dots) d.onclick = () => tr.scrollTo({ left: Number(d.dataset.rk) * tr.clientWidth, behavior: "smooth" });
   }
+  // みんなの獲得ログ: everyone's latest TP earned (8 lines, newest first), read along with the ランキング
+  function feedHTML() {
+    const f = tpRank?.feed;
+    if (!f) return "";
+    return `<h4 class="bl-h">みんなの獲得ログ</h4>` + (f.length ? `<ol class="tp-feed">` + f.map((x) =>
+      `<li${x.name === window.TC_NAME ? ` class="me"` : ""}><span class="tf-at num">${esc(ntAt(x.at))}</span><span class="tf-who"><b>${esc(x.name)}</b>${x.why ? `<small>${esc(x.why)}</small>` : ""}</span><b class="tf-tp num">＋${tpN(x.tp)}<small>TP</small></b></li>`).join("") + `</ol>`
+      : `<p class="hint">まだだれもTPをもらっていません。</p>`);
+  }
   function renderPoint() {
-    const bal = tp.bal ?? 0, reqs = (tp.reqs || []).slice().sort((a, b) => String(b.at).localeCompare(String(a.at)));
-    const staff = window.TC_WORK === "社員", min = Math.min(...tp.amounts);
+    const bal = tp.bal ?? 0, staff = window.TC_WORK === "社員", typed = $("tp-amt")?.value || "";
     $("tp-body").innerHTML =
       `<div class="tp-card tp-hero"><span class="tp-cap">YOUR POINTS</span><div class="tp-bal">${tp.bal == null ? "—" : tpN(bal)}<small>TP</small></div>` +
       `<p class="tp-how">1TP＝1円分</p></div>` +
       `<section class="tp-rank" id="tp-rank" aria-label="ランキング"></section>` +
-      // TP is used as 報酬 on the invoice (merged into the 業務委託料); a 社員 asks for it to be added to the 給与
+      `<section id="tp-feed" aria-label="みんなの獲得ログ"></section>` +
+      // TP is used as 報酬 on the invoice (a TP報酬 line of its own); a 社員 asks for it to be added to the 給与
       `<div class="tp-card tp-use"><b>${staff ? "TPを給与に加算" : "TPを報酬に使う"}</b>` +
-      `<p class="hint">${staff ? "申請すると、Themisが給与に加算します（1TP＝1円）。" : "使うと、今の請求書に「TP報酬」として足されます（1TP＝1円）。請求書では業務委託料に合算されて届きます。"}</p>` +
-      `<div class="tp-row"><select id="tp-amt" aria-label="使うポイント">${tp.amounts.map((a) => `<option value="${a}"${a > bal ? " disabled" : ""}>${tpN(a)}TP（${tpN(a)}円）</option>`).join("")}</select>` +
-      `<button type="button" class="btn primary" id="tp-go"${bal < min ? " disabled" : ""}>${staff ? "給与に加算を申請" : "請求書に追加"}</button></div>` +
-      (bal < min ? `<p class="hint">${tpN(min)}TPから使えます。</p>` : "") + `</div>` +
-      (reqs.length ? `<h4 class="bl-h">使ったTP</h4><div class="tp-list">` + reqs.map((x) =>
-        `<div><span>${esc(x.item === "えらべるPay" ? `えらべるPay ${tpN(x.amount)}円分` : `${x.item}　${tpN(x.amount)}TP`)}<br><span class="muted">${esc(ntAt(x.at))}　${esc(x.status)}${x.ym ? `（${Number(x.ym.slice(5))}月分の請求書）` : ""}</span></span>` +
-        (x.url ? `<a class="btn primary tp-get" href="${esc(x.url)}" target="_blank" rel="noopener">受け取る</a>` : "") + `</div>`).join("") + `</div>` : "");
+      `<p class="hint">${staff ? "申請すると、Themisが給与に加算します（1TP＝1円）。" : "使うと、今の請求書に「TP報酬」として、業務委託料とは別に載ります（1TP＝1円）。"}</p>` +
+      `<div class="tp-row"><span class="tp-in"><input type="number" id="tp-amt" inputmode="numeric" min="1" max="${bal}" step="1" placeholder="使うTP" aria-label="使うポイント"><small>TP</small></span>` +
+      `<button type="button" class="btn primary" id="tp-go"${bal < 1 ? " disabled" : ""}>${staff ? "給与に加算を申請" : "請求書に追加"}</button></div>` +
+      `<p class="hint">${bal < 1 ? "TPがたまると使えます。" : `1〜${tpN(bal)}TPの間で入れてください。`}</p></div>`;
     paintRank();
-    const sel = $("tp-amt"), ok = [...sel.options].find((o) => !o.disabled);
-    if (ok) sel.value = ok.value;
+    const sel = $("tp-amt");
+    sel.value = typed;
     $("tp-go").onclick = async () => {
       const a = Number(sel.value);
-      if (!(a <= bal) || !await ask(staff ? "給与への加算を申請しますか？" : "請求書に追加しますか？",
+      if (!Number.isInteger(a) || a < 1) { msg("使うTPの数を入れてください。"); sel.focus(); return; }
+      if (a > bal) { msg(`TPが足りません（残高 ${tpN(bal)}TP）。`); sel.focus(); return; }
+      if (!await ask(staff ? "給与への加算を申請しますか？" : "請求書に追加しますか？",
         staff ? `${tpN(a)}TP（${tpN(a)}円）を給与に加算するよう申請します。` : `${tpN(a)}TP（${tpN(a)}円）を、請求書のTP報酬に追加します。追加したTPは戻せません。`, staff ? "申請する" : "追加する")) return;
       try {
         const v = JSON.parse(await call("api_tpUse", a));
         tp.bal = v.bal; if (v.req) tp.reqs = [...(tp.reqs || []), v.req];
-        paintWho(); renderPoint();
+        sel.value = ""; paintWho(); renderPoint();
         msg(staff ? "申請しました。Themisが給与に加算するまでお待ちください。" : `${Number(v.req.ym.slice(5))}月分の請求書に、TP報酬 ${tpN(a)}円を追加しました。`);
         if (!staff && backend?.refresh) backend.refresh(["inv-" + v.req.ym]);
       }
@@ -3019,17 +3034,19 @@ window.addEventListener("error", function (e) {
     const url = window.TC_API ? location.origin + location.pathname : "";
     $("iv-body").innerHTML =
       `<div class="iv-hero"><span class="iv-cap">INVITE FRIENDS</span><h2>友達を招待して<br>毎月 <em>${bonus}TP</em> もらおう</h2>` +
-      `<p>あなたの招待コードで友達がメンバーになると、友達には最初に <b>${welcome}TP</b>。その友達が月${days}日以上出勤した月は、あなたに毎月 <b>${bonus}TP</b>（${bonus}円分）のボーナスが届きます。何人でも招待できます。</p>` +
+      `<p>あなたの招待コードで友達がメンバーになると、友達とあなたに <b>${welcome}TP</b> ずつ。さらに、その友達が月${days}日以上出勤した月は、あなたに毎月 <b>${bonus}TP</b>（${bonus}円分）のボーナスが届きます。何人でも招待できます。</p>` +
       `<div class="iv-code"><span>あなたの招待コード</span><b class="num" id="iv-code">${v ? esc(v.code) : "……"}</b></div>` +
       `<div class="iv-acts"><button type="button" class="btn primary" id="iv-copy"${v ? "" : " disabled"}>コードをコピー</button>` +
       (navigator.share ? `<button type="button" class="btn iv-share" id="iv-share"${v ? "" : " disabled"}>友達に送る</button>` : "") + `</div></div>` +
-      `<ol class="iv-steps"><li><b>1</b>友達に招待コードを送る</li><li><b>2</b>友達がメンバーになり、アプリで招待コードを入力</li><li><b>3</b>Themisが確認すると、友達に ${welcome}TP</li><li><b>4</b>友達が月${days}日以上出勤した月は、あなたに ${bonus}TP</li></ol>` +
+      `<ol class="iv-steps"><li><b>1</b>友達に招待コードを送る</li><li><b>2</b>友達がメンバーになり、アプリで招待コードを入力</li><li><b>3</b>Themisが確認すると、友達とあなたに ${welcome}TP</li><li><b>4</b>友達が月${days}日以上出勤した月は、あなたに ${bonus}TP</li></ol>` +
       `<h4 class="bl-h">招待した人</h4>` + (v?.invited?.length ? `<div class="tp-list">` + v.invited.map((x) => `<div><span><b>${esc(x.name)}</b>さん<br><span class="muted">${esc(ntAt(x.since))}から　月${days}日以上の出勤で ${bonus}TP</span></span></div>`).join("") + `</div>`
         : `<p class="hint">まだいません。招待コードを送ってみましょう。</p>`) +
       `<h4 class="bl-h">招待コードを入力</h4>` +
       (v?.entered && v.entered.status !== "却下"
         ? `<div class="tp-card iv-entered"><span>${esc(v.entered.name)}さんの招待コードを入力済み</span><span class="st st-${v.entered.status === "許可" ? "done" : "late"}">${v.entered.status === "許可" ? "承認済み" : v.entered.status === "停止" ? "終了" : "確認中"}</span></div>`
-        : `<form class="tp-card iv-enter" id="iv-form"><p class="hint">あなたを招待してくれた人のコードを入れてください。Themisが確認すると、あなたにも ${welcome}TP が届きます。${v?.entered ? "（前に入れたコードは承認されませんでした）" : ""}</p>` +
+        // a code can be entered only within the first 24 hours after the first sign-in
+        : v && v.canEnter === false ? `<p class="hint iv-closed">招待コードを入れられるのは、最初にログインしてから${v.hours || 24}時間以内です。</p>`
+        : `<form class="tp-card iv-enter" id="iv-form"><p class="hint">あなたを招待してくれた人のコードを入れてください。Themisが確認すると、あなたにも ${welcome}TP が届きます。${v?.until ? `入力できるのは ${esc(ntAt(v.until))} までです。` : ""}${v?.entered ? "（前に入れたコードは承認されませんでした）" : ""}</p>` +
           `<div class="tp-row"><input type="text" id="iv-in" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="例：AB12CD" aria-label="招待コード"><button type="submit" class="btn primary">送る</button></div></form>`);
     const text = () => `Themis Portal の招待コード：${v.code}${url ? `\n${url}` : ""}`;
     if ($("iv-copy")) $("iv-copy").onclick = async () => { const ok = await copyText(v.code); $("iv-copy").textContent = ok ? "コピーしました" : "コピーできませんでした"; setTimeout(() => { if ($("iv-copy")) $("iv-copy").textContent = "コードをコピー"; }, 1600); };
@@ -3200,9 +3217,10 @@ window.addEventListener("error", function (e) {
     const amount = Number(inv.fixedAmount) || 0;
     const minutes = Math.round(monthWorkMin(ym, now));
     const days = monthRows(ym).filter((x) => x.r?.in).length;
-    // TP used as 報酬 is merged into the 業務委託料 line: the invoice shows one amount, not the TP itself
+    // TP used as 報酬 is a line of its own, apart from the 業務委託料
     const tpUsed = (inv.tpLines || []).filter((t) => t.kind === "use").reduce((s, t) => s + (Number(t.amount) || 0), 0);
-    const lines = [{ name: `${y}年${m}月分 業務委託料（稼働 ${days}日）`, qty: "1", unitLabel: "式", price: amount + tpUsed, amount: amount + tpUsed }];    for (const x of inv.extras || []) if (x.name || x.amount) lines.push({ name: x.name || "（品目）", qty: "1", unitLabel: "式", price: Number(x.amount) || 0, amount: Number(x.amount) || 0 });
+    const lines = [{ name: `${y}年${m}月分 業務委託料（稼働 ${days}日）`, qty: "1", unitLabel: "式", price: amount, amount }];
+    if (tpUsed) lines.push({ name: "TP報酬", qty: "1", unitLabel: "式", price: tpUsed, amount: tpUsed });
     // every amount is entered tax-inclusive; the 10% portion is backed out of the total
     const gross = lines.reduce((s, l) => s + l.amount, 0);
     const taxRate = 10;
@@ -3213,7 +3231,7 @@ window.addEventListener("error", function (e) {
     const wh = whOn ? withholding(gross) : 0;
     return {
       ym, no: inv.no || `${ym.replace("-", "")}-001`, issueDate: inv.date || (dayKey(new Date()) > lastDay(ym) ? dayKey(new Date()) : lastDay(ym)), dueDate: dueFrom(ym, b.due),
-      subject: inv.subject || `${y}年${m}月分 業務委託料`, note: inv.note || "",
+      subject: inv.subject || `${y}年${m}月分 業務委託料`, note: "",
       to: CLIENT, from: b.from || "", addr: b.addr || "", reg: b.reg || "", bank: b.bank || "",
       days, minutes, lines, gross, subtotal, taxRate, tax, wh, whOn, total: gross - wh,
     };
@@ -3260,8 +3278,7 @@ window.addEventListener("error", function (e) {
   // text blocks addr and bank, rebuilt from the fields on every edit
   const ADDR = ["zip", "address", "building", "tel"];
   const BANK = ["bankName", "branch", "acctType", "acctNo", "acctName"];
-  const BILL = ["from", "mail", "reg", "due", ...ADDR, ...BANK];
-  const INV = ["no", "date", "subject", "note"];
+  const BILL = ["from", "reg", "due", ...ADDR, ...BANK];
   const BILL_DEFAULTS = { due: "next-end", acctType: "普通" };
   // 銀行 and 支店 are added for the person; names that already end in another word for the institution
   // or branch (信用金庫, 本店, 営業部, ゆうちょの「〇一八店」…) are printed as typed
@@ -3329,8 +3346,7 @@ window.addEventListener("error", function (e) {
     zipEl.addEventListener("blur", () => { const z = digits(zipEl.value); if (z.length === 7) zipEl.value = z.slice(0, 3) + "-" + z.slice(3); zipEl.dispatchEvent(new Event("change")); });
   }
   function fillForms(force) {
-    const invName = "inv-" + viewYm();
-    const b = doc("billing"), inv = doc(invName), v = computeInvoice(viewYm(), Date.now());
+    const b = doc("billing");
     splitOldBilling(b);
     const set = (el, val) => { if (force || document.activeElement !== el) el.value = val ?? ""; };
     // an empty saved value falls back to the default too, so the account type always shows 普通 until changed
@@ -3338,36 +3354,6 @@ window.addEventListener("error", function (e) {
     // names saved with 銀行 / 支店 typed in show without them, beside the fixed words
     set($("b-bankName"), stripEnd(b.bankName, "銀行")); set($("b-branch"), stripEnd(b.branch, "支店"));
     syncSfx();
-    set($("i-no"), inv.no ?? v.no); set($("i-date"), inv.date ?? v.issueDate);
-    set($("i-subject"), inv.subject ?? v.subject); set($("i-note"), inv.note ?? "");
-    // the amount box only shows what Themis entered; the extra lines stay the member's own
-    const fixed = inv.fixedAmount != null;
-    $("i-amount").value = fixed ? Number(inv.fixedAmount).toLocaleString("ja-JP") : "";
-    $("i-amount-note").textContent = fixed ? "Themisが入力した金額です。違う場合はThemisの担当者に連絡してください。"
-      : "請求金額はThemisが入力します。入力されると、ここに表示されて提出できるようになります。";
-    const box = $("extras");
-    if (force || !box.contains(document.activeElement)) {
-      // lines appear only once 「＋ 明細を追加」 is pressed
-      box.replaceChildren(...(inv.extras || []).map((x, i) => {
-        const row = document.createElement("div"); row.className = "extra";
-        row.innerHTML = `<input type="text" id="x-name-${i}" maxlength="40" placeholder="例：交通費" aria-label="品目"><input type="number" id="x-amt-${i}" min="0" step="10" inputmode="numeric" placeholder="例：1200" aria-label="金額"><button type="button" aria-label="この明細を削除">×</button>`;
-        row.children[0].value = x.name || ""; row.children[1].value = x.amount || "";
-        noAutofill(row.children[0]);
-        // look the invoice up on every edit: a reload replaces the stored object, and a reference
-        // captured here would keep writing to the old copy that is no longer saved or shown
-        const ex = () => { const d = doc(invName); if (!d.extras) d.extras = []; return d.extras; };
-        const line = () => ex()[i] || (ex()[i] = { name: "", amount: 0 });
-        row.children[0].oninput = () => { line().name = row.children[0].value; invChanged(); };
-        row.children[1].oninput = () => { line().amount = Number(row.children[1].value) || 0; invChanged(); };
-        row.children[2].onclick = () => { ex().splice(i, 1); invChanged(); fillForms(true); };
-        return row;
-      }));
-    }
-    // TP used as 報酬 shows here (it cannot be changed); on the invoice it is part of the 業務委託料
-    const used = (inv.tpLines || []).filter((t) => t.kind === "use");
-    $("tp-lines").innerHTML = used.length ? used.map((t) => `<div><span>TP報酬（${esc(ntAt(t.at))}）</span><b class="num">＋${tpN(t.amount)}円</b></div>`).join("") +
-      `<p>業務委託料に合算して請求されます。</p>` : "";
-    $("tp-lines").hidden = !used.length;
     setSummary();
   }
   // 毎月共通の設定 folds to one line while 先月と同じ is ticked; it starts ticked once the settings are complete
@@ -3382,7 +3368,6 @@ window.addEventListener("error", function (e) {
     $("set-sum").textContent = on ? `${b.from}　/　振込先：${b.bank}` : "";
   }
   $("b-same").addEventListener("change", () => { sameLast = $("b-same").checked; setSummary(); });
-  function invChanged() { saveSoon("inv-" + viewYm()); renderInvoice(); }
   const billEdited = (k) => { const b = doc("billing"); b[k] = $("b-" + k).value.trim(); composeBilling(b); saveSoon("billing"); renderInvoice(); };
   for (const k of BILL) {
     $("b-" + k).addEventListener("input", () => billEdited(k));
@@ -3398,8 +3383,6 @@ window.addEventListener("error", function (e) {
   $("b-tel").addEventListener("blur", () => { $("b-tel").value = $("b-tel").value.normalize("NFKC").replace(/[^\d-]/g, ""); billEdited("tel"); });
   zipField($("b-zip"), $("b-address"), $("b-zipmsg"), () => billEdited("address"));
   $("b-wh").addEventListener("change", () => { doc("billing").wh = $("b-wh").checked; saveSoon("billing"); renderInvoice(); });
-  for (const k of INV) $("i-" + k).addEventListener("input", () => { doc("inv-" + viewYm())[k] = $("i-" + k).value; invChanged(); });
-  $("x-add").onclick = () => { const inv = doc("inv-" + viewYm()); inv.extras = [...(inv.extras || []), { name: "", amount: 0 }]; invChanged(); fillForms(true); const el = $("x-name-" + (inv.extras.length - 1)); if (el) focusIfMouse(el); };
 
   const invMsg = (t) => { $("inv-msg").textContent = t; };
   let lastInvKey = "";
@@ -3491,47 +3474,32 @@ window.addEventListener("error", function (e) {
     const ym = viewYm(), inv = doc("inv-" + ym), v = computeInvoice(ym, Date.now());
     const st = inv.status || "draft", [y, m] = ym.split("-").map(Number);
     $("inv-title").textContent = `${y}年${m}月分の請求書`;
-    $("fs-month").textContent = `${y}年${m}月分`;
     const pill = $("inv-status"); pill.dataset.s = st;
     pill.textContent = st === "paid" ? (inv.confirmedOn ? "入金確認済み" : `入金されました（${jDate(inv.paidOn)}）`) : st === "submitted" ? `提出済み（${jDate(inv.submittedOn)}）` : "";
     pill.hidden = st === "draft";   // a draft needs no label; only 提出済み / 入金済み are shown
     const locked = st !== "draft";
-    $("fs-bill").disabled = locked; $("fs-set").disabled = locked;
+    $("fs-set").disabled = locked;
     // Themis marks the payment; the member then confirms the money arrived. A paid invoice can no longer be withdrawn
     $("a-submit").hidden = locked; $("a-paid").hidden = !(st === "paid" && !inv.confirmedOn); $("a-undo").hidden = st !== "submitted";
     // a draft can go out only once Themis's amount is in it
     $("a-submit").disabled = inv.fixedAmount == null;
-    const b = doc("billing"), ready = !!(b.from && b.bank && v.lines[0].amount);
-    $("i-hours").textContent = `${v.days}日`;
     $("b-wh").checked = v.whOn;
     $("b-wh").disabled = v.gross <= 120000;
-    const key = JSON.stringify(v);
-    if (key !== lastInvKey) { lastInvKey = key; pictureSoon(v); }
+    const key = JSON.stringify([v, inv.fixedAmount == null]);
+    if (key !== lastInvKey) { lastInvKey = key; $("inv-sum").innerHTML = invSumHTML(v, inv.fixedAmount != null); }
   }
-  // the preview is drawn off screen at true A4 size and shown as a picture, exactly as the PDF will look;
-  // redrawn shortly after typing stops
-  let picTimer = null, picTurn = 0;
-  function pictureSoon(v) {
-    clearTimeout(picTimer);
-    const turn = ++picTurn;
-    picTimer = setTimeout(async () => {
-      try {
-        const url = await invoicePicture(v);
-        if (turn !== picTurn) return;
-        $("inv-img").src = url; $("inv-big").src = url;
-        $("inv-cap").textContent = "タップで拡大できます";
-      } catch {
-        if (turn === picTurn) { lastInvKey = ""; $("inv-cap").textContent = "見本を表示できませんでした。通信状況を確認してください。"; }
-      }
-    }, 400);
-  }
-  async function invoicePicture(v) {
-    await libs(); await document.fonts.ready;
-    const node = document.createElement("div");
-    node.className = "invoice"; node.style.boxShadow = "none"; node.innerHTML = invoiceHTML(v);
-    $("pdf-host").appendChild(node);
-    try { return (await html2canvas(node, { scale: 2, backgroundColor: "#ffffff" })).toDataURL("image/jpeg", 0.9); }
-    finally { node.remove(); }
+  // the invoice's contents as plain lines (the PDF itself is made only when it is submitted)
+  function invSumHTML(v, fixed) {
+    const row = (t, val, cls = "") => `<div class="is-row${cls}"><span>${t}</span><b class="num">${val}</b></div>`;
+    return `<h3 class="fs-h">請求書の内容</h3>` +
+      (fixed ? "" : `<p class="is-wait">請求金額はThemisが入力します。入力されると、ここに表示されて提出できるようになります。</p>`) +
+      `<div class="is-meta">` + [["請求番号", esc(v.no)], ["請求日", esc(jDate(v.issueDate))], ["件名", esc(v.subject)], ["稼働日数", `${v.days}日`], ["お支払期限", esc(jDate(v.dueDate))]]
+        .map(([t, d]) => `<div><span>${t}</span><b>${d}</b></div>`).join("") + `</div>` +
+      `<div class="is-lines">` + v.lines.map((l, i) => row(i ? esc(l.name) : "業務委託料", fixed || i ? yen(l.amount) : "—", l.name === "TP報酬" ? " tp" : "")).join("") +
+      row("合計（税込）", yen(v.gross), " sub") + row(`うち消費税（${v.taxRate}%）`, yen(v.tax), " small") +
+      (v.whOn ? row("源泉徴収税", "−" + yen(v.wh), " small") : "") + `</div>` +
+      `<div class="is-total"><span>ご請求金額</span><b class="num">${fixed ? yen(v.total) : "—"}</b></div>` +
+      `<div class="is-bank"><span>お振込先</span><p>${v.bank ? esc(v.bank).replace(/\n/g, "<br>") : "（毎月共通の設定で入力してください）"}</p></div>`;
   }
   // the page never zooms (no pinch, no double tap); only the invoice / PDF viewers let fingers zoom in to check
   // the details. Android follows the viewport tag; iPhone ignores user-scalable there, so its pinch is stopped by hand
@@ -3554,15 +3522,6 @@ window.addEventListener("error", function (e) {
     if (!tapAt || !t || Math.hypot(t.clientX - tapAt[0], t.clientY - tapAt[1]) > 10) return;
     if (a && a.matches("input, textarea, [contenteditable]") && !e.target.closest(TAPPABLE)) a.blur();
   }, { passive: true });
-  const closeViewer = () => { $("inv-view").hidden = true; allowZoom(false); };
-  $("inv-thumb").onclick = () => {
-    if (!$("inv-big").getAttribute("src")) return;
-    $("inv-view").hidden = false; allowZoom(true);
-    $("inv-view").querySelector(".viewer-scroll").scrollTop = 0;
-  };
-  $("inv-view").addEventListener("click", (e) => { if (e.target === $("inv-view") || e.target.classList.contains("viewer-scroll")) closeViewer(); });
-  $("v-close").onclick = closeViewer;
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("inv-view").hidden) closeViewer(); });
 
   // while any sheet is open the page behind stays still, so a swipe can't scroll the calendar
   const sheets = [...document.querySelectorAll(".modal-bg")];
@@ -3622,37 +3581,23 @@ ${v.addr}`;
     const t = mailText(v), i = t.indexOf("\n");
     return { subject: t.slice(0, i).replace(/^件名：/, ""), body: t.slice(i + 1).replace(/^\n/, "") };
   }
-  // submitting builds the PDF here, then the server files it in Drive and emails it to Themis
-  // 「内容を確認して提出」 shows the amounts once more; the invoice goes out from that box
-  $("a-submit").onclick = () => {
+  // 「提出する」 builds the PDF here; the server files it in Drive, where Themis opens it from 報酬・給与 (no email)
+  $("a-submit").onclick = async () => {
     const ym = viewYm(), inv = doc("inv-" + ym), b = doc("billing");
     const v = computeInvoice(ym, Date.now());
     if (ym >= ymOf(dayKey(new Date()))) { invMsg("今月以降の請求書は提出できません。月が明けてから提出してください。"); return; }
     if (inv.fixedAmount == null) { invMsg("請求金額がまだ入力されていません。Themisが金額を入力してから提出してください。"); return; }
     if (!(b.from && b.bank)) { invMsg("氏名・振込先を入力してから提出してください。"); return; }
     const [y, m] = ym.split("-").map(Number);
-    $("sub-h").textContent = `${y}年${m}月分の請求書を提出`;
-    $("sub-body").innerHTML = `<dl class="sub-sum">` +
-      v.lines.map((l) => `<dt>${esc(l.name)}</dt><dd class="num">${yen(l.amount)}</dd>`).join("") +
-      `<dt class="tot">ご請求金額（税込）</dt><dd class="num tot">${yen(v.gross)}</dd>` +
-      (v.wh ? `<dt>源泉徴収税</dt><dd class="num">− ${yen(v.wh)}</dd><dt class="tot">お支払額</dt><dd class="num tot">${yen(v.total)}</dd>` : "") +
-      `</dl><p class="hint">金額と内容に間違いがなければ「この内容で提出する」を押してください。請求書PDFがメールでThemisに届きます。違う場合は提出せず、Themisの担当者に連絡してください。</p>`;
-    $("sub-err").textContent = "";
-    $("sub-sheet").hidden = false;
-  };
-  $("sub-cancel").onclick = () => { $("sub-sheet").hidden = true; };
-  $("sub-go").onclick = async () => {
-    const ym = viewYm(), inv = doc("inv-" + ym), b = doc("billing");
-    const v = computeInvoice(ym, Date.now());
-    $("sub-sheet").hidden = true;
+    if (!await ask(`${y}年${m}月分の請求書を提出しますか？`, `ご請求金額 ${yen(v.total)}。この内容の請求書PDFがThemisに届きます。`, "提出する")) return;
     $("a-submit").disabled = true; invMsg("請求書PDFを作って、Themisに送っています…");
     try {
       const b64 = await buildPdf(ym, v);
       const { subject, body } = mailParts(v);
-      const url = await call("api_submit", ym, b64, subject, body, b.mail || "");
+      const url = await call("api_submit", ym, b64, subject, body, "");
       inv.snapshot = v; inv.status = "submitted"; inv.submittedOn = dayKey(new Date()); inv.pdfUrl = url;
       renderInvoice();
-      if (await persist("inv-" + ym)) invMsg(`Themisに提出しました。${b.mail ? `控えのPDFが ${b.mail} にも届きます。` : ""}`);
+      if (await persist("inv-" + ym)) invMsg("Themisに提出しました。");
     } catch (e) {
       invMsg(e?.message ? `提出できませんでした。${e.message}` : "提出できませんでした。通信状況を確認して、もう一度押してください。");
     } finally { renderInvoice(); }
@@ -3671,7 +3616,7 @@ ${v.addr}`;
     const ym = viewYm(), inv = doc("inv-" + ym);
     delete inv.snapshot; delete inv.submittedOn; delete inv.paidOn; inv.status = "draft";
     renderInvoice(); fillForms(true);
-    if (await persist("inv-" + ym)) invMsg("下書きに戻しました。Themisに送ったメールは取り消されないので、出し直す場合はその旨を担当者に伝えてください。");
+    if (await persist("inv-" + ym)) invMsg("下書きに戻しました。出し直す場合は、もう一度「提出する」を押してください。");
   };
 
   // ---- Japanese public holidays (祝日法, incl. 振替休日 and 国民の休日; equinox formula valid to 2099) ----
@@ -5263,7 +5208,7 @@ ${v.addr}`;
     for (const b of $("ad-body").querySelectorAll("[data-unsubmit]")) b.onclick = () => {
       const c = card(b), name = c.dataset.name;
       adDialog("提出の取り消し",
-        `<p>${esc(name)}さんの${esc(ymLabel(ym))}分の請求書の提出を取り消して、「未提出」に戻します。<br>${esc(name)}さんは、直してからもう一度提出できます。</p><p class="hint">届いたメールとPDFは消えません。</p>`,
+        `<p>${esc(name)}さんの${esc(ymLabel(ym))}分の請求書の提出を取り消して、「未提出」に戻します。<br>${esc(name)}さんは、直してからもう一度提出できます。</p><p class="hint">提出されたPDFは消えません。</p>`,
         "提出を取り消す", async () => {
           await call("api_adminUnsubmit", c.dataset.id, ym);
           const r = byName[name];
@@ -5761,15 +5706,16 @@ ${v.addr}`;
   }
   function adSales() {
     const { months, all } = salesMonths();
+    // 月ごと: one card per month (newest first), read top to bottom with no sideways scrolling
     const rows = Object.keys(months).sort().reverse().map((ym) => {
-      const m = months[ym], [y, mo] = ym.split("-").map(Number);
-      return `<tr${profitOf(m) < 0 ? ` class="warn"` : ""}><th>${y}年${mo}月</th><td>${yen(m.sales)}</td><td>${yen(m.cost)}</td><td>${yen(m.exp)}</td><td>${signed(profitOf(m))}</td><td>${profitRate(m)}</td></tr>`;
+      const m = months[ym], [y, mo] = ym.split("-").map(Number), warn = profitOf(m) < 0 ? " warn" : "";
+      return `<div class="sm-card${warn}"><div class="sm-h"><b>${y}年${mo}月</b><span>利益 <b class="num">${signed(profitOf(m))}</b>（${profitRate(m)}）</span></div>` +
+        `<dl class="sm-g num"><div><dt>売上</dt><dd>${yen(m.sales)}</dd></div><div><dt>人件費</dt><dd>${yen(m.cost)}</dd></div><div><dt>TP経費</dt><dd>${yen(m.exp)}</dd></div></dl></div>`;
     });
     $("ad-body").innerHTML =
       `<h4 class="bl-h">${new Date().getFullYear()}年${new Date().getMonth() + 1}月</h4>` + liveBox(workYm(dayKey(new Date()))) +
       `<h4 class="bl-h">全体</h4>` + salesBox(all) +
-      (rows.length ? `<h4 class="bl-h">月ごと</h4><div class="sl-wrap"><table class="sl-tbl num"><thead><tr><th>月</th><th>売上</th><th>人件費</th><th>TP経費</th><th>利益</th><th>利益率</th></tr></thead>` +
-        `<tbody>${rows.join("")}</tbody></table></div>` : "");
+      (rows.length ? `<h4 class="bl-h">月ごと</h4><div class="sm-list">${rows.join("")}</div>` : "");
   }
   // 管理者画面 › 問い合わせ: every お問い合わせ (the ones waiting for an answer first, marked 未回答); one opened shows
   // the exchange and a reply box. The answer reaches the sender's お知らせ as 「お問い合わせについて」
@@ -5853,7 +5799,7 @@ ${v.addr}`;
     };
     const who = (id) => ivAd.list.find((x) => x.id === id);
     for (const b of $("ad-body").querySelectorAll("[data-iv-ok]")) b.onclick = () => { const x = who(b.dataset.ivOk);
-      act(x.id, "ok", "招待を許可しますか？", `${x.inviteeName}さんに ${tpN(ivAd.welcome || 5000)}TP が届きます。${x.inviterName}さんには、${x.inviteeName}さんが月${ivAd.days || 20}日以上出勤した月ごとに ${tpN(ivAd.bonus)}TP が付きます（今月の分から）。`, "許可する", false, "許可しました。"); };
+      act(x.id, "ok", "招待を許可しますか？", `${x.inviteeName}さんと${x.inviterName}さんに ${tpN(ivAd.welcome || 5000)}TP ずつ届きます。さらに${x.inviterName}さんには、${x.inviteeName}さんが月${ivAd.days || 20}日以上出勤した月ごとに ${tpN(ivAd.bonus)}TP が付きます（今月の分から）。`, "許可する", false, "許可しました。"); };
     for (const b of $("ad-body").querySelectorAll("[data-iv-ng]")) b.onclick = () => { const x = who(b.dataset.ivNg);
       act(x.id, "ng", "招待を却下しますか？", `${x.inviteeName}さんが入れた、${x.inviterName}さんの招待コードを認めません。`, "却下する", true, "却下しました。"); };
     for (const b of $("ad-body").querySelectorAll("[data-iv-stop]")) b.onclick = () => { const x = who(b.dataset.ivStop);
