@@ -441,7 +441,7 @@ fieldset:disabled .f input, fieldset:disabled .f textarea, fieldset:disabled .f 
    メニュー: its list, and 請求書 / 給与明細 under a way back to it; the month bar wherever there is a month */
 #member-ui:not([data-tab="home"]) > :is(.shifts, .clock, .bell-row, .nt-home, .celebs) { display: none; }
 #member-ui:not([data-tab="card"]):not([data-tab="hope"]) > #shift-seg, #shift-seg:not(:has(#tab-hope:not([hidden]))) { display: none; }
-#member-ui:is([data-tab="home"], [data-tab="menu"], [data-tab="notice"], [data-tab="point"], [data-tab="invite"], [data-tab="stats"]) > .bar-month { display: none; }
+#member-ui:is([data-tab="home"], [data-tab="menu"], [data-tab="notice"], [data-tab="point"], [data-tab="invite"], [data-tab="plaza"]) > .bar-month { display: none; }
 /* シフト表 and シフト希望 move by ‹ › only (no 今月 / 来月 button) */
 #member-ui:is([data-tab="card"], [data-tab="hope"]) #m-now { display: none; }
 /* ホーム: 未読のお知らせが〇件あります, and the newest お知らせ under the clock */
@@ -519,7 +519,7 @@ fieldset:disabled .f input, fieldset:disabled .f textarea, fieldset:disabled .f 
 .who-tp i { display: grid; font-style: normal; font-family: var(--f-num); font-size: 8.5px; font-weight: 800; line-height: 1; letter-spacing: 0; color: #9fb4d6;
   padding-right: 6px; border-right: 1px solid rgb(255 255 255 / .18); }
 .who-tp b { font-family: var(--f-num); font-size: 17px; font-weight: 800; letter-spacing: .02em; line-height: 1.2; text-shadow: 0 0 10px rgb(246 210 122 / .35); }
-#member-ui:not([data-tab="inv"]):not([data-tab="pay"]):not([data-tab="notice"]):not([data-tab="invite"]):not([data-tab="stats"]) > .sub-back { display: none; }
+#member-ui:not([data-tab="inv"]):not([data-tab="pay"]):not([data-tab="notice"]):not([data-tab="invite"]) > .sub-back { display: none; }
 /* the bell, small at the top left of ホーム; its count in a red circle as on LINE */
 .bell-row { margin-bottom: -14px; }
 .bell { position: relative; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--rule); background: var(--card); color: var(--ink); padding: 0;
@@ -588,7 +588,7 @@ body:has(#member-ui:not([hidden])) .brand-btns { display: none; }
   /* a dark, game-like dock; the screen on show is a lit button */
   background: linear-gradient(180deg, #1f2c3f, #121a27); border-top: 1px solid #34465f;
   box-shadow: 0 -8px 20px -10px rgb(10 20 35 / .55), inset 0 1px 0 rgb(255 255 255 / .08); padding: 4px max(8px, env(safe-area-inset-right, 0px)) calc(4px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
-.bnav-in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.bnav-in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
 .bnav button { display: grid; justify-items: center; gap: 1px; padding: 4px 2px 3px; border: 0; border-radius: 12px; background: transparent; color: #8fa3c0; font-size: 11px; font-weight: 700; letter-spacing: .02em; }
 .bnav svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .bnav button[data-g="home"] svg { fill: currentColor; fill-opacity: .15; }
@@ -1369,11 +1369,11 @@ button.pcal-c { cursor: pointer; }
 .nt-note { position: relative; overflow: visible; background: rgb(255 255 255 / .06); border: 1px solid rgb(255 255 255 / .1); border-radius: 14px; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
 .nt-note > .nt-item { border-radius: 14px; }
 .nt-note::before { position: absolute; left: -26px; top: 12px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; line-height: 1;
-  content: "📢"; background: #3b2f73; border: 1.5px solid #a78bfa; box-shadow: 0 0 8px rgb(167 139 250 / .55); }
+  content: ""; background: #3b2f73; border: 1.5px solid #a78bfa; box-shadow: 0 0 8px rgb(167 139 250 / .55); }
 .nt-note[data-k="imp"]::before { content: "!"; color: #fff; font-weight: 900; font-family: var(--f-num); background: #e5373d; border-color: #ff9a9a; box-shadow: 0 0 10px rgb(229 55 61 / .7); }
-.nt-note[data-k="tp"]::before { content: "★"; color: #5a3d00; background: var(--gold); border-color: #fff1c2; box-shadow: 0 0 10px rgb(246 210 122 / .7); }
-.nt-note[data-k="gift"]::before { content: "🎁"; background: #1f6b5f; border-color: #7fe0cf; box-shadow: 0 0 10px rgb(127 224 207 / .7); }
-.nt-note[data-k="ask"]::before { content: "💬"; background: #22344a; border-color: #8fb1ee; }
+.nt-note[data-k="tp"]::before { content: ""; color: #5a3d00; background: var(--gold); border-color: #fff1c2; box-shadow: 0 0 10px rgb(246 210 122 / .7); }
+.nt-note[data-k="gift"]::before { content: ""; background: #1f6b5f; border-color: #7fe0cf; box-shadow: 0 0 10px rgb(127 224 207 / .7); }
+.nt-note[data-k="ask"]::before { content: ""; background: #22344a; border-color: #8fb1ee; }
 .nt-note.new { border-color: rgb(167 139 250 / .55); background: rgb(167 139 250 / .12); }
 .nt-note.open { border-color: #a78bfa; background: rgb(30 22 66 / .9); box-shadow: 0 0 18px -4px rgb(167 139 250 / .7); }
 .nt-board .nt-item .nt-sub, .nt-board .nt-item .nt-at { color: #b8a9e6; }
@@ -1527,7 +1527,7 @@ button.pcal-c { cursor: pointer; }
 /* ポイント: えらべるPay の交換 and the requests as plates */
 .tp-card:not(.tp-hero) { background: var(--plate); border-color: var(--plate-line); color: var(--plate-ink); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
 .tp-card:not(.tp-hero) > b { color: #fff; font-size: 16px; display: flex; align-items: center; gap: 8px; }
-.tp-card:not(.tp-hero) > b::before { content: "🎁"; font-size: 18px; }
+.tp-card:not(.tp-hero) > b::before { content: ""; display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; background: center / contain no-repeat; background-image: var(--ic-gift); }
 .tp-card:not(.tp-hero) .hint { color: var(--plate-soft); }
 .tp-row select { background: #0f1724; color: #fff; border-color: var(--plate-line); flex: 1 1 180px; }
 .tp-row .btn { flex: none; }
@@ -1715,7 +1715,7 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
   background: radial-gradient(120% 120% at 100% 0%, #3a2f5c 0%, transparent 55%), var(--plate); border: 1px solid var(--plate-line); }
 .rk-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .rk-h b { color: #fff; font-size: 15px; display: flex; align-items: center; gap: 6px; }
-.rk-h b::before { content: "🏆"; }
+.rk-h b::before { content: ""; display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; background: center / contain no-repeat; background-image: var(--ic-trophy); }
 .rk-h span { font-size: 11px; color: var(--plate-soft); }
 .rk-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .rk-list li { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 10px; background: rgb(255 255 255 / .04); }
@@ -1767,7 +1767,7 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
   background: radial-gradient(120% 140% at 100% 0%, #3a2f5c 0%, transparent 55%), var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
 .iv-enter-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .iv-enter-h > b { color: #fff; font-size: 15px; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-.iv-enter-h > b::before { content: "🎟"; }
+.iv-enter-h > b::before { content: ""; display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; background: center / contain no-repeat; background-image: var(--ic-ticket); }
 .iv-enter-row { display: flex; gap: 8px; }
 .iv-enter-row input { flex: 1; min-width: 0; font: inherit; font-family: var(--f-num); font-size: 20px; font-weight: 800; letter-spacing: .28em; text-transform: uppercase; text-align: center; padding: 9px 10px; border-radius: 12px; border: 1.5px dashed rgb(246 210 122 / .6); background: #0f1724; color: #fff; }
 .iv-enter-row input::placeholder { color: rgb(255 255 255 / .22); }
@@ -1802,7 +1802,7 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 /* ポイント › みんなの獲得ログ: a panel like the ランキング, one short line each */
 .tf-panel { display: grid; gap: 8px; padding: 14px 16px; border-radius: var(--r); color: var(--plate-ink);
   background: radial-gradient(120% 120% at 0% 0%, #17423d 0%, transparent 55%), var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
-.tf-h b::before { content: "⚡" !important; }
+.tf-h b::before { background-image: var(--ic-bolt) !important; }
 .tp-feed { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
 .tp-feed li { display: grid; grid-template-columns: 38px minmax(0, 1fr) 70px 66px; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 9px; background: rgb(255 255 255 / .04); font-size: 13px; }
 .tp-feed li.me { background: rgb(63 182 165 / .2); box-shadow: inset 0 0 0 1px rgb(127 224 207 / .5); }
@@ -1920,7 +1920,7 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
 .nm-pill.yr3, .who-name.yr3 { color: #2a1500 !important; border: 1px solid #ffe0c2 !important;
   background: linear-gradient(115deg, #9c5f28 0%, #d99a5e 35%, #ffe0c2 48%, #d99a5e 62%, #9c5f28 100%) !important; background-size: 220% 100% !important;
   box-shadow: 0 0 10px rgb(217 154 94 / .55), inset 0 1px 0 rgb(255 255 255 / .5) !important; animation: yr-shine 4s linear infinite; }
-.nm-pill.yr1::before, .who-name.yr1::before { content: "👑"; margin-right: 4px; }
+.nm-pill.yr1::before, .who-name.yr1::before { content: ""; display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; background: center / contain no-repeat; background-image: var(--ic-crown); margin-right: 4px; }
 @keyframes yr-shine { from { background-position: 100% 0; } to { background-position: -120% 0; } }
 @media (prefers-reduced-motion: reduce) { .nm-pill[class*="yr"], .who-name[class*="yr"] { animation: none; } }
 /* 🔥 連続 (under the clock, below the +50TP line) */
@@ -1934,7 +1934,7 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
   background: radial-gradient(120% 140% at 100% 0%, #5a2a4a 0%, transparent 55%), var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
 .thx-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .thx-h > b { color: #fff; font-size: 15px; display: flex; align-items: center; gap: 6px; }
-.thx-h > b::before { content: "💌"; }
+.thx-h > b::before { content: ""; display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; background: center / contain no-repeat; background-image: var(--ic-letter); }
 .thx-left { display: inline-flex; align-items: center; gap: 2px; font-size: 11.5px; color: var(--plate-soft); }
 .thx-left > span { margin-left: 6px; }
 .thx-left b { color: #ffb3d1; font-size: 14px; }
@@ -1962,7 +1962,7 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
 .thx-msg { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 8px; }
 .thx-msg p { margin: 0; padding: 6px 10px; border-radius: 4px 12px 12px 12px; background: rgb(255 179 209 / .12); border: 1px solid rgb(255 179 209 / .25); color: #fff; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
 .rk-thx { background: radial-gradient(120% 120% at 100% 0%, #5a2a4a 0%, transparent 55%), var(--plate) !important; }
-.rk-thx .rk-h b::before { content: "💌" !important; }
+.rk-thx .rk-h b::before { background-image: var(--ic-letter) !important; }
 .rk-h b, .rk-h span { white-space: nowrap; }
 .rk-h b { min-width: 0; overflow: hidden; }
 /* 今日のお祝い (ホーム) */
@@ -2013,6 +2013,45 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
 .sx-birth .hint { grid-column: 1 / -1; margin: 0; }
 .sx-birth .btn { padding: 10px 18px; }
 .ad-join { font: inherit; font-size: 14px; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--rule); }
+/* original icons (no standard emoji): <i class="ico ico-NAME"></i>, or var(--ic-NAME) on a ::before */
+:root {
+  --ic-fire: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23ffd36b'/%3E%3Cstop offset='1' stop-color='%23ff5a1f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath fill='url(%23g)' d='M12 2c1 3.5 5 5.6 5 10.3A5 5 0 0 1 12 22a5 5 0 0 1-5-5c0-2.6 1.6-4 2.6-5.4.3 1.4 1 2.4 2.2 2.8C11 11 13 6.5 12 2z'/%3E%3Cpath fill='%23fff3c4' d='M12 22a2.6 2.6 0 0 1-2.6-2.6c0-1.6 1.4-2.6 2.1-3.8.8 1.3 3.1 2.1 3.1 3.9A2.6 2.6 0 0 1 12 22z'/%3E%3C/svg%3E");
+  --ic-train: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%234f8df5' d='M12 2.5C7.2 2.5 4.5 5.2 4.5 9v6.5a3 3 0 0 0 3 3h9a3 3 0 0 0 3-3V9c0-3.8-2.7-6.5-7.5-6.5z'/%3E%3Cpath fill='%23dbe8ff' d='M7.2 8.6C7.8 6.3 9.5 5.3 12 5.3s4.2 1 4.8 3.3v2.2H7.2z'/%3E%3Ccircle cx='8.3' cy='14.6' r='1.4' fill='%23fff'/%3E%3Ccircle cx='15.7' cy='14.6' r='1.4' fill='%23fff'/%3E%3Cpath fill='none' stroke='%234f8df5' stroke-width='2' stroke-linecap='round' d='M8.5 18.5 6.5 21.5M15.5 18.5l2 3'/%3E%3C/svg%3E");
+  --ic-gift: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='3' y='8.5' width='18' height='4.5' rx='1.2' fill='%23f6d27a'/%3E%3Crect x='4.5' y='13' width='15' height='8' rx='1.2' fill='%23e0a92a'/%3E%3Crect x='10.6' y='8.5' width='2.8' height='12.5' fill='%233fb6a5'/%3E%3Cpath fill='none' stroke='%233fb6a5' stroke-width='2' stroke-linejoin='round' d='M12 8.5C10.2 4.6 6.6 4.6 6.6 6.6S10.2 8.5 12 8.5zm0 0c1.8-3.9 5.4-3.9 5.4-1.9S13.8 8.5 12 8.5z'/%3E%3C/svg%3E");
+  --ic-letter: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2.5' y='5' width='19' height='14' rx='2.5' fill='%23ff9cc6'/%3E%3Cpath d='M3.2 6.6 12 12.6l8.8-6' fill='none' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath fill='%23e8467f' stroke='%23fff' stroke-width='1' d='M12 19.2l-3-2.9a1.9 1.9 0 0 1 2.7-2.7l.3.3.3-.3a1.9 1.9 0 0 1 2.7 2.7z'/%3E%3C/svg%3E");
+  --ic-crown: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f6d27a' stroke='%23c99a2e' stroke-width='1' stroke-linejoin='round' d='M3 8l4.6 4.2L12 5l4.4 7.2L21 8l-2 10H5z'/%3E%3Ccircle cx='3' cy='8' r='1.7' fill='%23f6d27a'/%3E%3Ccircle cx='12' cy='5' r='1.7' fill='%23f6d27a'/%3E%3Ccircle cx='21' cy='8' r='1.7' fill='%23f6d27a'/%3E%3Crect x='5' y='17.5' width='14' height='2.6' rx='.6' fill='%23c99a2e'/%3E%3C/svg%3E");
+  --ic-party: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f6d27a' d='M3 21l5-13 8 8z'/%3E%3Cpath fill='%23e0a92a' d='M3 21l2.6-6.6 4 4z'/%3E%3Ccircle cx='15' cy='4.5' r='1.6' fill='%23ff6fa5'/%3E%3Ccircle cx='19.5' cy='10' r='1.6' fill='%237fe0cf'/%3E%3Cpath stroke='%23a78bfa' stroke-width='2' stroke-linecap='round' d='M12 2.5v3M18 14.5h3M20.5 3.5l-3 3'/%3E%3C/svg%3E");
+  --ic-cake: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='4' y='11.5' width='16' height='9.5' rx='2' fill='%23ff9cc6'/%3E%3Cpath d='M4 15.2c2 1.6 4-1 6 0s4 1.6 6 0 4-1 4 0' fill='none' stroke='%23fff' stroke-width='1.6'/%3E%3Crect x='11' y='6' width='2' height='5.5' rx='.5' fill='%237fe0cf'/%3E%3Cpath fill='%23f6d27a' d='M12 1.5c1.3 1.6 1.6 2.6 1 3.6a1.2 1.2 0 0 1-2 0c-.6-1 0-2 1-3.6z'/%3E%3C/svg%3E");
+  --ic-mega: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23a78bfa' d='M3 10v4a1 1 0 0 0 1 1h2l9 5V4L6 9H4a1 1 0 0 0-1 1z'/%3E%3Cpath fill='%237c5ce0' d='M6 15l1.6 5h2.6L9 15z'/%3E%3Cpath fill='none' stroke='%23f6d27a' stroke-width='1.8' stroke-linecap='round' d='M18 9.5a3 3 0 0 1 0 5M20.2 7a6 6 0 0 1 0 10'/%3E%3C/svg%3E");
+  --ic-chat: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%238fb1ee' d='M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z'/%3E%3Ccircle cx='8' cy='10.5' r='1.3' fill='%23fff'/%3E%3Ccircle cx='12' cy='10.5' r='1.3' fill='%23fff'/%3E%3Ccircle cx='16' cy='10.5' r='1.3' fill='%23fff'/%3E%3C/svg%3E");
+  --ic-star: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f6d27a' stroke='%23c99a2e' stroke-width='1' stroke-linejoin='round' d='M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6-4.9-4.6 6.6-.8z'/%3E%3C/svg%3E");
+  --ic-bolt: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f6d27a' stroke='%23c99a2e' stroke-width='.8' stroke-linejoin='round' d='M13.5 2 5 13.5h6L9.5 22 19 9.5h-6.2z'/%3E%3C/svg%3E");
+  --ic-ticket: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ff9cc6' stroke='%23ffd1e6' stroke-width='1' d='M3 6h18a1.5 1.5 0 0 1 1.5 1.5V10a2 2 0 0 0 0 4v2.5A1.5 1.5 0 0 1 21 18H3a1.5 1.5 0 0 1-1.5-1.5V14a2 2 0 0 0 0-4V7.5A1.5 1.5 0 0 1 3 6z'/%3E%3Cpath stroke='%23fff' stroke-width='1.2' stroke-dasharray='1.6 1.6' d='M16.5 7.5v9'/%3E%3Cpath fill='%23fff' d='M10 15.6l-2.9-2.8a1.8 1.8 0 0 1 2.6-2.5l.3.3.3-.3a1.8 1.8 0 0 1 2.6 2.5z'/%3E%3C/svg%3E");
+  --ic-trophy: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f6d27a' d='M7 3h10v5a5 5 0 0 1-10 0z'/%3E%3Cpath fill='none' stroke='%23f6d27a' stroke-width='1.8' d='M7 5H4.5v1.5A3.5 3.5 0 0 0 8 10M17 5h2.5v1.5A3.5 3.5 0 0 1 16 10'/%3E%3Crect x='10.8' y='12.5' width='2.4' height='4' fill='%23e0a92a'/%3E%3Cpath fill='%23c99a2e' d='M7.5 17h9l1 4h-11z'/%3E%3C/svg%3E");
+}
+.ico { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; background: center / contain no-repeat; font-style: normal; flex: none; }
+.ico-fire { background-image: var(--ic-fire); }
+.ico-train { background-image: var(--ic-train); }
+.ico-gift { background-image: var(--ic-gift); }
+.ico-letter { background-image: var(--ic-letter); }
+.ico-crown { background-image: var(--ic-crown); }
+.ico-party { background-image: var(--ic-party); }
+.ico-cake { background-image: var(--ic-cake); }
+.ico-mega { background-image: var(--ic-mega); }
+.ico-chat { background-image: var(--ic-chat); }
+.ico-star { background-image: var(--ic-star); }
+.ico-bolt { background-image: var(--ic-bolt); }
+.ico-ticket { background-image: var(--ic-ticket); }
+.ico-trophy { background-image: var(--ic-trophy); }
+
+/* today's number sits inside its cell (its round mark no longer pokes past the edge); a double tap never zooms or moves the bar */
+.day.is-today .dn { margin-left: 0; margin-top: 1px; }
+html, body { touch-action: manipulation; }
+/* 広場: マイページ, ランキング, 獲得ログ and ありがとうチケット, each standing apart */
+#p-plaza:not([hidden]) { display: grid; gap: 22px; }
+#p-plaza > .tp-rank { display: grid; gap: 8px; }
+.sx-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#ask-body { white-space: pre-line; }
 </style>
 <!-- the opening screen only when the app is newly opened: decided before anything is drawn, so a reload shows nothing of it -->
 <script>(function () {
@@ -2248,7 +2287,7 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
   </section>
   <!-- ホーム: the お知らせ board under the clock; only its inside scrolls -->
   <section class="nt-home" id="nt-home" aria-label="お知らせ">
-    <div class="nt-home-h"><span class="nt-pin" aria-hidden="true">📣</span><b>お知らせ</b><span class="nt-home-n" id="nt-home-n" hidden></span><button type="button" class="nt-home-post" id="nt-home-post" hidden>＋ お知らせを出す</button></div>
+    <div class="nt-home-h"><span class="nt-pin" aria-hidden="true"><i class="ico ico-mega" aria-hidden="true"></i></span><b>お知らせ</b><span class="nt-home-n" id="nt-home-n" hidden></span><button type="button" class="nt-home-post" id="nt-home-post" hidden>＋ お知らせを出す</button></div>
     <div class="nt-board" id="nt-home-list"></div>
   </section>
 
@@ -2279,14 +2318,14 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
     <div class="hope-head">
       <div class="hope-stat">
         <span class="hope-due" id="h-due">締切 —</span>
-        <span><i class="hm-far">🚄</i> <b class="num" id="h-far-n">0</b>日</span>
+        <span><i class="hm-far"><i class="ico ico-train" aria-hidden="true"></i></i> <b class="num" id="h-far-n">0</b>日</span>
         <span><i class="hm-ok">○</i> <b class="num" id="h-count">0</b>日</span>
         <span><i class="hm-maybe">△</i> <b class="num" id="h-maybe">0</b>日</span>
         <span class="hope-sent" id="h-sent"></span>
       </div>
       <!-- 🚄 is 稼働できる with 遠方 too (stored as "○遠") -->
       <div class="hope-brush" id="h-brush" role="radiogroup" aria-label="付ける印">
-        <button type="button" role="radio" data-b="○遠" aria-checked="false"><span class="hb">🚄</span>遠方可</button>
+        <button type="button" role="radio" data-b="○遠" aria-checked="false"><span class="hb"><i class="ico ico-train" aria-hidden="true"></i></span>遠方可</button>
         <button type="button" role="radio" data-b="○" aria-checked="true"><span class="hb">○</span>稼働できる</button>
         <button type="button" role="radio" data-b="△" aria-checked="false"><span class="hb">△</span>要相談</button>
       </div>
@@ -2372,9 +2411,8 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
 
   <section class="panel menu" id="p-menu" aria-label="メニュー" hidden>
     <!-- 友達を招待: its own lit box at the top, so it is seen -->
-    <button type="button" class="menu-invite" id="m-invite"><span class="mi-gift" aria-hidden="true">🎁</span><span><b>友達を招待する</b><small>友達も自分も <em>5,000TP</em>。さらに毎月 <em>5,000TP</em> のチャンス</small></span></button>
+    <button type="button" class="menu-invite" id="m-invite"><span class="mi-gift" aria-hidden="true"><i class="ico ico-gift" aria-hidden="true"></i></span><span><b>友達を招待する</b><small>友達も自分も <em>5,000TP</em>。さらに毎月 <em>5,000TP</em> のチャンス</small></span></button>
     <div class="menu-list">
-      <button type="button" class="menu-item" id="m-stats"><b>マイ記録</b><small>出勤の記録・誕生日の登録</small></button>
       <button type="button" class="menu-item" id="tab-pay" hidden><b>給与明細</b><small>毎月の給与明細を見る</small></button>
       <button type="button" class="menu-item" id="tab-inv"><b>請求書</b><small>毎月の請求書を作って提出</small></button>
       <button type="button" class="menu-item" id="m-ask"><b>お問い合わせ</b><small>Themisに質問・連絡する</small></button>
@@ -2400,9 +2438,12 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
     <div id="iv-body"></div>
   </section>
 
-  <!-- マイ記録: this month and this year in numbers, the stores, the best run, and the 生年月日 -->
-  <section class="panel" id="p-stats" aria-label="マイ記録" hidden>
+  <!-- 広場: マイページ (this month and the totals) on top, then the ランキング, みんなの獲得ログ and ありがとうチケット -->
+  <section class="panel" id="p-plaza" aria-label="広場" hidden>
     <div id="st-body"></div>
+    <section class="tp-rank" id="tp-rank" aria-label="ランキング"></section>
+    <section class="tp-feed-box" id="tp-feed" aria-label="みんなの獲得ログ"></section>
+    <section id="tp-thx" aria-label="ありがとうチケット"></section>
   </section>
 
   <section class="panel" id="p-point" aria-label="ポイント" hidden>
@@ -2418,6 +2459,7 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
   <div class="bnav-in">
     <button type="button" data-g="home" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>ホーム</span></button>
     <button type="button" data-g="shift"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>シフト</span></button>
+    <button type="button" data-g="plaza"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.5"/><path d="M2.5 19.5c.6-3.6 2.8-5.5 5.5-5.5s4.9 1.9 5.5 5.5M13.5 14.6c.9-.7 1.9-1.1 3-1.1 2.3 0 4.1 1.6 4.6 4.6"/></svg><span>広場</span></button>
     <button type="button" data-g="point"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><text x="12" y="15.6" text-anchor="middle" font-size="9.5" font-weight="800" font-family="Inter, sans-serif" fill="currentColor" stroke="none">TP</text></svg><span>ポイント</span></button>
     <button type="button" data-g="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>メニュー</span></button>
   </div>
@@ -2528,6 +2570,7 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
     <label class="f">住所<input id="s-address" type="text" autocomplete="off" maxlength="100" placeholder="東京都新宿区西新宿1-2-3"></label>
     <label class="f">建物名・部屋番号（任意）<input id="s-building" type="text" autocomplete="off" maxlength="60" placeholder="〇〇マンション 101"></label>
     <label class="f">電話番号<input id="s-tel" type="tel" inputmode="tel" autocomplete="off" maxlength="15" placeholder="090-1234-5678"></label>
+    <label class="f">生年月日<input id="s-birth" type="date" min="1930-01-01"><span class="hint">誕生日の当日は、ホームでみんなにお知らせされます（生まれた年は表示されません）</span></label>
     <div class="f" role="radiogroup" aria-labelledby="s-work-h" id="s-work-box"><span id="s-work-h">勤務形態</span>
       <div class="s-work"><label class="check"><input type="radio" name="s-work" value="常勤"> 常勤</label><label class="check"><input type="radio" name="s-work" value="週末"> 週末</label><label class="check"><input type="radio" name="s-work" value="社員"> 社員</label></div>
       <span class="hint">常勤の人は、シフト希望の提出はありません。社員の人は、シフト表だけを使います。</span></div>
@@ -2746,7 +2789,7 @@ window.addEventListener("error", function (e) {
   let CRED = null, mode = "login";   // login | member | admin
   try { CRED = localStorage.getItem(CRED_KEY); } catch (e) {}
   // signing out also forgets the copy of the records kept for a quick start
-  const setCred = (c) => { CRED = c; try { if (c) localStorage.setItem(CRED_KEY, c); else { localStorage.removeItem(CRED_KEY); localStorage.removeItem("tc_cache"); localStorage.removeItem("tc_inbox"); localStorage.removeItem("tc_tp"); localStorage.removeItem("tc_rank"); localStorage.removeItem("tc_invite"); localStorage.removeItem("tc_thx"); dropView(); } } catch (e) {} };
+  const setCred = (c) => { CRED = c; try { if (c) localStorage.setItem(CRED_KEY, c); else { localStorage.removeItem(CRED_KEY); localStorage.removeItem("tc_cache"); localStorage.removeItem("tc_inbox"); localStorage.removeItem("tc_tp"); localStorage.removeItem("tc_rank"); localStorage.removeItem("tc_invite"); localStorage.removeItem("tc_thx"); localStorage.removeItem("tc_stats"); dropView(); } } catch (e) {} };
   const viaGas = !!window.google?.script?.run;
   const rawCall = (fn, ...args) => viaGas
     ? new Promise((res, rej) => { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](CRED, ...args); })
@@ -2905,7 +2948,7 @@ window.addEventListener("error", function (e) {
   // the page opens on ホーム; the bar at the foot picks ホーム, シフト (シフト表 / シフト希望) or メニュー (請求書 / 給与明細 in it)
   let tab = "home", shiftTab = "card";
   // お知らせ belongs to wherever it was opened from: ホーム (the bell) or メニュー (お問い合わせ)
-  const GROUP = { home: "home", card: "shift", hope: "shift", point: "point", menu: "menu", inv: "menu", pay: "menu", notice: "home", invite: "menu", stats: "menu" };
+  const GROUP = { home: "home", card: "shift", hope: "shift", point: "point", menu: "menu", inv: "menu", pay: "menu", notice: "home", invite: "menu", plaza: "plaza" };
   function setTab(t) {
     // each tab keeps its own month: the shift calendar opens on this month, invoices on last month
     // and its own place on the page: coming back to a screen lands where it was left
@@ -2917,12 +2960,12 @@ window.addEventListener("error", function (e) {
     $("m-hope").hidden = !(GROUP[t] === "shift" && tabOk("hope"));
     $("m-hope").textContent = t === "hope" ? "‹ シフト表に戻る" : "シフト希望を出す";
     for (const k of ["card", "hope"]) $("tab-" + k).setAttribute("aria-selected", t === k);
-    for (const k of ["card", "hope", "inv", "pay", "menu", "notice", "point", "invite", "stats"]) $("p-" + k).hidden = t !== k;
+    for (const k of ["card", "hope", "inv", "pay", "menu", "notice", "point", "invite", "plaza"]) $("p-" + k).hidden = t !== k;
     $("sub-act").replaceChildren();
     if (t === "notice") renderNotice();
-    if (t === "point") { renderPoint(); loadTp(); loadRank(); loadThanks(); }
+    if (t === "point") { renderPoint(); loadTp(); }
     if (t === "invite") { renderInvite(); loadInvite(); }
-    if (t === "stats") { renderStats(); loadStats(); }
+    if (t === "plaza") { renderStats(); loadStats(); paintRank(); loadRank(); paintThanks(); loadThanks(); }
     for (const b of document.querySelectorAll(".bnav button")) {
       if (b.dataset.g === GROUP[t]) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
     }
@@ -2934,7 +2977,7 @@ window.addEventListener("error", function (e) {
   }
   const tabScroll = {};
   for (const b of document.querySelectorAll(".bnav button")) b.onclick = () => {
-    pickTab({ home: "home", shift: tabOk(shiftTab) ? shiftTab : "card", point: "point", menu: "menu" }[b.dataset.g]);
+    pickTab({ home: "home", shift: tabOk(shiftTab) ? shiftTab : "card", point: "point", plaza: "plaza", menu: "menu" }[b.dataset.g]);
   };
   // the bar never moves with a finger: a swipe on it (or on the message above it) is stopped here, as an iPhone
   // ignores touch-action for the page's own bounce (taps still reach the buttons)
@@ -3114,7 +3157,6 @@ window.addEventListener("error", function (e) {
   $("m-ask").onclick = () => showNotice("new", null, "menu");
   $("nt-home-post").onclick = () => showNotice("post", null, "home");
   $("m-invite").onclick = () => pickTab("invite");
-  $("m-stats").onclick = () => pickTab("stats");
   // ---- ポイント（TP）: 1TP = 1円; 50TP for each day's 稼働実績 after 退勤; exchanged for えらべるPay on request ----
   let tp = { bal: null, item: "えらべるPay", amounts: [500, 1000, 3000, 5000], reqs: [] };
   // the last balance and requests are kept on this device, so the TP shows beside the name at once on opening
@@ -3193,7 +3235,7 @@ window.addEventListener("error", function (e) {
     try { tpRank = JSON.parse(await call("api_tpRank")); } catch (e) { rankAt = 0; return; }
     try { localStorage.setItem("tc_rank", JSON.stringify(tpRank)); } catch (e) {}
     paintWho();   // the name at the top right takes its 年間ランキング colour
-    if (tab === "point") paintRank();
+    if (tab === "plaza") paintRank();
   }
   function rankHTML() {
     if (!tpRank) return `<p class="rk-wait">ランキングを読み込んでいます…</p>`;
@@ -3249,9 +3291,6 @@ window.addEventListener("error", function (e) {
       $("tp-body").innerHTML =
         `<div class="tp-card tp-hero"><span class="tp-cap">YOUR POINTS</span><div class="tp-bal" id="tp-bal"></div>` +
         `<p class="tp-how">1TP＝1円分</p></div>` +
-        `<section class="tp-rank" id="tp-rank" aria-label="ランキング"></section>` +
-        `<section class="tp-feed-box" id="tp-feed" aria-label="みんなの獲得ログ"></section>` +
-        `<section id="tp-thx" aria-label="ありがとうチケット"></section>` +
         // TP is used as 報酬 on the invoice (a TP報酬 line of its own); a 社員 asks for it to be added to the 給与
         `<div class="tp-card tp-use"><b><span class="tp-coin" aria-hidden="true">TP</span>${staff ? "TPを給与に加算" : "TPを使用する"}</b>` +
         `<p class="hint" id="tp-use-how"></p>` +
@@ -3296,7 +3335,7 @@ window.addEventListener("error", function (e) {
   async function loadThanks() {
     try { thx = JSON.parse(await call("api_thanks")); } catch (e) { return; }
     try { localStorage.setItem("tc_thx", JSON.stringify({ tok: CRED.split(".")[0], v: thx })); } catch (e) {}
-    if (tab === "point") paintThanks();
+    if (tab === "plaza") paintThanks();
   }
   function paintThanks() {
     const box = $("tp-thx");
@@ -3358,7 +3397,7 @@ window.addEventListener("error", function (e) {
     if (!box) return;
     box.hidden = !celebs.length;
     box.innerHTML = celebs.map((c) => {
-      const what = c.kind === "birth" ? "誕生日" : `在籍${c.years}周年`, icon = c.kind === "birth" ? "🎂" : "🎉";
+      const what = c.kind === "birth" ? "誕生日" : `在籍${c.years}周年`, icon = c.kind === "birth" ? `<i class="ico ico-cake"></i>` : `<i class="ico ico-party"></i>`;
       return `<div class="cel-card${c.me ? " me" : ""}"><span class="cel-ic" aria-hidden="true">${icon}</span>` +
         (c.me
           ? `<div class="cel-t"><b>${c.kind === "birth" ? "お誕生日" : what}おめでとうございます！</b><small>みんなから「おめでとう」が <b class="num">${c.count}</b>件 届いています</small></div>`
@@ -3373,63 +3412,58 @@ window.addEventListener("error", function (e) {
     };
   }
 
-  // ---- マイ記録: this month and this year in numbers (the year's months are read once, when it is opened) ----
+  // ---- マイページ (top of 広場): this month, and the totals over every month on record (read once, when opened) ----
   const hmJ = (min) => `${Math.floor(min / 60)}時間${min % 60 ? `${min % 60}分` : ""}`;
+  let myStats = null;
+  try { const c = JSON.parse(localStorage.getItem("tc_stats") || "null"); if (c && CRED && c.tok === CRED.split(".")[0]) myStats = c.v; } catch (e) {}
   async function loadStats() {
-    const now = new Date(), names = [];
-    for (let mo = 1; mo <= now.getMonth() + 1; mo++) { const n = `m-${now.getFullYear()}-${pad(mo)}`; if (!docs[n]) names.push(n); }
-    if (!names.length) return;
-    let got;
-    try { got = JSON.parse(await call("api_load", names)); } catch (e) { return; }
-    for (const n of names) if (!docs[n]) docs[n] = got[n] || { days: {} };
-    if (tab === "stats") renderStats();
+    try { myStats = JSON.parse(await call("api_myStats")); } catch (e) { return; }
+    try { localStorage.setItem("tc_stats", JSON.stringify({ tok: CRED.split(".")[0], v: myStats })); } catch (e) {}
+    const now = new Date(), names = new Set(myStats.months || []);
+    for (let mo = 1; mo <= now.getMonth() + 1; mo++) names.add(`m-${now.getFullYear()}-${pad(mo)}`);
+    const want = [...names].filter((n) => !docs[n]);
+    if (want.length) {
+      let got;
+      try { got = JSON.parse(await call("api_load", want)); } catch (e) { got = null; }
+      if (got) for (const n of want) if (!docs[n]) docs[n] = got[n] || { days: {} };
+    }
+    if (tab === "plaza") renderStats();
   }
   function renderStats() {
     const now = new Date(), y = now.getFullYear(), cm = now.getMonth() + 1, today = dayKey(now), t = Date.now();
-    const months = [];
-    for (let mo = 1; mo <= cm; mo++) {
-      const ym = `${y}-${pad(mo)}`, have = !!docs["m-" + ym];
-      const rows = have ? monthRows(ym).filter((x) => x.key <= today && x.r?.in) : [];
-      months.push({ mo, have, days: rows.length, min: have ? Math.round(monthWorkMin(ym, t)) : 0, rows });
-    }
-    const all = months.flatMap((m) => m.rows), loading = months.some((m) => !m.have);
-    const cur = months[cm - 1], last = cm > 1 ? months[cm - 2] : null;
+    const monthOf = (ym) => {
+      const rows = docs["m-" + ym] ? monthRows(ym).filter((x) => x.key <= today && x.r?.in) : [];
+      return { ym, have: !!docs["m-" + ym], days: rows.length, min: docs["m-" + ym] ? Math.round(monthWorkMin(ym, t)) : 0, rows };
+    };
+    // every month on record (and this year's), oldest first
+    const yms = [...new Set([...(myStats?.months || []).map((n) => n.slice(2)), ...Array.from({ length: cm }, (_, i) => `${y}-${pad(i + 1)}`)])].filter((ym) => ym <= today.slice(0, 7)).sort();
+    const months = yms.map(monthOf), all = months.flatMap((m) => m.rows), loading = !myStats || months.some((m) => !m.have);
+    const cur = monthOf(today.slice(0, 7)), lastYm = dayKey(new Date(y, cm - 2, 1)).slice(0, 7), last = monthOf(lastYm);
     const stores = {};
     for (const x of all) if (x.r.store) stores[x.r.store] = (stores[x.r.store] || 0) + 1;
     const top = Object.entries(stores).sort((a, b) => b[1] - a[1]).slice(0, 3);
-    // the longest run of kept days this year (the same rule as 🔥 連続)
+    // the longest run of kept days over all time (the same rule as 連続)
     let run = 0, best = 0;
-    for (const m of months) for (const [k, r] of Object.entries((docs["m-" + `${y}-${pad(m.mo)}`] || {}).days || {}).sort()) {
+    for (const m of months) for (const [k, r] of Object.entries((docs["m-" + m.ym] || {}).days || {}).sort()) {
       if (k > today || !r || (!r.in && !r.absent) || (k === today && r.in && !r.out)) continue;
       if (dayKept(r)) best = Math.max(best, ++run); else run = 0;
     }
-    const diff = (a, b, unit) => (b == null ? "" : `<span class="sx-diff${a - b < 0 ? " down" : ""}">先月より ${a - b >= 0 ? "+" : "−"}${Math.abs(a - b)}${unit}</span>`);
-    const maxD = Math.max(1, ...months.map((m) => m.days));
-    const p = myProf || {};
+    const diff = (a, b, unit) => (last.have ? `<span class="sx-diff${a - b < 0 ? " down" : ""}">先月より ${a - b >= 0 ? "+" : "−"}${Math.abs(a - b)}${unit}</span>` : "");
+    const yearMonths = Array.from({ length: 12 }, (_, i) => (i < cm ? monthOf(`${y}-${pad(i + 1)}`) : null));
+    const maxD = Math.max(1, ...yearMonths.filter(Boolean).map((m) => m.days));
     $("st-body").innerHTML =
-      `<div class="sx-hero"><span class="sx-cap">MY RECORD</span><h2>${cm}月のふりかえり</h2>` +
-      `<div class="sx-big"><div><span>出勤</span><b class="num">${cur.days}<small>日</small></b>${diff(cur.days, last?.days, "日")}</div>` +
-      `<div><span>稼働</span><b class="num">${Math.floor(cur.min / 60)}<small>時間</small></b>${last ? diff(Math.floor(cur.min / 60), Math.floor(last.min / 60), "時間") : ""}</div>` +
-      `<div><span>🔥 連続</span><b class="num">${streakDays()}<small>日</small></b></div></div></div>` +
-      `<h4 class="bl-h">${y}年の記録${loading ? "（読み込んでいます…）" : ""}</h4>` +
-      `<div class="sx-tiles">` + [["出勤日数", `${all.length}日`], ["稼働時間", hmJ(months.reduce((s, m) => s + m.min, 0))], ["行った店舗", `${Object.keys(stores).length}店舗`], ["最高の連続", `${best}日`]]
+      `<div class="sx-hero"><span class="sx-cap">MY PAGE</span><h2>${cm}月のふりかえり</h2>` +
+      `<div class="sx-big"><div><span>出勤</span><b class="num">${cur.days}<small>日</small></b>${diff(cur.days, last.days, "日")}</div>` +
+      `<div><span>稼働</span><b class="num">${Math.floor(cur.min / 60)}<small>時間</small></b>${diff(Math.floor(cur.min / 60), Math.floor(last.min / 60), "時間")}</div>` +
+      `<div><span><i class="ico ico-fire" aria-hidden="true"></i> 連続</span><b class="num">${streakDays()}<small>日</small></b></div></div></div>` +
+      `<h4 class="bl-h">累計の記録${loading ? "（読み込んでいます…）" : ""}</h4>` +
+      `<div class="sx-tiles">` + [["出勤日数", `${all.length}日`], ["稼働時間", hmJ(months.reduce((s, m) => s + m.min, 0))], ["獲得TP", myStats ? `${tpN(myStats.tp)}TP` : "—"],
+        ["もらったありがとう", myStats ? `${myStats.thanks}回` : "—"], ["行った店舗", `${Object.keys(stores).length}店舗`], ["最高の連続", `${best}日`]]
         .map(([k, v]) => `<div><span>${k}</span><b class="num">${v}</b></div>`).join("") + `</div>` +
-      `<div class="sx-bars" aria-label="月ごとの出勤日数">` + Array.from({ length: 12 }, (_, i) => {
-        const m = months[i];
-        return `<div class="sx-bar${i + 1 === cm ? " now" : ""}"><span class="num">${m ? m.days : ""}</span><i style="height:${m ? Math.round((m.days / maxD) * 100) : 0}%"></i><small>${i + 1}</small></div>`;
-      }).join("") + `</div>` +
-      (top.length ? `<h4 class="bl-h">よく行った店舗</h4><ol class="sx-stores">` + top.map(([n, c], i) => `<li><i>${i + 1}</i><span>${esc(n)}</span><b class="num">${c}回</b></li>`).join("") + `</ol>` : "") +
-      `<h4 class="bl-h">誕生日</h4><form class="sx-birth" id="sx-birth"><label class="f">生年月日<input type="date" id="sx-bd" min="1930-01-01" max="${today}" value="${esc(p.birth || "")}"></label>` +
-      `<button type="submit" class="btn primary">保存</button><p class="hint">誕生日の当日は、ホームでみんなにお知らせされて「おめでとう」が届きます（生まれた年は表示されません）</p></form>`;
-    $("sx-birth").onsubmit = async (e) => {
-      e.preventDefault();
-      const v = $("sx-bd").value;
-      busyOn("保存しています");
-      try { myProf.birth = await call("api_setBirth", v); await busyDone(v ? "誕生日を保存しました" : "誕生日を消しました"); loadCelebs(); }
-      catch (err) { busyOff(); msg(errText(err)); }
-    };
+      `<h4 class="bl-h">${y}年の月ごとの出勤</h4><div class="sx-bars" aria-label="月ごとの出勤日数">` + yearMonths.map((m, i) =>
+        `<div class="sx-bar${i + 1 === cm ? " now" : ""}"><span class="num">${m ? m.days : ""}</span><i style="height:${m ? Math.round((m.days / maxD) * 100) : 0}%"></i><small>${i + 1}</small></div>`).join("") + `</div>` +
+      (top.length ? `<h4 class="bl-h">よく行った店舗</h4><ol class="sx-stores">` + top.map(([n, c], i) => `<li><i>${i + 1}</i><span>${esc(n)}</span><b class="num">${c}回</b></li>`).join("") + `</ol>` : "");
   }
-
   // ---- 友達を招待: the person's code (to copy or share), the code of whoever invited them, the people they invited ----
   // the last one read is kept on this device, so the code and the time left show at once; read ahead after opening
   let invite = null;
@@ -3575,7 +3609,7 @@ window.addEventListener("error", function (e) {
   // 常勤 staff hand in no shift wishes, so they never see that tab; 社員 send no invoice and hand in no wishes:
   // they get their 給与明細 instead
   // 代表 has no 勤務形態 and sees every tab
-  const tabOk = (t) => t === "card" || t === "home" || t === "menu" || t === "notice" || t === "point" || t === "invite" || t === "stats" || !!window.TC_REP || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
+  const tabOk = (t) => t === "card" || t === "home" || t === "menu" || t === "notice" || t === "point" || t === "invite" || t === "plaza" || !!window.TC_REP || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
   function applyWork() {
     $("tab-hope").hidden = !tabOk("hope"); $("tab-inv").hidden = !tabOk("inv"); $("tab-pay").hidden = !tabOk("pay");
     $("m-hope").hidden = !(GROUP[tab] === "shift" && tabOk("hope"));
@@ -3585,7 +3619,7 @@ window.addEventListener("error", function (e) {
   $("tab-pay").onclick = () => pickTab("pay");
 
   let view = new Date(); view = new Date(view.getFullYear(), view.getMonth(), 1);
-  const tabView = { home: view, menu: view, notice: view, point: view, invite: view, stats: view, card: view, inv: new Date(view.getFullYear(), view.getMonth() - 1, 1), pay: new Date(view.getFullYear(), view.getMonth() - 1, 1), hope: new Date(view.getFullYear(), view.getMonth() + 1, 1) };
+  const tabView = { home: view, menu: view, notice: view, point: view, invite: view, plaza: view, card: view, inv: new Date(view.getFullYear(), view.getMonth() - 1, 1), pay: new Date(view.getFullYear(), view.getMonth() - 1, 1), hope: new Date(view.getFullYear(), view.getMonth() + 1, 1) };
   const viewYm = () => `${view.getFullYear()}-${pad(view.getMonth() + 1)}`;
   function watchView() {
     if (!backend) return;
@@ -3855,7 +3889,7 @@ window.addEventListener("error", function (e) {
       cell.type = "button"; cell.dataset.k = key; cell.disabled = closed;
       cell.className = `hc wd-${date.getDay()}` + (hol ? " hol" : "") + (v === "△" ? " v-maybe" : v === "○遠" ? " v-far" : v ? " v-ok" : "");
       cell.innerHTML = `<span class="dn">${d}</span>` + (hol ? `<span class="hn">${esc(hol)}</span>` : "") +
-        (v ? `<span class="mk">${{ "△": "△", "○遠": "🚄" }[v] || "○"}</span>` : "");
+        (v ? `<span class="mk">${{ "△": "△", "○遠": `<i class="ico ico-train" aria-hidden="true"></i>` }[v] || "○"}</span>` : "");
       cell.setAttribute("aria-label", `${mo}月${d}日（${WD[date.getDay()]}）${hol ? " " + hol : ""} ` +
         ({ "○": "稼働できる", "○遠": "遠方可", "△": "要相談" }[v] || "稼働不可"));
       frag.appendChild(cell);
@@ -4065,7 +4099,7 @@ window.addEventListener("error", function (e) {
   // 稼働実績 sent. Today counts once it is clocked out; a day that falls short ends the run. Counted from the months
   // on this device (this month and last month)
   function dayKept(r) {
-    if (r.absent || r.early || !r.out || !String(r.result || "").trim()) return false;
+    if (r.absent || r.early || (r.autoOut && r.autoReason !== "残業") || !r.out || !String(r.result || "").trim()) return false;
     if (r.planIn) {
       const [h, mi] = String(r.planIn).split(":").map(Number), t = new Date(r.punchIn || r.in);
       if (t.getHours() * 60 + t.getMinutes() > h * 60 + mi + 5) return false;
@@ -4088,8 +4122,47 @@ window.addEventListener("error", function (e) {
     return n;
   }
   function paintStreak() {
-    const n = streakDays(), el = $("streak"), h = n ? `🔥 <b class="num">${n}</b>日連続` : "";
+    const n = streakDays(), el = $("streak"), h = n ? `<i class="ico ico-fire" aria-hidden="true"></i><b class="num">${n}</b>日連続` : "";
     if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; el.hidden = !n; el.classList.toggle("hot", n >= 7); }
+  }
+
+  // 自動退勤: a shift left open for 10 hours is clocked out at its 10th hour (a テスト用 account: after 2 minutes, to
+  // try it out). The next time the app is open it asks whether that was 残業 or a forgotten 退勤, and opens the day
+  // to put the real time in. A 残業 day earns TP as usual, with the time put in; a forgotten 退勤 does not
+  const AUTO_OUT = () => (window.TC_TEST ? 2 * 60000 : 10 * 3600000);
+  let autoAsking = false;
+  function autoOut() {
+    const key = state().openDate, r = openRec();
+    if (!backend || !r || !r.in || r.out || Date.now() - r.in < AUTO_OUT()) return;
+    const end = r.in + AUTO_OUT();
+    for (const b of r.breaks || []) if (b.e == null) b.e = end;
+    r.out = end; r.autoOut = true; state().openDate = null;
+    persist("m-" + ymOf(key), "state");
+    askAutoOut();
+  }
+  // the newest day still marked 自動退勤 and not yet asked about (this month and last month)
+  function autoOutDay() {
+    const now = new Date();
+    for (const ym of [ymOf(dayKey(now)), ymOf(dayKey(new Date(now.getFullYear(), now.getMonth() - 1, 1)))]) {
+      const days = (docs["m-" + ym] || {}).days || {};
+      const k = Object.keys(days).sort().reverse().find((x) => days[x]?.autoOut && !days[x].autoAsked);
+      if (k) return k;
+    }
+    return null;
+  }
+  async function askAutoOut() {
+    const key = autoOutDay();
+    if (!key || autoAsking || mode !== "member" || !$("setup-sheet").hidden || !$("contract-sheet").hidden) return;
+    autoAsking = true;
+    const r = rec(key), hrs = AUTO_OUT() >= 3600000 ? `${AUTO_OUT() / 3600000}時間` : `${AUTO_OUT() / 60000}分`;
+    const a = await ask(`${hrs}を超えたので、自動で退勤にしました`,
+      `${key.slice(5).replace("-", "/")}　出勤 ${hm(r.in)} → 自動退勤 ${hm(r.out)}\n残業しましたか？それとも退勤の打刻を忘れましたか？どちらでも、このあと実際に退勤した時刻に直してください。`, "残業した", false, "打刻を忘れた");
+    autoAsking = false;
+    if (a == null) return;   // asked again next time
+    r.autoAsked = true; r.autoReason = a ? "残業" : "打刻忘れ";
+    persist("m-" + ymOf(key));
+    openSheet(key);
+    msg(a ? "退勤の時刻を実際の時刻に直して、稼働実績を保存してください。TPも付きます。" : "退勤の時刻を、実際に退勤した時刻に直して保存してください。");
   }
 
   // ---- render ----
@@ -4098,7 +4171,7 @@ window.addEventListener("error", function (e) {
     if (mode !== "member") return;   // the login and admin screens have nothing on the clock
     const now = Date.now(), nd = new Date(now);
     $("date").textContent = `${nd.getFullYear()}年${nd.getMonth() + 1}月${nd.getDate()}日（${WD[nd.getDay()]}）`;
-    paintStreak();
+    autoOut(); paintStreak();
     $("time").innerHTML = `${pad(nd.getHours())}:${pad(nd.getMinutes())}<span class="sec">:${pad(nd.getSeconds())}</span>`;
 
     const open = openRec(), todayRec = rec(dayKey(nd));
@@ -4199,7 +4272,7 @@ window.addEventListener("error", function (e) {
             : (r?.store || r?.planIn) && key >= today ? `<span class="plan"><span class="pw">予定</span>${r.planIn ? span(r.planIn, r.planOut) : ""}</span>` : "") +
           (r?.early && r?.in ? `<span class="el">早退</span>` : "") +
           // a day with no shift yet shows the mark sent as シフト希望 (🚄 遠方可 / ○ / △)
-          (!r?.in && !r?.store && !r?.planIn && !r?.absent && hopes[key] ? `<span class="hp hp-${{ "○遠": "far", "△": "maybe" }[hopes[key]] || "ok"}">${{ "○遠": "🚄", "△": "△" }[hopes[key]] || "○"}<small>希望</small></span>` : "") +
+          (!r?.in && !r?.store && !r?.planIn && !r?.absent && hopes[key] ? `<span class="hp hp-${{ "○遠": "far", "△": "maybe" }[hopes[key]] || "ok"}">${{ "○遠": `<i class="ico ico-train" aria-hidden="true"></i>`, "△": "△" }[hopes[key]] || "○"}<small>希望</small></span>` : "") +
           (r?.transport || r?.km != null ? `<span class="tr">${esc(r.transport || "")}${r.rideWith ? `（${esc(r.rideWith)}）` : ""}${r.km != null ? ` ${r.km}km` : ""}</span>` : "") +
           (missingProof(r) ? `<span class="np"><span class="pw">画像</span>未添付</span>` : r?.proofs?.length && !r.absent ? `<span class="pf">画像${r.proofs.length}枚</span>` : "");
         cell.setAttribute("aria-label", `${date.getMonth() + 1}月${date.getDate()}日（${WD[date.getDay()]}）${hol ? " " + hol : ""}${r?.absent ? " 欠勤" : ""}${r?.store ? " " + r.store : ""}${time ? " " + time : ""}${r?.early && r?.in ? " 早退" : ""}`);
@@ -4658,6 +4731,7 @@ window.addEventListener("error", function (e) {
     $("s-from").value = b.from || window.TC_NAME || "";
     for (const k of ADDR) $("s-" + k).value = b[k] || "";
     for (const r of document.getElementsByName("s-work")) r.checked = r.value === window.TC_WORK;
+    $("s-birth").value = myProf?.birth || ""; $("s-birth").max = dayKey(new Date());
     $("s-work-box").hidden = !!window.TC_REP;   // 代表 has no 勤務形態
     $("s-err").textContent = "";
     $("setup-sheet").hidden = false;
@@ -4670,6 +4744,13 @@ window.addEventListener("error", function (e) {
     if (!from) { $("s-err").textContent = "氏名・屋号を入力してください。"; $("s-from").focus(); return; }
     if (!val("address")) { $("s-err").textContent = "住所を入力してください。"; $("s-address").focus(); return; }
     if (!val("tel")) { $("s-err").textContent = "電話番号を入力してください。"; $("s-tel").focus(); return; }
+    const birth = $("s-birth").value;
+    if (!birth) { $("s-err").textContent = "生年月日を入力してください。"; $("s-birth").focus(); return; }
+    if (birth !== (myProf?.birth || "")) {
+      $("s-err").textContent = "保存しています…";
+      try { myProf.birth = await call("api_setBirth", birth); $("s-err").textContent = ""; loadCelebs(); }
+      catch (err) { $("s-err").textContent = errText(err); return; }
+    }
     const work = [...document.getElementsByName("s-work")].find((r) => r.checked)?.value;
     if (!work && !window.TC_REP) { $("s-err").textContent = "勤務形態（常勤・週末・社員）を選んでください。"; return; }
     if (work && !window.TC_REP && work !== window.TC_WORK) {
@@ -4971,7 +5052,7 @@ window.addEventListener("error", function (e) {
   }
   function showPerson(me) {
     window.TC_NAME = me.name; window.TC_WORK = me.workType || "";
-    window.TC_ADMIN = !!me.admin; window.TC_OWNER = !!me.owner; window.TC_REP = !!me.rep; window.TC_CONTRACT = me.contractAsk !== false;
+    window.TC_ADMIN = !!me.admin; window.TC_OWNER = !!me.owner; window.TC_REP = !!me.rep; window.TC_CONTRACT = me.contractAsk !== false; window.TC_TEST = !!me.test;
     $("logout").hidden = false; $("chpass").hidden = false;
     // admins use the normal site too; the header button switches to the admin screen and back
     $("adminbtn").hidden = !me.admin; $("m-admin").hidden = !me.admin;
@@ -5258,8 +5339,10 @@ window.addEventListener("error", function (e) {
     });
   });
   // resolves true for the OK button, false for やめる or a tap outside the box
-  function ask(title, body, okText, danger) {
-    $("ask-h").textContent = title; $("ask-body").textContent = body;
+  // noText: the other button's words (戻る when left out); a tap outside the box answers null
+  const ASK_NO = $("ask-no").textContent;
+  function ask(title, body, okText, danger, noText) {
+    $("ask-h").textContent = title; $("ask-body").textContent = body; $("ask-no").textContent = noText || ASK_NO;
     $("ask-yes").textContent = okText; $("ask-yes").className = `btn ${danger ? "danger armed" : "primary"}`;
     $("ask-sheet").querySelector(".modal").classList.toggle("danger", !!danger);
     $("ask-sheet").hidden = false;
@@ -5267,7 +5350,7 @@ window.addEventListener("error", function (e) {
       const done = (v) => { $("ask-sheet").hidden = true; res(v); };
       $("ask-yes").onclick = () => done(true);
       $("ask-no").onclick = () => done(false);
-      $("ask-sheet").onclick = (e) => { if (e.target === $("ask-sheet")) done(false); };
+      $("ask-sheet").onclick = (e) => { if (e.target === $("ask-sheet")) done(noText ? null : false); };
     });
   }
   $("chpass").onclick = async () => {
@@ -5477,7 +5560,7 @@ window.addEventListener("error", function (e) {
       const [y, mo, d] = key.split("-").map(Number), wd = new Date(y, mo - 1, d).getDay();
       const part = (t, list, cls) => `<div class="hope-who ${cls}"><b>${t}（${list.length}人）</b><span>${list.length ? list.map((m) => esc(m.name)).join("、") : "—"}</span></div>`;
       return `<h3 class="ad-h3">${mo}月${d}日（${WD[wd]}）${holidayName(key) ? `<small>${esc(holidayName(key))}</small>` : ""}</h3>` +
-        part("🚄 遠方可", who(key, "○遠方可"), "v-far") + part("○ 稼働できる", who(key, "○"), "v-ok") + part("△ 要相談", who(key, "△"), "v-maybe");
+        part(`<i class="ico ico-train" aria-hidden="true"></i> 遠方可`, who(key, "○遠方可"), "v-far") + part("○ 稼働できる", who(key, "○"), "v-ok") + part("△ 要相談", who(key, "△"), "v-maybe");
     };
     $("ad-body").innerHTML =
       `<div class="ad-stats"><div class="ad-stat"><span>提出済み</span><b class="num">${sent} / ${live.length}</b></div>` +
@@ -5490,7 +5573,7 @@ window.addEventListener("error", function (e) {
       `<div class="pcal-detail" id="hope-day">${dayList(sel)}</div>` +
       byWork(live).map(([t, g]) => `<h3 class="ad-grp">${esc(groupName(t))}（${g.length}人）</h3><div class="ad-cards">` + g.map((m, i) => {
         const r = byName[m.name];
-        return personCard(m, i, r ? `<span><i class="hm-ok">○</i> <b class="num">${esc(r[3])}</b>日</span><span>うち🚄遠方可 <b class="num">${esc(r[4])}</b></span><span><i class="hm-maybe">△</i> <b class="num">${esc(r[5])}</b>日</span>`
+        return personCard(m, i, r ? `<span><i class="hm-ok">○</i> <b class="num">${esc(r[3])}</b>日</span><span>うち<i class="ico ico-train" aria-hidden="true"></i>遠方可 <b class="num">${esc(r[4])}</b></span><span><i class="hm-maybe">△</i> <b class="num">${esc(r[5])}</b>日</span>`
           : `<span class="st st-late">未提出</span>`, !r);
       }).join("") + `</div>`).join("");
     bindPeople();
@@ -5528,12 +5611,12 @@ window.addEventListener("error", function (e) {
       const ym = adMonth.hope, r = adData.hopes.find((x) => x[0] === m.name);
       $("ad-body").innerHTML = head + (r
         // the sheet's ○ count includes the 遠方可 days; here each mark is counted on its own, as on the member's screen
-        ? `<div class="ad-stats row5"><div class="ad-stat"><span>🚄 遠方可</span><b class="num">${esc(r[4])}</b></div><div class="ad-stat"><span>○</span><b class="num">${Math.max(0, (Number(r[3]) || 0) - (Number(r[4]) || 0))}</b></div>` +
-          `<div class="ad-stat"><span>△</span><b class="num">${esc(r[5])}</b></div></div><p class="hint">提出 ${esc(r[2])}　<b class="far-tag">🚄</b> 遠方可　<i class="hm-ok">○</i> 稼働できる　<i class="hm-maybe">△</i> 要相談　空欄は稼働不可</p>`
+        ? `<div class="ad-stats row5"><div class="ad-stat"><span><i class="ico ico-train" aria-hidden="true"></i> 遠方可</span><b class="num">${esc(r[4])}</b></div><div class="ad-stat"><span>○</span><b class="num">${Math.max(0, (Number(r[3]) || 0) - (Number(r[4]) || 0))}</b></div>` +
+          `<div class="ad-stat"><span>△</span><b class="num">${esc(r[5])}</b></div></div><p class="hint">提出 ${esc(r[2])}　<b class="far-tag"><i class="ico ico-train" aria-hidden="true"></i></b> 遠方可　<i class="hm-ok">○</i> 稼働できる　<i class="hm-maybe">△</i> 要相談　空欄は稼働不可</p>`
         : `<p class="hint">${esc(ymLabel(ym))}のシフト希望はまだ提出されていません。</p>`) +
         monthCal(ym, (key) => {
           const v = r?.[5 + Number(key.slice(8))] || "";
-          return v ? { cls: v === "△" ? "v-maybe" : v === "○遠方可" ? "v-far" : "v-ok", html: `<span class="pcal-m">${v === "○遠方可" ? "🚄" : esc(v)}</span>` } : {};
+          return v ? { cls: v === "△" ? "v-maybe" : v === "○遠方可" ? "v-far" : "v-ok", html: `<span class="pcal-m">${v === "○遠方可" ? `<i class="ico ico-train" aria-hidden="true"></i>` : esc(v)}</span>` } : {};
         }, "", true);
     } else {
       const ym = adMonth.work, rows = Object.fromEntries(adRows((x) => x[DH.name] === m.name && x[DH.date].startsWith(ym)).map((x) => [x[DH.date], x]));
@@ -6685,6 +6768,7 @@ window.addEventListener("error", function (e) {
       const paid = [prev, cur].filter((ym) => doc("inv-" + ym).status === "paid" && !doc("inv-" + ym).confirmedOn);
       if (paid.length) msg(`${paid.map((ym) => Number(ym.slice(5))).join("・")}月分の入金が完了しました。メニューの「請求書」で金額を確かめて「入金を確認しました」を押してください。`);
       restoreView();
+      setTimeout(askAutoOut, 800);   // a day clocked out by itself since last time: asked about now
     }
     if (window.TC_ADMIN) adPrefetch();
     cacheSoon();
@@ -6695,7 +6779,8 @@ window.addEventListener("error", function (e) {
   }
   // first the name, address and 勤務形態, then the contract; both block the app (admins too) until done
   function needsSetup() {
-    if (!doc("billing").from || !doc("billing").addr || (!window.TC_WORK && !window.TC_REP)) { openSetup(); return true; }
+    // 生年月日 too: someone who signed up before it was asked fills it in once
+    if (!doc("billing").from || !doc("billing").addr || (!window.TC_WORK && !window.TC_REP) || !myProf?.birth) { openSetup(); return true; }
     if (contractDue()) { openContract(); return true; }
     return false;
   }
