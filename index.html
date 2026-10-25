@@ -1690,6 +1690,25 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 #res-form .r-tp small { color: var(--plate-soft); font-size: 11px; }
 #res-form textarea { min-height: 120px; }
 #res-form .modal-actions .btn { padding: 11px 18px; font-weight: 800; }
+
+/* the clock: 勤務外 and 欠勤にする at the top right, the space around tightened */
+.clock { padding: 18px 18px 16px; gap: 14px; }
+.clock-top { align-items: flex-start; flex-wrap: nowrap; }
+.clock-top > div:first-child { min-width: 0; }
+.clock-side { flex-direction: row; align-items: center; gap: 6px; flex: none; }
+.clock-side .pill { padding: 4px 10px; font-size: 12px; }
+.clock-side .key-sub { padding: 5px 10px; font-size: 12px; }
+@media (max-width: 380px) { .clock-side { flex-direction: column; align-items: flex-end; } }
+
+/* メンバーを追加: folded to its title until tapped */
+.ad-add > b { display: none; }
+.ad-add-h { grid-column: 1 / -1; margin: 0 -12px; width: calc(100% + 24px); padding: 12px 14px; border: 0; background: var(--plate); color: #fff; font: inherit; text-align: left; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.ad-add-h b { font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.ad-add-h b::before { content: "＋"; color: #7fe0cf; font-weight: 900; }
+.ad-add-h .ad-chev { margin-left: auto; width: 9px; height: 9px; border-right: 2px solid #7fe0cf; border-bottom: 2px solid #7fe0cf; transform: rotate(45deg); transition: transform .2s; }
+.ad-add.open .ad-add-h .ad-chev { transform: rotate(-135deg); }
+.ad-add:not(.open) { padding-bottom: 0; }
+.ad-add:not(.open) > :not(.ad-add-h) { display: none !important; }
 </style>
 </head>
 <body>
@@ -2155,7 +2174,7 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
   <form class="modal" id="res-form" novalidate>
     <h3>今日の稼働実績</h3>
     <p class="hint r-sub" id="r-sub"></p>
-    <p class="r-tp">提出すると <b>+50TP</b><small>（打刻どおり・遅刻なし・稼働8時間以上の日）</small></p>
+    <p class="r-tp">提出すると <b>+50TP</b><small>（打刻通り・遅刻・早退無し・稼働8時間以上の日）</small></p>
     <label class="f">この日の成果・対応内容<textarea id="r-text" maxlength="500" rows="5" placeholder="例：来店対応 12件、新規契約 3件、デモ実施 5回"></textarea></label>
     <label class="check"><input type="checkbox" id="r-early"> 早退</label>
     <label class="f" id="r-early-wrap" hidden>早退理由<input type="text" id="r-early-reason" maxlength="100" placeholder="例：体調不良のため"></label>
@@ -2757,7 +2776,8 @@ window.addEventListener("error", function (e) {
     keepInbox();
     paintBell();
     // what is on screen is drawn again, unless something is being typed there
-    if (tab === "notice" && ![...$("nt-body").querySelectorAll("textarea, input[type=text]")].some((el) => el.value.trim())) renderNotice();
+    // (only the list: a form being filled in, its pulldowns included, is never drawn over)
+    if (tab === "notice" && nt.view === "list") renderNotice();
   }
   async function loadInbox() {
     if (!CRED || mode === "login") return;
@@ -2838,7 +2858,7 @@ window.addEventListener("error", function (e) {
     const fx = document.createElement("div");
     fx.className = "tp-fx miss"; fx.setAttribute("role", "alertdialog");
     fx.innerHTML = `<div class="tp-fx-card"><span class="tp-fx-coin">TP</span><h3>${head}</h3><p>${body}</p>` +
-      `<p class="tp-fx-rule">TPがもらえる日：出勤・退勤をボタンで打刻し、遅刻なし・稼働8時間以上で、稼働実績を提出した日</p>` +
+      `<p class="tp-fx-rule">TPがもらえる日：打刻通り・遅刻・早退無し・稼働8時間以上で、稼働実績を提出した日</p>` +
       `<button type="button" class="btn primary">分かりました</button></div>`;
     document.body.appendChild(fx);
     fx.querySelector("button").onclick = () => fx.remove();
@@ -2850,7 +2870,9 @@ window.addEventListener("error", function (e) {
     call("api_tpResult", key).then((s) => {
       const v = JSON.parse(s); tp.bal = v.bal; paintWho();
       if (v.added) { msg(`稼働実績を保存しました。${v.added}TPもらいました。`); tpFx(v.added, "稼働実績の提出ありがとうございます"); }
-      else if (v.why) { msg("稼働実績を保存しました。"); tpMiss(v.why); }
+      // why no TP: shown large the first time the day is judged, then only as a line
+      else if (v.why) { if (v.first !== false) { msg("稼働実績を保存しました。"); tpMiss(v.why); } else msg(`稼働実績を保存しました。（この日は${v.why}のため、TPは付きません）`); }
+      else if (v.done) msg("稼働実績を保存しました。（この日のTPは受け取り済みです）");
     }).catch(() => {});
   }
   function renderPoint() {
@@ -3575,9 +3597,10 @@ ${v.addr}`;
       card.querySelector(".st-store").textContent = r?.store || none;
       const inT = r?.in ? hm(r.in) : r?.planIn, outT = r?.out ? hm(r.out) : r?.planOut;
 
-      card.querySelector(".st-time").innerHTML = absentDay ? "欠勤"
+      const time = card.querySelector(".st-time"), th = absentDay ? "欠勤"
         : inT || outT ? `<span class="seg">出勤 <b>${esc(inT || "--:--")}</b></span><span class="seg">退勤 <b>${esc(outT || "--:--")}</b></span>`
         : r?.store ? "時間はまだ入っていません" : "";
+      if (time.dataset.h !== th) { time.dataset.h = th; time.innerHTML = th; }
     };
     const tmr = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate() + 1);
     const done = !open && !!todayRec?.out;
@@ -4356,7 +4379,9 @@ ${v.addr}`;
   // ---- boot ----
   setTab(tab);
   fillForms(true);
-  setInterval(render, 1000);
+  // the clock ticks every second, but not while a pulldown is open or a sheet is up: an iPhone closes an open
+  // pulldown (and the picker of a sheet) when the page under it is drawn again
+  setInterval(() => { if (document.activeElement?.tagName === "SELECT" || document.querySelector(".modal-bg:not([hidden]), .tp-fx")) return; render(); }, 1000);
 
   // ---- sign-in ----
   // the session string is kept on this device; without one (or once it has expired) the login screen shows
@@ -4407,7 +4432,9 @@ ${v.addr}`;
     // the ポイント sit right of the name in a badge of their own: "TP" stacked upright, the number beside it
     keepTp();
     const tpChip = tp.bal == null ? "" : `<span class="who-tp${tpN(tp.bal).length > 6 ? " long" : tpN(tp.bal).length > 5 ? " mid" : ""}" aria-label="${tpN(tp.bal)} TP"><i aria-hidden="true"><span>T</span><span>P</span></i><b>${tpN(tp.bal)}</b></span>`;
-    $("who").innerHTML = name ? `<span class="who-row"><span class="who-name"><span class="who-nm">${esc(name)}</span></span>${tpChip}</span>` + (tags ? `<span class="who-tags">${tags}</span>` : "") : "";
+    // drawn only when it changes (the clock calls this every second)
+    const who = name ? `<span class="who-row"><span class="who-name"><span class="who-nm">${esc(name)}</span></span>${tpChip}</span>` + (tags ? `<span class="who-tags">${tags}</span>` : "") : "";
+    if ($("who").dataset.h !== who) { $("who").dataset.h = who; $("who").innerHTML = who; }
   }
   function showPerson(me) {
     window.TC_NAME = me.name; window.TC_WORK = me.workType || "";
@@ -5361,6 +5388,7 @@ ${v.addr}`;
   // one card per person instead of a wide table; a change of 勤務形態 or 管理者 is saved the moment it is made.
   // The owner sees every ログインID and can add, reset and remove people and give 管理者; other admins see their own ID only
   const adOpenCards = new Set();
+  let adAddOpen = false;
   function adMembers() {
     // 未回答 is not a choice: until one is made the box only says 選んでください
     const list = adData.members, owner = adData.owner, rep = !!adData.rep;
@@ -5372,10 +5400,12 @@ ${v.addr}`;
     const roleSel = (v, name, attr) => seg(name, (rep ? [["運営", "運営"]] : []).concat([["管理者", "管理者"], ["", "メンバー"]]), v || "", attr);
     const picked = (el) => (el.querySelector("input:checked") || {}).value;
     // whether the contract is put in front of the person when they first open the app (blank on the sheet = 表示する)
-    const askChk = (v, attr) => `<label class="check"><input type="checkbox" ${attr}${v === false ? "" : " checked"}> 最初に表示する</label>`;
+    // shown as 契約済 (ticked: the contract is not put in front of them, it is already signed on paper)
+    const askChk = (v, attr) => `<label class="check"><input type="checkbox" ${attr}${v === false ? " checked" : ""}> 契約済</label>`;
     const badge = (m) => m.rep ? `<span class="st st-rep">代表</span>` : m.role === "運営" ? `<span class="st st-done">運営</span>` : m.role === "管理者" ? `<span class="st st-work">管理者</span>` : "";
     $("ad-body").innerHTML =
-      (owner ? `<form class="ad-add" id="ad-add" novalidate><b>メンバーを追加</b>` +
+      // メンバーを追加 starts folded; a tap on its title opens it
+      (owner ? `<form class="ad-add${adAddOpen ? " open" : ""}" id="ad-add" novalidate><button type="button" class="ad-add-h" id="ad-add-h" aria-expanded="${adAddOpen}"><b>メンバーを追加</b><span class="ad-chev" aria-hidden="true"></span></button>` +
         `<label class="f ad-add-name">氏名<input id="ad-who" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done"></label>` +
         `<div class="f">勤務形態${workSel("", "ad-work", 'id="ad-work"')}</div>` +
         `<div class="f">役割${roleSel("", "ad-role", 'id="ad-role"')}</div>` +
@@ -5421,13 +5451,14 @@ ${v.addr}`;
       s.onclick = flip;
       s.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } };
     }
+    if (owner) $("ad-add-h").onclick = () => { adAddOpen = !adAddOpen; $("ad-add").classList.toggle("open", adAddOpen); $("ad-add-h").setAttribute("aria-expanded", adAddOpen); if (adAddOpen) focusIfMouse($("ad-who")); };
     // the phone must not offer the contacts list (自動入力) for the new person's name
     if (owner) noAutofill($("ad-who"));
     // the red note goes away as soon as the missing part is filled in
     if (owner) for (const ev of ["input", "change"]) $("ad-add").addEventListener(ev, () => { $("ad-add-err").textContent = ""; });
     if (owner) $("ad-add").addEventListener("submit", (e) => {
       e.preventDefault();
-      const name = $("ad-who").value.trim(), workType = picked($("ad-work")), role = picked($("ad-role")) || "", contractAsk = $("ad-ask").checked;
+      const name = $("ad-who").value.trim(), workType = picked($("ad-work")), role = picked($("ad-role")) || "", contractAsk = !$("ad-ask").checked;
       // shown in red right above 追加, where the eyes are when it is pressed
       const addErr = (t) => { $("ad-add-err").textContent = t; };
       if (!name) { addErr("氏名を入れていません。"); $("ad-who").focus(); return; }
@@ -5438,7 +5469,7 @@ ${v.addr}`;
         adMsg("追加しています…");
         try {
           const r = JSON.parse(await call("api_adminSaveMember", { name, workType, role, contractAsk }));
-          adData.members.push({ id: r.id, name, loginId: r.loginId, role, admin: !!role, owner: role === "運営", fixed: false, active: true, contract: "", hasContract: false, workType, contractAsk });
+          adData.members.push({ id: r.id, name, loginId: r.loginId, role, admin: !!role, owner: role === "運営", fixed: false, active: true, contract: "", hasContract: false, workType, contractAsk }); adAddOpen = false;
           adChanged(); adMsg(`${name}さんを追加しました。`); showCreds(name, r);
         } catch (err) { adMsg(errText(err)); }
       });
@@ -5448,7 +5479,7 @@ ${v.addr}`;
       b.textContent = ok ? "コピー済み" : "失敗"; setTimeout(() => { b.textContent = "コピー"; }, 1500);
     };
     for (const el of $("ad-body").querySelectorAll(".ad-card [data-k]")) el.onchange = async () => {
-      const c = card(el), m = person(c), k = el.dataset.k, v = k === "contractAsk" ? el.checked : picked(el);
+      const c = card(el), m = person(c), k = el.dataset.k, v = k === "contractAsk" ? !el.checked : picked(el);
       el.disabled = true; adMsg(`${m.name}さんを保存しています…`);
       try {
         // the server sends back what it saved; an older server sends nothing, and may have dropped the change
@@ -5459,7 +5490,7 @@ ${v.addr}`;
         adChanged();
         if (!saved) adMsg(`${m.name}さんを保存しましたが、サーバーが古いため反映されていないかもしれません。Code.gs を「新しいバージョン」でデプロイし直してください。`);
         else if (saved[k] !== v) adMsg(`${m.name}さんの${{ role: "役割", workType: "勤務形態", contractAsk: "契約書の表示", gender: "性別" }[k]}は変えられませんでした。`);
-        else adMsg(k === "contractAsk" ? `${m.name}さんに、契約書を最初に${v ? "表示する" : "表示しない"}ようにしました。`
+        else adMsg(k === "contractAsk" ? `${m.name}さんを${v ? "未契約（最初に契約書を表示）" : "契約済"}にしました。`
           : `${m.name}さんの${{ role: "役割", workType: "勤務形態", gender: "性別" }[k]}を「${v || "メンバー"}」にしました。`);
       } catch (err) { adMsg(errText(err)); el.disabled = false; }
     };
