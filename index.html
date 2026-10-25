@@ -1774,8 +1774,10 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 .iv-closed { padding: 12px 14px; border-radius: 12px; background: var(--card); border: 1px solid var(--rule); margin: 0; }
 
 /* opening screen */
+.no-splash .splash { display: none; }
 .splash { position: fixed; inset: 0; z-index: 2147483000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--paper); transition: opacity .5s ease, visibility .5s; }
 .splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
+.splash .sp-logo:not([src]) { visibility: hidden; }
 .splash .sp-logo { height: 104px; opacity: 0; animation: sp-in 1s cubic-bezier(.2, .7, .2, 1) .1s forwards; }
 .sp-name { font-size: 24px; font-weight: 700; letter-spacing: .12em; color: var(--ink); opacity: 0; animation: sp-in 1s cubic-bezier(.2, .7, .2, 1) .45s forwards; }
 .sp-bar { width: 120px; height: 3px; border-radius: 2px; background: color-mix(in srgb, var(--ink) 12%, transparent); overflow: hidden; margin-top: 10px; opacity: 0; animation: sp-fade .4s ease .9s forwards; }
@@ -1798,9 +1800,9 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
   background: radial-gradient(120% 120% at 0% 0%, #17423d 0%, transparent 55%), var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
 .tf-h b::before { content: "⚡" !important; }
 .tp-feed { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
-.tp-feed li { display: grid; grid-template-columns: 66px minmax(0, 1fr) 78px 58px; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 9px; background: rgb(255 255 255 / .04); font-size: 13px; }
+.tp-feed li { display: grid; grid-template-columns: 38px minmax(0, 1fr) 70px 66px; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 9px; background: rgb(255 255 255 / .04); font-size: 13px; }
 .tp-feed li.me { background: rgb(63 182 165 / .2); box-shadow: inset 0 0 0 1px rgb(127 224 207 / .5); }
-.tf-at { font-size: 11px; color: var(--plate-soft); white-space: nowrap; }
+.tf-at { font-size: 10px; line-height: 1.25; color: var(--plate-soft); white-space: nowrap; overflow: hidden; }
 .tf-name { min-width: 0; display: flex; }
 .tf-why-c { display: flex; justify-content: flex-start; min-width: 0; }
 /* a name in a round pill (獲得ログ and ランキング) */
@@ -1809,7 +1811,7 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 .rk-list li > span { display: flex; min-width: 0; }
 .rk-list li.me .nm-pill, .tp-feed li.me .nm-pill { background: rgb(63 182 165 / .35); border-color: rgb(127 224 207 / .6); }
 .tf-why { font-size: 10.5px; color: #bfe9e1; padding: 1px 7px; border-radius: 999px; background: rgb(63 182 165 / .18); border: 1px solid rgb(127 224 207 / .3); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-.tf-tp { color: var(--gold); font-size: 14px; white-space: nowrap; text-align: right; min-width: 52px; }
+.tf-tp { color: var(--gold); font-size: 13px; white-space: nowrap; text-align: right; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 /* the TP mark: a small gold coin */
 .tp-coin { display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 7px; border-radius: 50%; font-style: normal; font-family: var(--f-num); font-size: 9px; font-weight: 900; letter-spacing: -.02em; vertical-align: -5px;
   color: #5a3d00; background: radial-gradient(circle at 35% 30%, #fff6cf, #f6d27a 50%, #c99a2e); box-shadow: 0 0 0 1.5px #b9862a inset, 0 1px 4px rgb(201 154 46 / .5); }
@@ -1866,7 +1868,26 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 .sm-g div { padding: 6px 8px; border-radius: 8px; background: rgb(255 255 255 / .05); min-width: 0; }
 .sm-g dt { font-size: 11px; color: var(--plate-soft); }
 .sm-g dd { margin: 0; color: #fff; font-size: 13.5px; overflow-wrap: anywhere; }
+/* 打刻表 (起床・出発・出勤・退勤・稼働): five equal columns, each centred, so the times line up under their names */
+.today > div { text-align: center; min-width: 0; }
+.today dd { overflow: hidden; text-overflow: clip; }
+/* 今日の予定・明日の予定: only the lit line on top, no coloured edge on the left; the times and 修正 centred on one line */
+.shifts .shift-today, .shifts #shift-next, .shifts .shift-today.absent { border-left-color: var(--plate-line); border-left-width: 1px; }
+.st-foot { align-items: center; }
+/* ホームのお知らせ: slim rows (still easy to tap), the text on one line */
+.nt-board .nt-item { padding: 8px 10px 8px 4px; min-height: 44px; gap: 1px 8px; }
+.nt-board .nt-item b { font-size: 13.5px; line-height: 1.35; }
+.nt-board .nt-item .nt-sub { font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nt-board .nt-item .nt-at { font-size: 10.5px; }
+.nt-board .nt-tag { font-size: 10px; padding: 0 6px; }
+.nt-note::before { top: 15px; width: 7px; height: 7px; }
 </style>
+<!-- the opening screen only when the app is newly opened: decided before anything is drawn, so a reload shows nothing of it -->
+<script>(function () {
+  var nav = performance.getEntriesByType ? performance.getEntriesByType("navigation")[0] : null, again = false;
+  try { again = sessionStorage.getItem("tc_opened") === "1"; sessionStorage.setItem("tc_opened", "1"); } catch (e) {}
+  if (again || (nav && nav.type === "reload")) document.documentElement.classList.add("no-splash");
+})();</script>
 </head>
 <body>
 <!-- opening: the logo and the name rise in softly over the whole screen while everything loads underneath, then it fades away -->
@@ -1881,9 +1902,8 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
   <!-- the opening screen (at the top of body) takes the header's logo; it is shown only when the app is newly opened,
        not when the page is reloaded (更新) within the same visit -->
   <script>(function () {
-    var sp = document.getElementById("splash"), nav = performance.getEntriesByType ? performance.getEntriesByType("navigation")[0] : null, again = false;
-    try { again = sessionStorage.getItem("tc_opened") === "1"; sessionStorage.setItem("tc_opened", "1"); } catch (e) {}
-    if (again || (nav && nav.type === "reload")) { sp.remove(); return; }
+    var sp = document.getElementById("splash");
+    if (document.documentElement.classList.contains("no-splash")) { sp.remove(); return; }
     document.getElementById("sp-logo").src = document.querySelector(".brand .logo").src;
   })();</script>
 
@@ -2069,7 +2089,7 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
       <div>
         <div class="date" id="date">—</div>
         <div class="time" id="time">--:--<span class="sec">:--</span></div>
-        <div class="clock-tp">退勤後に稼働実績を出すと <b>+50TP</b> もらえます</div>
+        <div class="clock-tp">退勤後に稼働実績を出すと <b>+50TP</b> 付与</div>
       </div>
       <div class="clock-side">
         <span class="pill" id="status" data-s="off">勤務外</span>
@@ -3054,12 +3074,12 @@ window.addEventListener("error", function (e) {
   }
   // みんなの獲得ログ: everyone's latest TP earned (8 lines, newest first), read along with the ランキング
   // みんなの獲得ログ: the newest FEED_N, one short line each, in a panel like the ランキング
-  const FEED_N = 5;
+  const FEED_N = 8;
   function feedHTML() {
     const f = tpRank?.feed;
     if (!f) return "";
     return `<div class="tf-panel"><div class="rk-h tf-h"><b>みんなの獲得ログ</b><span>最新${Math.min(f.length, FEED_N)}件</span></div>` + (f.length ? `<ol class="tp-feed">` + f.slice(0, FEED_N).map((x) =>
-      `<li${x.name === window.TC_NAME ? ` class="me"` : ""}><span class="tf-at num">${esc(ntAt(x.at) || "")}</span><span class="tf-name"><span class="nm-pill">${esc(x.name)}</span></span><span class="tf-why-c">${x.why ? `<span class="tf-why">${esc(x.why)}</span>` : ""}</span><b class="tf-tp num">＋${tpN(x.tp)}</b></li>`).join("") + `</ol>`
+      `<li${x.name === window.TC_NAME ? ` class="me"` : ""}><span class="tf-at num">${esc(ntAt(x.at) || "").replace(" ", "<br>")}</span><span class="tf-name"><span class="nm-pill">${esc(x.name)}</span></span><span class="tf-why-c">${x.why ? `<span class="tf-why">${esc(x.why)}</span>` : ""}</span><b class="tf-tp num">＋${tpN(x.tp)}</b></li>`).join("") + `</ol>`
       : `<p class="rk-none">まだだれもTPをもらっていません。</p>`) + `</div>`;
   }
   // the screen is built once; later calls only bring the numbers up to date, so the amount box being typed in
@@ -3075,7 +3095,7 @@ window.addEventListener("error", function (e) {
         `<section class="tp-feed-box" id="tp-feed" aria-label="みんなの獲得ログ"></section>` +
         // TP is used as 報酬 on the invoice (a TP報酬 line of its own); a 社員 asks for it to be added to the 給与
         `<div class="tp-card tp-use"><b>${staff ? "TPを給与に加算" : "TPを報酬に使用"}</b>` +
-        `<p class="hint">${staff ? "申請すると、Themisが給与に加算します（1TP＝1円）。" : "使用すると、今月の請求書に「TP報酬」として追加されます（1TP＝1円）。"}</p>` +
+        `<p class="hint">${staff ? "申請すると、Themisが給与に加算します（1TP＝1円）" : "使用すると、今月の請求書に「TP報酬」として追加されます（1TP＝1円）"}</p>` +
         `<div class="tp-row"><span class="tp-in"><input type="number" id="tp-amt" inputmode="numeric" min="1" step="1" placeholder="使用TP" aria-label="使用するポイント"><small>TP</small></span>` +
         `<button type="button" class="btn primary" id="tp-go">${staff ? "給与に加算を申請" : "請求書に追加"}</button></div>` +
         `<p class="hint" id="tp-range"></p></div>`;
@@ -3100,7 +3120,7 @@ window.addEventListener("error", function (e) {
       sel.value = ""; paintWho(); renderPoint();
       const done = staff ? "申請しました" : `${Number(v.req.ym.slice(5))}月分の請求書に追加しました`;
       await busyDone(done, `${tpN(a)}TP（${tpN(a)}円）`);
-      msg(staff ? "申請しました。Themisが給与に加算するまでお待ちください。" : `${Number(v.req.ym.slice(5))}月分の請求書に、TP報酬 ${tpN(a)}円を追加しました。`);
+
       if (!staff && backend?.refresh) backend.refresh(["inv-" + v.req.ym]);
     }
     catch (e) { busyOff(); msg(errText(e)); }
