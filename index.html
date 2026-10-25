@@ -1731,7 +1731,9 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 .rk-dots { display: flex; justify-content: center; gap: 8px; }
 .rk-dots button { width: 8px; height: 8px; padding: 0; border-radius: 50%; border: 0; background: rgb(127 140 165 / .5); }
 .rk-dots button.on { width: 22px; border-radius: 4px; background: #3fb6a5; }
-.tp-use > b::before { content: "💴" !important; }
+.tp-use > b::before { content: none !important; display: none !important; }
+.tp-use > b { display: flex; align-items: center; }
+.who-tp .tp-coin { margin-right: 0; width: 20px; height: 20px; font-size: 8.5px; vertical-align: 0; }
 .tp-lines p { margin: 2px 0 0; font-size: 11.5px; color: var(--ink-soft); }
 
 /* メニュー › 友達を招待: a gold box that invites a tap */
@@ -3119,7 +3121,7 @@ window.addEventListener("error", function (e) {
         `<section class="tp-rank" id="tp-rank" aria-label="ランキング"></section>` +
         `<section class="tp-feed-box" id="tp-feed" aria-label="みんなの獲得ログ"></section>` +
         // TP is used as 報酬 on the invoice (a TP報酬 line of its own); a 社員 asks for it to be added to the 給与
-        `<div class="tp-card tp-use"><b>${staff ? "TPを給与に加算" : "TPを使用"}</b>` +
+        `<div class="tp-card tp-use"><b><span class="tp-coin" aria-hidden="true">TP</span>${staff ? "TPを給与に加算" : "TPを使用する"}</b>` +
         `<p class="hint" id="tp-use-how"></p>` +
         `<div class="tp-row"><span class="tp-in"><input type="number" id="tp-amt" inputmode="numeric" min="1" step="1" placeholder="使用TP" aria-label="使用するポイント"><small>TP</small></span>` +
         `<button type="button" class="btn primary" id="tp-go">${staff ? "給与に加算を申請" : "請求書に追加"}</button></div>` +
@@ -4675,7 +4677,7 @@ window.addEventListener("error", function (e) {
     // the name in a round badge
     // the ポイント sit right of the name in a badge of their own: "TP" stacked upright, the number beside it
     keepTp();
-    const tpChip = tp.bal == null ? "" : `<span class="who-tp${tpN(tp.bal).length > 6 ? " long" : tpN(tp.bal).length > 5 ? " mid" : ""}" aria-label="${tpN(tp.bal)} TP"><i aria-hidden="true"><span>T</span><span>P</span></i><b>${tpN(tp.bal)}</b></span>`;
+    const tpChip = tp.bal == null ? "" : `<span class="who-tp${tpN(tp.bal).length > 6 ? " long" : tpN(tp.bal).length > 5 ? " mid" : ""}" aria-label="${tpN(tp.bal)} TP"><span class="tp-coin" aria-hidden="true">TP</span><b>${tpN(tp.bal)}</b></span>`;
     // drawn only when it changes (the clock calls this every second)
     const who = name ? `<span class="who-row"><span class="who-name"><span class="who-nm">${esc(name)}</span></span>${tpChip}</span>` + (tags ? `<span class="who-tags">${tags}</span>` : "") : "";
     if ($("who").dataset.h !== who) { $("who").dataset.h = who; $("who").innerHTML = who; }
