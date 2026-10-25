@@ -84,7 +84,9 @@ document.documentElement.classList.add("fonts-wait");
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; touch-action: manipulation; }
 [hidden] { display: none !important; }
 /* the page is one screen that never scrolls; #scroller fills it and scrolls instead (see the note on #scroller) */
-html, body { height: 100%; overflow: hidden; }
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+/* a swipe that starts on the bar at the foot moves nothing (an iPhone dragged the whole page up with it) */
+.bnav, .toast { touch-action: none; overscroll-behavior: none; }
 body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; }
 #scroller {
   position: fixed; inset: 0; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;
@@ -2635,6 +2637,9 @@ window.addEventListener("error", function (e) {
   for (const b of document.querySelectorAll(".bnav button")) b.onclick = () => {
     pickTab({ home: "home", shift: tabOk(shiftTab) ? shiftTab : "card", point: "point", menu: "menu" }[b.dataset.g]);
   };
+  // the bar never moves with a finger: a swipe on it (or on the message above it) is stopped here, as an iPhone
+  // ignores touch-action for the page's own bounce (taps still reach the buttons)
+  for (const el of [document.querySelector(".bnav"), $("toast")]) el.addEventListener("touchmove", (e) => e.preventDefault(), { passive: false });
   // 戻る: from 請求書 / 給与明細 to メニュー; inside お知らせ back to its list, then to where it was opened from
   $("back-menu").onclick = () => {
     if (tab === "notice" && nt.view !== "list" && nt.fromList) showNotice("list");
