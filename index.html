@@ -1590,6 +1590,74 @@ button.pcal-c { cursor: pointer; }
 .pcal-detail { border-color: var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
 .pcal-detail .ad-plan { justify-self: start; margin-top: 10px; }
 .pcal-ym { display: flex; align-items: center; gap: 8px; }
+
+/* お知らせ opened: the buttons at the bottom right, 閉じる last; a button already done is greyed and cannot be pressed */
+.nt-pop { cursor: default; }
+.nt-pop-acts { margin-top: 4px; padding-top: 12px; border-top: 1px solid rgb(127 140 165 / .25); }
+.nt-pop-acts { flex-wrap: nowrap; }
+.nt-pop-acts .btn { min-width: 0; padding: 10px 14px; white-space: nowrap; }
+.nt-pop-acts .nt-ok { white-space: nowrap; font-size: 13px; }
+.nt-pop .btn:not(.primary) { color: #fff; background: rgb(255 255 255 / .08); border-color: rgb(255 255 255 / .25); box-shadow: none; }
+.nt-pop .btn:disabled { opacity: 1; color: var(--plate-soft); background: rgb(255 255 255 / .04); border-color: rgb(255 255 255 / .12); box-shadow: none; }
+.nt-pop .btn.primary:disabled { background: rgb(255 255 255 / .06); }
+.nt-pop .nt-claim:not(:disabled) { color: #3a2a00; border-color: #fff1c2; background: linear-gradient(180deg, #ffe08a, #e0a92a); box-shadow: inset 0 1px 0 rgb(255 255 255 / .5), 0 4px 0 #8a5e08, 0 0 16px -2px rgb(246 210 122 / .7); }
+.nt-pop-x { order: 99; }
+/* 未読: a small red tag at the front of the title (the dot is not needed beside it) */
+.nt-tag.new { color: #fff; background: #e5373d; border-color: #e5373d; }
+.nt-item.unread b:has(.nt-tag.new)::before { display: none; }
+
+/* 交換を申請: a gold button that stands out */
+#tp-go:not(:disabled) { color: #3a2a00; font-weight: 800; letter-spacing: .06em; padding: 11px 22px; border-color: #fff1c2; background: linear-gradient(180deg, #ffe08a, #e0a92a);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .5), 0 5px 0 #8a5e08, 0 0 18px -2px rgb(246 210 122 / .6); }
+#tp-go:not(:disabled):active { transform: translateY(5px); box-shadow: inset 0 1px 0 rgb(255 255 255 / .5); }
+#tp-go:disabled { color: var(--plate-soft); background: rgb(255 255 255 / .06); border-color: rgb(255 255 255 / .14); box-shadow: none; }
+
+/* the TP lines Themis put on the invoice (read only) */
+.tp-lines { display: grid; gap: 4px; padding: 10px 12px; border-radius: var(--r); background: color-mix(in srgb, var(--gold) 14%, var(--card)); border: 1px dashed #c99a2e; font-size: 13px; }
+.tp-lines > div { display: flex; justify-content: space-between; gap: 10px; }
+
+/* TP received: coins burst out, the amount pops up in gold */
+.tp-fx { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: radial-gradient(circle, rgb(20 16 4 / .55), rgb(6 10 18 / .7)); animation: tpfx-in .25s ease-out; }
+.tp-fx.out { opacity: 0; transition: opacity .45s; }
+.tp-fx-card { position: relative; display: grid; justify-items: center; gap: 4px; padding: 26px 34px 22px; border-radius: 22px; color: #fff; text-align: center;
+  background: radial-gradient(120% 120% at 50% 0%, #3a2f5c 0%, transparent 60%), var(--plate); border: 1.5px solid var(--gold);
+  box-shadow: 0 0 40px rgb(246 210 122 / .45), 0 30px 60px -20px rgb(0 0 0 / .7); animation: tpfx-pop .6s cubic-bezier(.2, 1.6, .4, 1); }
+.tp-fx-coin { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-family: var(--f-num); font-weight: 900; font-size: 22px; color: #6b4a00;
+  background: radial-gradient(circle at 35% 30%, #fff6cf, #f6d27a 45%, #c99a2e); border: 3px solid #fff1c2; box-shadow: 0 0 24px rgb(246 210 122 / .8); animation: tpfx-spin 1s ease-out; }
+.tp-fx-card b { font-family: var(--f-num); font-size: 46px; font-weight: 900; line-height: 1.1; color: var(--gold); text-shadow: 0 0 20px rgb(246 210 122 / .6); }
+.tp-fx-card b small { font-size: 20px; margin-left: 4px; }
+.tp-fx-card p { margin: 0; font-size: 13px; color: var(--plate-ink); }
+.tp-fx-coins { position: absolute; left: 50%; top: 58px; width: 0; height: 0; }
+.tp-fx-coins i { position: absolute; width: 14px; height: 14px; margin: -7px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff6cf, #f6d27a 50%, #c99a2e);
+  transform: rotate(var(--a)) translateY(0); opacity: 0; animation: tpfx-burst 1.1s ease-out var(--d) forwards; }
+@keyframes tpfx-in { from { opacity: 0; } }
+@keyframes tpfx-pop { 0% { transform: scale(.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes tpfx-spin { from { transform: rotateY(720deg) scale(.4); } }
+@keyframes tpfx-burst { 0% { opacity: 1; transform: rotate(var(--a)) translateY(0) scale(.6); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-130px) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .tp-fx, .tp-fx-card, .tp-fx-coin, .tp-fx-coins i { animation: none; } .tp-fx-coins { display: none; } }
+
+/* the confirm boxes (ログアウト, パスワード変更, 管理者画面 and the rest): a dark plate, a lit line on top, big buttons */
+#ask-sheet { background: rgb(6 10 18 / .6); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+#ask-sheet .modal { width: min(400px, 100%); background: var(--plate); color: var(--plate-ink); border: 1px solid var(--plate-line); border-top: 3px solid #3fb6a5; padding: 24px 22px 20px; gap: 10px; text-align: center;
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / .7), inset 0 1px 0 rgb(255 255 255 / .08); }
+#ask-sheet .modal.danger { border-top-color: #e5373d; }
+#ask-sheet h3 { margin: 0; color: #fff; font-size: 18px; }
+#ask-sheet .hint { color: var(--plate-soft); font-size: 14px; line-height: 1.7; margin: 0; }
+#ask-sheet .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+#ask-sheet .modal-actions > div { display: contents; }
+#ask-sheet .modal-actions .btn { width: 100%; padding: 12px; font-size: 15px; font-weight: 800; }
+#ask-sheet #ask-no { color: #fff; background: rgb(255 255 255 / .08); border-color: rgb(255 255 255 / .25); box-shadow: none; }
+#ask-sheet #ask-yes.danger, #ask-sheet .modal.danger #ask-yes { color: #fff; border-color: #ff9a8a; background: linear-gradient(180deg, #e8664f, #a8382a); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 4px 0 #6b1f15, 0 0 16px -2px rgb(232 102 79 / .55); }
+
+/* 他社への請求書, 自社情報 and the other admin boxes: the title on a dark band across the top */
+#bl-form, #co-form, #ad-dlg .modal { padding-top: 0; overflow-x: hidden; border-color: var(--plate-line); }
+#bl-form > h3, #co-form > h3, #ad-dlg .modal > h3 { position: sticky; top: 0; z-index: 2; margin: 0 -22px 4px; padding: 14px 22px; background: var(--plate); color: #fff; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+#bl-form > h3::before, #co-form > h3::before, #ad-dlg .modal > h3::before { content: ""; width: 4px; height: 1.1em; border-radius: 2px; background: linear-gradient(180deg, #ffd08a, #a9540f); box-shadow: 0 0 8px rgb(233 139 60 / .6); }
+#co-form .co-sub { display: flex; align-items: center; gap: 8px; margin-top: 6px; padding-top: 10px; border-top: 1px dashed var(--rule); }
+.bl-items-h { padding: 8px 12px; border-radius: 10px; background: var(--plate); color: #fff; }
+.bl-items-h select { color: var(--ink); }
+.bl-sum { background: var(--plate); color: var(--plate-ink); border-radius: 12px; padding: 10px 14px; }
+.bl-sum dd, .bl-sum b { color: var(--gold); }
 </style>
 </head>
 <body>
@@ -1885,6 +1953,7 @@ button.pcal-c { cursor: pointer; }
         <div class="f">
           追加の明細（交通費など、税込金額）
           <div class="extras" id="extras"></div>
+          <div class="tp-lines" id="tp-lines" hidden></div>
           <button type="button" class="tool" id="x-add" style="justify-self:start">＋ 明細を追加</button>
         </div>
         <label class="f">備考<textarea id="i-note" maxlength="300" placeholder="例：御社都合の交通費の為"></textarea></label>
@@ -2299,7 +2368,7 @@ window.addEventListener("error", function (e) {
   const ymOf = (key) => key.slice(0, 7);
   const hm = (ms) => { const d = new Date(ms); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
   const dur = (min) => { min = Math.max(0, Math.round(min)); return `${Math.floor(min / 60)}:${pad(min % 60)}`; };
-  const yen = (n) => "¥" + Math.round(n).toLocaleString("ja-JP");
+  const yen = (n) => (Math.round(n) < 0 ? "−" : "") + "¥" + Math.abs(Math.round(n)).toLocaleString("ja-JP");
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const jDate = (iso) => { if (!iso) return ""; const [y, m, d] = iso.split("-").map(Number); return `${y}年${m}月${d}日`; };
   // Safari ignores autocomplete="off" and offers 連絡先を自動入力 on any field it guesses is a contact
@@ -2452,7 +2521,7 @@ window.addEventListener("error", function (e) {
       if (!r?.depart) { msg(r?.wake ? "先に「出発」を押してください。" : "先に「起床」を押してください。"); return; }
       // keep a planned shift's store and route when clocking in on that day
       const base = { ...(r || {}) }; delete base.breakMin;
-      m.days[key] = { ...base, in: now, out: null, breaks: [], memo: r?.memo || "" };
+      m.days[key] = { ...base, in: now, out: null, breaks: [], memo: r?.memo || "", punchIn: now };   // punchIn / punchOut: the key presses, for TP
       msg(`${hm(now)} ${r?.store ? r.store + "で" : ""}出勤を記録しました。`);
       state().openDate = key;
       render(); await persist("m-" + ymOf(key), "state"); return;
@@ -2461,7 +2530,7 @@ window.addEventListener("error", function (e) {
     if (!r) return;
     if (kind === "out") {
       for (const b of r.breaks || []) if (b.e == null) b.e = now;
-      r.out = now; state().openDate = null;
+      r.out = now; r.punchOut = now; state().openDate = null;
       msg(`${hm(now)} 退勤しました。本日の稼働 ${dur(workMin(r, now))}。お疲れさまでした。`);
     }
     render();
@@ -2544,7 +2613,7 @@ window.addEventListener("error", function (e) {
     const board = $("nt-home-list"), top = inbox.items.slice(0, 5);
     $("nt-home-n").hidden = !n; $("nt-home-n").textContent = `未読 ${n}`;
     board.innerHTML = top.length ? top.map((x) => `<div class="nt-note${x.unread ? " new" : ""}" data-k="${ntKind(x)}">` + ntRow(x, x.unread) + `</div>`).join("") +
-        (inbox.items.length > top.length ? `<button type="button" class="nt-more" id="nt-home-more">すべてのお知らせを見る（${inbox.items.length}件）›</button>` : "")
+        (inbox.items.length > top.length ? `<button type="button" class="nt-more" id="nt-home-more">すべてのお知らせを見る ›</button>` : "")
       : `<p class="nt-empty">お知らせはまだありません。</p>`;
     for (const b of board.querySelectorAll("[data-open]")) b.onclick = () => ntPop(inbox.items.find((y) => y.id === b.dataset.open), "home");
     const more = $("nt-home-more");
@@ -2552,42 +2621,67 @@ window.addEventListener("error", function (e) {
     if (popId && !$("nt-pop").hidden) { const x = inbox.items.find((y) => y.id === popId); if (x) ntPop(x, popFrom); }
   }
   // each note's kind (重要 / えらべるPay / TP付き / お問い合わせ / ふつう) gives it its own mark
-  const ntKind = (x) => (x.kind === "q" ? "ask" : x.url ? "gift" : x.important ? "imp" : x.reward > 0 ? "tp" : "info");
-  // a tapped お知らせ opens large over the screen: the title, a line, then all of its text, 受け取る, and
-  // 確認しました for a 重要 one (reading it marks it read; a 重要 one waits for that button). An お問い合わせ
-  // shows the exchange, with 返信する to answer. A tap anywhere but on a button closes it
+  const ntKind = (x) => (x.kind === "q" ? "ask" : x.url ? "gift" : x.important ? "imp" : x.reward > 0 && !x.got ? "tp" : "info");
+  // whether an お知らせ's TP can still be received (posted with TP, not yet received, not past its deadline)
+  const tpOpen = (x) => x.kind === "n" && x.reward > 0 && !x.got && !(x.until && x.until < ntNow());
+  // a tapped お知らせ opens large over the screen: the title, a line, all of its text, then at the bottom right
+  // 確認する (確認済み once pressed) or, for one with TP, 受け取る (a 重要 one: only after 確認する), and 閉じる.
+  // Only 閉じる closes it. An お問い合わせ shows the exchange, with 返信する to answer
   let popId = null, popFrom = "home";
   function ntPop(x, from) {
     if (!x) return;
     popId = x.id; popFrom = from || "home";
-    const imp = x.kind === "n" && x.important, waiting = imp && x.unread;
-    const tags = (imp ? `<span class="nt-tag imp">重要</span>` : x.kind === "q" ? `<span class="nt-tag ask">お問い合わせ</span>` : "") + rewardTag(x);
+    const imp = x.kind === "n" && x.important;
+    const tags = (imp ? `<span class="nt-tag imp">重要</span>` : x.kind === "q" ? `<span class="nt-tag ask">お問い合わせ</span>` : "") +
+      (x.unread ? `<span class="nt-tag new">未読</span>` : "") + rewardTag(x);
+    let acts = "";
+    if (x.kind === "q") acts = `<button type="button" class="btn primary" id="nt-pop-reply">返信する</button>`;
+    else {
+      if (x.url) acts += `<a class="btn primary nt-get" href="${esc(x.url)}" target="_blank" rel="noopener">受け取る</a>`;
+      if (tpOpen(x)) {
+        // a 重要 one is confirmed first; then 受け取る opens
+        if (imp) acts += `<button type="button" class="btn${x.unread ? " primary" : ""}" id="nt-pop-ok"${x.unread ? "" : " disabled"}>${x.unread ? "確認する" : "✓ 確認済み"}</button>`;
+        acts += `<button type="button" class="btn primary nt-claim" id="nt-pop-get"${imp && x.unread ? " disabled" : ""}>受け取る</button>`;
+      } else {
+        if (x.reward > 0 && x.got) acts += `<span class="nt-ok">✓ 受け取り済み</span>`;
+        acts += `<button type="button" class="btn primary" id="nt-pop-ok"${x.unread ? "" : " disabled"}>${x.unread ? "確認する" : "✓ 確認済み"}</button>`;
+      }
+    }
     const body = x.kind === "q"
-      ? `<div class="nt-chat">` + x.msgs.map((m) => `<div class="nt-msg${m.admin ? "" : " me"}"><p>${esc(m.text)}</p></div>`).join("") + `</div>` +
-        `<div class="nt-pop-acts"><button type="button" class="btn primary" id="nt-pop-reply">返信する</button></div>`
-      : `<div class="nt-text">${esc(x.text)}</div>` +
-        ((x.url || imp) ? `<div class="nt-pop-acts">` + (x.url ? `<a class="btn primary nt-get" href="${esc(x.url)}" target="_blank" rel="noopener">受け取る</a>` : "") +
-          (waiting ? `<button type="button" class="btn primary" id="nt-pop-ok">確認しました</button>` : imp ? `<span class="nt-ok">✓ 確認済み</span>` : "") + `</div>` : "");
+      ? `<div class="nt-chat">` + x.msgs.map((m) => `<div class="nt-msg${m.admin ? "" : " me"}"><p>${esc(m.text)}</p></div>`).join("") + `</div>`
+      : `<div class="nt-text">${esc(x.text)}</div>`;
     const box = $("nt-pop-in");
     box.dataset.k = ntKind(x);
     box.innerHTML = (tags ? `<div class="nt-pop-tags">${tags}</div>` : "") + `<h3 class="nt-pop-t">${esc(x.kind === "n" ? x.title : askTitle(x))}</h3><hr class="nt-rule">` + body +
-      `<p class="nt-pop-close">タップで閉じる</p>`;
+      `<div class="nt-pop-acts">${acts}<button type="button" class="btn nt-pop-x" id="nt-pop-x">閉じる</button></div>`;
     $("nt-pop").hidden = false;
-    if (!imp) markSeen([x.id]);
+    // an お問い合わせ's answer counts as read once opened
+    if (x.kind === "q") markSeen([x.id]);
+    $("nt-pop-x").onclick = closePop;
     const ok = $("nt-pop-ok");
     if (ok) ok.onclick = () => { markSeen([x.id]); ntPop(x, popFrom); };
+    const get = $("nt-pop-get");
+    if (get) get.onclick = async () => {
+      get.disabled = true;
+      try {
+        const v = JSON.parse(await call("api_noticeClaim", x.id));
+        x.got = true; x.unread = false; seenHere.add(x.id); keepInbox();
+        tp.bal = v.bal; paintWho(); paintBell(); ntPop(x, popFrom);
+        tpFx(v.added, "お知らせのTPを受け取りました");
+      } catch (e) { get.disabled = false; msg(errText(e)); }
+    };
     const re = $("nt-pop-reply");
     if (re) re.onclick = () => { closePop(); showNotice("q", x.id, popFrom); };
   }
   const closePop = () => { $("nt-pop").hidden = true; popId = null; };
-  $("nt-pop").addEventListener("click", (e) => { if (!e.target.closest("a, button")) closePop(); });
-  // one row of a list: a red dot while new, 重要 / お問い合わせ tags, the date, and the start of the text
+  // one row of a list: 未読 while not yet confirmed, 重要 / お問い合わせ tags, the TP while it can still be received,
+  // the date, and the start of the text
   function ntRow(x, dot) {
     const imp = x.kind === "n" && x.important, last = x.kind === "q" ? x.msgs[x.msgs.length - 1] : null;
     const title = x.kind === "n" ? x.title : askTitle(x);
     const sub = x.kind === "n" ? x.text : `${last.admin ? "Themis" : last.by}：${last.text}`;
     return `<button type="button" class="nt-item${dot ? " unread" : ""}" data-open="${esc(x.id)}">` +
-      `<b>${imp ? `<span class="nt-tag imp">重要</span>` : x.kind === "q" ? `<span class="nt-tag ask">お問い合わせ</span>` : ""}${x.reward > 0 ? `<span class="nt-tag tp">+${tpN(x.reward)}TP</span>` : ""}${esc(title)}</b>` +
+      `<b>${dot ? `<span class="nt-tag new">未読</span>` : ""}${imp ? `<span class="nt-tag imp">重要</span>` : x.kind === "q" ? `<span class="nt-tag ask">お問い合わせ</span>` : ""}${tpOpen(x) ? `<span class="nt-tag tp">+${tpN(x.reward)}TP</span>` : ""}${esc(title)}</b>` +
       `<span class="nt-at">${esc(ntAt(x.last || x.at))}</span><span class="nt-sub">${esc(sub)}</span></button>`;
   }
   // the form for a new お知らせ (from お知らせ and from 運営画面): title, text, 重要, TP for each reader
@@ -2600,10 +2694,10 @@ window.addEventListener("error", function (e) {
     `<button type="submit" class="btn primary">お知らせを出す</button>`;
   // the TP for reading, with its deadline (none after it)
   const rewardTag = (x) => {
-    if (!(x.reward > 0)) return "";
+    if (!(x.reward > 0) || x.got) return "";
     const over = x.until && x.until < ntNow(), d = ntAt(x.until).split(" ")[0];
     return over ? `<span class="nt-reward over">受け取り期限切れ</span>`
-      : `<span class="nt-reward">${x.important ? "確認すると" : "読むと"} +${tpN(x.reward)} TP${d ? `　${d}まで` : ""}</span>`;
+      : `<span class="nt-reward">+${tpN(x.reward)} TP${d ? `　${d}まで受け取れます` : ""}</span>`;
   };
   const ntNow = () => { const d = new Date(); return `${dayKey(d)} ${hm(d.getTime())}`; };
   function bindNoticeForm(form, done, say) {
@@ -2620,9 +2714,14 @@ window.addEventListener("error", function (e) {
       } catch (err) { say(errText(err)); if (e.submitter) e.submitter.disabled = false; }
     };
   }
+  // what was confirmed on this device stays read even if a list read just before the server heard of it says
+  // otherwise (so 「未読のお知らせが〇件あります」 never comes back for a moment)
+  const seenHere = new Set();
+  const keepInbox = () => { try { localStorage.setItem(INBOX_KEY, JSON.stringify(inbox)); } catch (e) {} };
   function setInbox(v) {
+    for (const x of v.items || []) if (seenHere.has(x.id) && x.kind === "n") x.unread = false;
     inbox = v; inboxAt = Date.now();
-    try { localStorage.setItem(INBOX_KEY, JSON.stringify(v)); } catch (e) {}
+    keepInbox();
     paintBell();
     // what is on screen is drawn again, unless something is being typed there
     if (tab === "notice" && ![...$("nt-body").querySelectorAll("textarea, input[type=text]")].some((el) => el.value.trim())) renderNotice();
@@ -2635,20 +2734,16 @@ window.addEventListener("error", function (e) {
   setInterval(() => { if (document.visibilityState === "visible" && mode !== "login") loadInbox(); }, 60000);
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState !== "visible") return;
-    loadInbox();
+    loadInbox(); loadTp();
     // this month's and the month on screen's records too, for a shift Themis put in meanwhile
     if (mode === "member" && backend?.refresh) { const cur = ymOf(dayKey(new Date())); backend.refresh([...new Set(["m-" + cur, "m-" + viewYm()])]); }
   });
   function markSeen(ids) {
     const want = ids.filter((id) => inbox.items.some((x) => x.id === id && x.unread));
     if (!want.length) return;
-    for (const x of inbox.items) if (want.includes(x.id)) x.unread = false;
-    paintBell();
-    // an お知らせ posted with TP for reading pays it now
-    call("api_inboxSeen", want).then((s) => {
-      const v = typeof s === "string" ? JSON.parse(s) : {};
-      if (v.added > 0) { tp.bal = v.bal; paintWho(); msg(`お知らせを読んで +${tpN(v.added)}TP もらいました`); }
-    }).catch(() => {});
+    for (const x of inbox.items) if (want.includes(x.id)) { x.unread = false; seenHere.add(x.id); }
+    keepInbox(); paintBell();
+    call("api_inboxSeen", want).catch(() => {});
   }
   function showNotice(view, id, from) {
     const fromList = nt.view === "list" && tab === "notice";
@@ -2675,9 +2770,25 @@ window.addEventListener("error", function (e) {
   function tpN(n) { return Number(n || 0).toLocaleString("ja-JP"); }
   async function loadTp() {
     if (!CRED || mode === "login") return;
+    const was = tp.bal;
     try { Object.assign(tp, JSON.parse(await call("api_tp"))); } catch (e) { return; }
+    // TP given by Themis since the last look gets the same celebration
+    if (was != null && tp.bal > was) tpFx(tp.bal - was, "ポイントが付与されました");
     paintWho();
     if (tab === "point") renderPoint();
+  }
+  // TP received: coins burst out and the amount pops up large in gold over the screen for a moment
+  function tpFx(n, text) {
+    if (!(n > 0)) return;
+    const fx = document.createElement("div");
+    fx.className = "tp-fx"; fx.setAttribute("role", "status");
+    fx.innerHTML = `<div class="tp-fx-card"><div class="tp-fx-coins">` +
+      Array.from({ length: 12 }, (_, i) => `<i style="--a:${i * 30}deg;--d:${(i % 3) * 60}ms"></i>`).join("") +
+      `</div><span class="tp-fx-coin">TP</span><b>+${tpN(n)}<small>TP</small></b><p>${esc(text)}</p></div>`;
+    document.body.appendChild(fx);
+    fx.onclick = () => fx.remove();
+    setTimeout(() => fx.classList.add("out"), 2200);
+    setTimeout(() => fx.remove(), 2700);
   }
   // the server pays once per day, only for a day clocked out with its 稼働実績 written (asking again does nothing)
   function tpForResult(key) {
@@ -2685,7 +2796,7 @@ window.addEventListener("error", function (e) {
     if (!r?.out || !String(r.result || "").trim()) return;
     call("api_tpResult", key).then((s) => {
       const v = JSON.parse(s); tp.bal = v.bal; paintWho();
-      if (v.added) msg(`稼働実績を保存しました。${v.added}TPもらいました。`);
+      if (v.added) { msg(`稼働実績を保存しました。${v.added}TPもらいました。`); tpFx(v.added, "稼働実績の提出ありがとうございます"); }
       else if (v.why) msg(`稼働実績を保存しました。（${v.why}のため、TPは付きません）`);
     }).catch(() => {});
   }
@@ -2720,12 +2831,10 @@ window.addEventListener("error", function (e) {
   function renderNotice() {
     const box = $("nt-body"), items = inbox.items, it = items.find((x) => x.id === nt.id);
     if (nt.view === "list") {
-      // opening the list clears every new mark but a 重要 お知らせ's
-      markSeen(items.filter((x) => x.unread && !(x.kind === "n" && x.important)).map((x) => x.id));
       // お問い合わせ is started from メニュー, not here; only 運営 and 代表 post お知らせ, from the top row beside 戻る
       $("sub-act").innerHTML = inbox.owner ? `<button type="button" class="tool" data-nt="post">＋ お知らせを出す</button>` : "";
-      // a 重要 one shown as new keeps its dot until it is confirmed; the others were just marked seen above
-      box.innerHTML = `<div class="nt-list">` + (items.length ? items.map((x) => ntRow(x, x.unread && x.kind === "n" && x.important)).join("")
+      // each one keeps its 未読 mark until it is confirmed (確認する / 受け取る) or, an お問い合わせ, opened
+      box.innerHTML = `<div class="nt-list">` + (items.length ? items.map((x) => ntRow(x, x.unread)).join("")
         : `<p class="nt-empty">お知らせはまだありません。</p>`) + `</div>`;
       // an お知らせ opens large over the list; an お問い合わせ opens its exchange with the reply box
       for (const b of box.querySelectorAll("[data-open]")) b.onclick = () => { const x = items.find((y) => y.id === b.dataset.open); if (x.kind === "n") ntPop(x, nt.from); else showNotice(x.kind, x.id); };
@@ -2875,6 +2984,12 @@ window.addEventListener("error", function (e) {
     const minutes = Math.round(monthWorkMin(ym, now));
     const days = monthRows(ym).filter((x) => x.r?.in).length;
     const lines = [{ name: `${y}年${m}月分 業務委託料（稼働 ${days}日）`, qty: "1", unitLabel: "式", price: amount, amount }];    for (const x of inv.extras || []) if (x.name || x.amount) lines.push({ name: x.name || "（品目）", qty: "1", unitLabel: "式", price: Number(x.amount) || 0, amount: Number(x.amount) || 0 });
+    // えらべるPay sent for TP: written as 報酬 and as already paid, so the total stays the same (put in by Themis)
+    for (const t of inv.tpLines || []) {
+      const a = Number(t.amount) || 0;
+      lines.push({ name: `TP報酬（${t.item} ${a.toLocaleString("ja-JP")}円分）`, qty: "1", unitLabel: "式", price: a, amount: a });
+      lines.push({ name: `${t.item}にて支払済み`, qty: "1", unitLabel: "式", price: -a, amount: -a });
+    }
     // every amount is entered tax-inclusive; the 10% portion is backed out of the total
     const gross = lines.reduce((s, l) => s + l.amount, 0);
     const taxRate = 10;
@@ -3035,6 +3150,10 @@ window.addEventListener("error", function (e) {
         return row;
       }));
     }
+    // the TP lines Themis put in show here too, but cannot be changed
+    $("tp-lines").innerHTML = (inv.tpLines || []).map((t) => `<div><span>TP報酬（${esc(t.item)} ${tpN(t.amount)}円分）</span><b class="num">＋${tpN(t.amount)}円</b></div>` +
+      `<div><span>${esc(t.item)}にて支払済み</span><b class="num">−${tpN(t.amount)}円</b></div>`).join("");
+    $("tp-lines").hidden = !(inv.tpLines || []).length;
     setSummary();
   }
   // 毎月共通の設定 folds to one line while 先月と同じ is ticked; it starts ticked once the settings are complete
@@ -3826,6 +3945,8 @@ ${v.addr}`;
       memo: $("f-memo").value.trim(),
       early: inMs != null && $("f-early").checked,
       earlyReason: inMs != null && $("f-early").checked ? $("f-early-reason").value.trim() : "",
+      // the key presses (for TP) and Themis's mark on a shift it put in stay as they were
+      punchIn: prev?.punchIn, punchOut: prev?.punchOut, adminPlan: prev?.adminPlan,
     };
     if (absent) { m.days[key].absent = true; if (prev?.absentReason) m.days[key].absentReason = prev.absentReason; }
     if ((inMs == null || outMs) && state().openDate === key) state().openDate = null;
@@ -4527,6 +4648,7 @@ ${v.addr}`;
   function ask(title, body, okText, danger) {
     $("ask-h").textContent = title; $("ask-body").textContent = body;
     $("ask-yes").textContent = okText; $("ask-yes").className = `btn ${danger ? "danger armed" : "primary"}`;
+    $("ask-sheet").querySelector(".modal").classList.toggle("danger", !!danger);
     $("ask-sheet").hidden = false;
     return new Promise((res) => {
       const done = (v) => { $("ask-sheet").hidden = true; res(v); };
@@ -5788,7 +5910,11 @@ ${v.addr}`;
     try {
       const r = JSON.parse(await rawCall("api_boot", names));
       if (r.inbox) setInbox(r.inbox);
-      if (typeof r.tp === "number") tp.bal = r.tp;
+      if (typeof r.tp === "number") {
+        // more than the copy on this device: TP was given while the app was closed
+        if (tp.bal != null && r.tp > tp.bal) setTimeout(((n) => () => tpFx(n, "ポイントが付与されました"))(r.tp - tp.bal), 800);
+        tp.bal = r.tp;
+      }
       if (Array.isArray(r.tpReqs)) tp.reqs = r.tpReqs;
       return [r.me, r.docs && { docs: r.docs, names }];
     } catch (e) {
