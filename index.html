@@ -1882,6 +1882,27 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 .nt-board .nt-item .nt-at { font-size: 10.5px; }
 .nt-board .nt-tag { font-size: 10px; padding: 0 6px; }
 .nt-note::before { top: 15px; width: 7px; height: 7px; }
+/* 運営画面 › 出したお知らせ / 付与履歴: slim rows, ten to a page */
+.adn-list, .tl-list { display: grid; border-radius: var(--r); overflow: hidden; background: var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
+.adn-row { display: flex; align-items: center; gap: 8px; padding: 0 10px 0 0; }
+.adn-row + .adn-row, .tl-row + .tl-row { border-top: 1px solid rgb(255 255 255 / .07); }
+.adn-open { flex: 1; min-width: 0; display: grid; gap: 1px; text-align: left; padding: 8px 12px; background: none; border: 0; color: #fff; font: inherit; }
+.adn-open b { font-size: 13.5px; line-height: 1.4; overflow-wrap: anywhere; }
+.adn-open .nt-tag { font-size: 10px; padding: 0 6px; margin-right: 4px; }
+.adn-at { font-size: 10.5px; color: var(--plate-soft); }
+.adn-del { flex: none; padding: 4px 10px; font-size: 12px; color: #ff9a8a !important; background: rgb(255 154 138 / .08) !important; border: 1px solid rgb(255 154 138 / .45) !important; box-shadow: none !important; }
+.tl-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 7px 12px; }
+.tl-at { font-size: 10px; line-height: 1.25; color: var(--plate-soft); }
+.tl-mid { display: grid; min-width: 0; }
+.tl-mid b { color: #fff; font-size: 13.5px; }
+.tl-mid small { color: var(--plate-soft); font-size: 11px; line-height: 1.4; overflow-wrap: anywhere; }
+.tl-n { color: var(--gold); font-size: 14px; white-space: nowrap; }
+.tl-n.neg { color: #ff9a8a; }
+.ad-pager { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 8px; }
+.ad-pager span { font-size: 13px; color: var(--ink-soft); min-width: 48px; text-align: center; }
+.ad-pager .tool { padding: 6px 14px; font-size: 13px; }
+.ad-pager .tool:disabled { opacity: .35; }
+.ad-paged { scroll-margin-top: 70px; }
 </style>
 <!-- the opening screen only when the app is newly opened: decided before anything is drawn, so a reload shows nothing of it -->
 <script>(function () {
@@ -3098,7 +3119,7 @@ window.addEventListener("error", function (e) {
         `<section class="tp-rank" id="tp-rank" aria-label="ランキング"></section>` +
         `<section class="tp-feed-box" id="tp-feed" aria-label="みんなの獲得ログ"></section>` +
         // TP is used as 報酬 on the invoice (a TP報酬 line of its own); a 社員 asks for it to be added to the 給与
-        `<div class="tp-card tp-use"><b>${staff ? "TPを給与に加算" : "TPを報酬に使用"}</b>` +
+        `<div class="tp-card tp-use"><b>${staff ? "TPを給与に加算" : "TPを使用"}</b>` +
         `<p class="hint" id="tp-use-how"></p>` +
         `<div class="tp-row"><span class="tp-in"><input type="number" id="tp-amt" inputmode="numeric" min="1" step="1" placeholder="使用TP" aria-label="使用するポイント"><small>TP</small></span>` +
         `<button type="button" class="btn primary" id="tp-go">${staff ? "給与に加算を申請" : "請求書に追加"}</button></div>` +
@@ -5912,15 +5933,47 @@ window.addEventListener("error", function (e) {
     }).join("") + `</div>` : `<p class="hint">お問い合わせはまだありません。</p>`;
     for (const b of $("ad-body").querySelectorAll("[data-ask]")) b.onclick = () => { askSel = b.dataset.ask; scrollToY(0); adAsk(); };
   }
-  // 運営画面 › お知らせ: a new one for everyone, and the ones already out (those to one person are not listed)
+  // 運営画面 › お知らせ: a new one for everyone, and the ones already out (those to one person are not listed),
+  // ten to a page, each with 削除
+  const AD_PAGE = 10, adPage = { nt: 0, log: 0 };
+  // ‹ 2 / 5 › under a list; the buttons carry data-pg="<list>:<page>"
+  function pagerHTML(key, page, total) {
+    const n = Math.ceil(total / AD_PAGE);
+    if (n <= 1) return "";
+    return `<div class="ad-pager"><button type="button" class="tool" data-pg="${key}:${page - 1}"${page <= 0 ? " disabled" : ""}>‹ 前へ</button>` +
+      `<span class="num">${page + 1} / ${n}</span><button type="button" class="tool" data-pg="${key}:${page + 1}"${page >= n - 1 ? " disabled" : ""}>次へ ›</button></div>`;
+  }
+  function bindPager(redraw) {
+    for (const b of $("ad-body").querySelectorAll("[data-pg]")) b.onclick = () => {
+      const [k, p] = b.dataset.pg.split(":"); adPage[k] = Number(p); redraw();
+      b.closest(".ad-paged")?.scrollIntoView({ block: "start", behavior: "smooth" });
+    };
+  }
   function adNotices() {
-    const list = inbox.items.filter((x) => x.kind === "n");
+    const list = inbox.items.filter((x) => x.kind === "n" && !x.personal);
+    const pages = Math.max(1, Math.ceil(list.length / AD_PAGE));
+    adPage.nt = Math.min(adPage.nt, pages - 1);
+    const shown = list.slice(adPage.nt * AD_PAGE, adPage.nt * AD_PAGE + AD_PAGE);
     $("ad-body").innerHTML = `<form class="nt-form nt-doc" id="ad-ntpost"><h3>お知らせを出す</h3><p class="hint">全員のホームのお知らせに届きます。</p>` + noticeFormHTML() + `</form>` +
-      `<h4 class="bl-h">出したお知らせ</h4>` + (list.length ? `<div class="nt-list">` + list.map((x) => ntRow(x, false)).join("") + `</div>` : `<p class="hint">まだありません。</p>`);
+      `<div class="ad-paged"><h4 class="bl-h">出したお知らせ（${list.length}件）</h4>` + (list.length ? `<div class="adn-list">` + shown.map((x) =>
+        `<div class="adn-row"><button type="button" class="adn-open" data-open="${esc(x.id)}"><b>${x.important ? `<span class="nt-tag imp">重要</span>` : ""}${x.reward > 0 ? `<span class="nt-tag tp">+${tpN(x.reward)}TP</span>` : ""}${esc(x.title)}</b>` +
+        `<span class="adn-at num">${esc(ntAt(x.at))}</span></button><button type="button" class="tool danger adn-del" data-ntdel="${esc(x.id)}">削除</button></div>`).join("") + `</div>` +
+        pagerHTML("nt", adPage.nt, list.length) : `<p class="hint">まだありません。</p>`) + `</div>`;
     bindNoticeForm($("ad-ntpost"), () => { if (adTab === "notices") adNotices(); }, adMsg);
     for (const b of $("ad-body").querySelectorAll("[data-open]")) b.onclick = () => ntPop(list.find((x) => x.id === b.dataset.open), "home");
-  }
-  // 運営画面 › ポイント: the exchange requests to send, giving TP to someone, everyone's balance and the log
+    for (const b of $("ad-body").querySelectorAll("[data-ntdel]")) b.onclick = async () => {
+      const x = list.find((y) => y.id === b.dataset.ntdel);
+      if (!await ask("このお知らせを削除しますか？", `「${x.title}」を全員のお知らせから消します。元に戻せません。${x.reward > 0 ? "受け取り済みのTPはそのままです。" : ""}`, "削除する", true)) return;
+      busyOn("削除しています");
+      try {
+        await call("api_noticeDelete", x.id);
+        inbox.items = inbox.items.filter((y) => y.id !== x.id); keepInbox(); paintBell();
+        await busyDone("削除しました");
+        if (adTab === "notices") adNotices();
+      } catch (e) { busyOff(); adMsg(errText(e)); }
+    };
+    bindPager(adNotices);
+  }  // 運営画面 › ポイント: the exchange requests to send, giving TP to someone, everyone's balance and the log
   // (the log is shown here only, to 運営 and 代表)
   // the last read is drawn at once and the fresh one replaces it when it arrives
   let tpAdCache = null;
@@ -5963,7 +6016,10 @@ window.addEventListener("error", function (e) {
     tpAdCache = d;
     if (mode === "admin" && adTab === "points" && $("ad-dlg").hidden) drawPoints(d);
   }
+  // a time of 付与履歴 as the sheet shows it (2026/10/5 9:05:00 and the like) → yyyy-MM-dd HH:mm
+  const tpAtOf = (s) => { const m = /(\d{4})\D(\d{1,2})\D(\d{1,2})\D+(\d{1,2}):(\d{2})/.exec(String(s || "")); return m ? `${m[1]}-${pad(m[2])}-${pad(m[3])} ${pad(m[4])}:${m[5]}` : ""; };
   function drawPoints(d) {
+    adPage.log = Math.min(adPage.log, Math.max(0, Math.ceil(d.log.length / AD_PAGE) - 1));
     const pend = d.reqs.filter((x) => x.status === "申請中").sort((a, b) => String(a.at).localeCompare(String(b.at)));
     // 付与履歴: one card per line (when, who, how many, what for, by whom), so a long reason wraps instead of
     // pushing the columns apart; the balance after each is not shown
@@ -5976,14 +6032,15 @@ window.addEventListener("error", function (e) {
       `<div id="ad-iv">${ivAdHTML()}</div>` +
       `<h4 class="bl-h">メンバー（名前を押すとポイントを付与できます）</h4><div class="tp-members">` + d.members.map((m) =>
         `<button type="button" class="tp-mem" data-give="${esc(m.id)}"><span>${esc(m.name)}</span><b><i>TP</i>${tpN(m.bal)}</b></button>`).join("") + `</div>` +
-      `<h4 class="bl-h">付与履歴</h4>` + (d.log.length
-        ? `<div class="tp-log">` + d.log.map((r) => {
-            const n = Number(String(r[2]).replace(/,/g, "")) || 0;
-            // when, who and by whom on the first line; the reason has the second line to itself
-            return `<div><div class="tp-log-top"><span class="muted">${esc(r[0])}</span><b>${esc(r[1])}</b><span class="muted">操作：${esc(r[5])}</span><b class="tp-amt${n < 0 ? " neg" : ""}">${n > 0 ? "+" : ""}${tpN(n)} TP</b></div>` +
-              `<div class="tp-log-why">${esc(r[4])}</div></div>`;
-          }).join("") + `</div>`
-        : `<p class="hint">まだ履歴はありません。</p>`);
+      // 付与履歴: one compact row each (when · who with the reason under it · how many), ten to a page
+      `<div class="ad-paged"><h4 class="bl-h">付与履歴（${d.log.length}件）</h4>` + (d.log.length
+        ? `<div class="tl-list">` + d.log.slice(adPage.log * AD_PAGE, adPage.log * AD_PAGE + AD_PAGE).map((r) => {
+            const n = Number(String(r[2]).replace(/,/g, "")) || 0, at = ntAt(tpAtOf(r[0])) || r[0];
+            return `<div class="tl-row"><span class="tl-at num">${esc(at).replace(" ", "<br>")}</span>` +
+              `<span class="tl-mid"><b>${esc(r[1])}</b><small>${esc(r[4])}${r[5] && r[5] !== "自動" ? `・${esc(r[5])}` : ""}</small></span>` +
+              `<b class="tl-n num${n < 0 ? " neg" : ""}">${n > 0 ? "+" : ""}${tpN(n)}</b></div>`;
+          }).join("") + `</div>` + pagerHTML("log", adPage.log, d.log.length)
+        : `<p class="hint">まだ履歴はありません。</p>`) + `</div>`;
     // 送付する: the えらべるPay's receiving URL is pasted in, and the member opens it from ポイント
     for (const b of $("ad-body").querySelectorAll("[data-sent]")) b.onclick = () => {
       const x = pend.find((y) => y.id === b.dataset.sent);
@@ -6000,6 +6057,7 @@ window.addEventListener("error", function (e) {
       try { await call("api_tpSettle", x.id, true); adMsg("加算済みにしました。"); adPoints(); } catch (e) { adMsg(errText(e)); }
     };
     bindIvAd();
+    bindPager(() => drawPoints(d));
     for (const b of $("ad-body").querySelectorAll("[data-ng]")) b.onclick = async () => {
       const x = pend.find((y) => y.id === b.dataset.ng);
       if (!await ask("却下しますか？", `${x.name}さん　${x.item} ${tpN(x.amount)}円分（ポイントは本人に戻ります）`, "却下する", true)) return;
