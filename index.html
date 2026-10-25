@@ -1444,7 +1444,7 @@ button.pcal-c { cursor: pointer; }
 .shifts .shift-today::before, .clock::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; border-radius: 0; background: linear-gradient(90deg, #3fb6a5, #7fe0cf 50%, #3fb6a5); box-shadow: 0 0 10px rgb(63 182 165 / .6); }
 .shifts .shift-today.small::before { background: linear-gradient(90deg, #c99a2e, var(--gold) 50%, #c99a2e); box-shadow: 0 0 10px rgb(246 210 122 / .5); }
 .shifts .shift-today.absent::before { background: #e5373d; box-shadow: 0 0 10px rgb(229 55 61 / .6); }
-.clock-tp { margin-top: 4px; font-size: 12.5px; color: var(--plate-soft); }
+.clock-tp { margin-top: 4px; font-size: clamp(10px, 3.2vw, 12.5px); color: var(--plate-soft); white-space: nowrap; }
 .clock-tp b { font-family: var(--f-num); color: var(--gold); font-size: 14px; }
 /* シフト: the calendar alone; 週末 staff go to シフト希望 by the button beside the month */
 #shift-seg { display: none !important; }
@@ -1474,7 +1474,9 @@ button.pcal-c { cursor: pointer; }
 .nt-home-h .nt-pin { filter: none; font-size: 15px; }
 .nt-home-h b { font-size: 15px; letter-spacing: .12em; background: none; -webkit-background-clip: border-box; background-clip: border-box; color: #fff; }
 .nt-home-n { box-shadow: none; }
-.nt-board { max-height: none; overflow: visible; padding: 4px 8px 8px; gap: 0; background: none; }
+.nt-home-post { margin-left: auto; flex: none; font: inherit; font-size: 12px; font-weight: 700; color: #7fe0cf; background: rgb(63 182 165 / .14); border: 1px solid rgb(127 224 207 / .4); border-radius: 999px; padding: 4px 11px; }
+.nt-home-n:not([hidden]) + .nt-home-post { margin-left: 8px; }
+.nt-board { max-height: 214px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 4px 8px 8px; gap: 0; background: none; }
 .nt-board::before { display: none; }
 .nt-note { border: 0; border-radius: 10px; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; padding-left: 18px; }
 .nt-note + .nt-note { border-top: 1px solid rgb(255 255 255 / .06); border-radius: 0; }
@@ -1757,11 +1759,22 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 .iv-steps li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--card); border: 1px solid var(--rule); font-size: 13.5px; }
 .iv-steps b { flex: none; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: #3fb6a5; color: #fff; font-family: var(--f-num); }
 .iv-entered { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.iv-enter input { font: inherit; font-size: 18px; letter-spacing: .2em; text-transform: uppercase; padding: 8px 10px; border-radius: var(--r); border: 1px solid var(--plate-line); background: #0f1724; color: #fff; flex: 1 1 140px; min-width: 0; }
+.iv-enter { display: grid; gap: 10px; padding: 14px 16px; border-radius: var(--r); color: var(--plate-ink);
+  background: radial-gradient(120% 140% at 100% 0%, #3a2f5c 0%, transparent 55%), var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
+.iv-enter-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.iv-enter-h > b { color: #fff; font-size: 15px; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.iv-enter-h > b::before { content: "🎟"; }
+.iv-enter-row { display: flex; gap: 8px; }
+.iv-enter-row input { flex: 1; min-width: 0; font: inherit; font-family: var(--f-num); font-size: 20px; font-weight: 800; letter-spacing: .28em; text-transform: uppercase; text-align: center; padding: 9px 10px; border-radius: 12px; border: 1.5px dashed rgb(246 210 122 / .6); background: #0f1724; color: #fff; }
+.iv-enter-row input::placeholder { color: rgb(255 255 255 / .22); }
+.iv-enter-row input:focus { outline: none; border-style: solid; border-color: #f6d27a; box-shadow: 0 0 0 3px rgb(246 210 122 / .2); }
+.iv-enter-row .btn { flex: none; padding: 0 20px; font-weight: 800; }
+.iv-enter-note { margin: 0; font-size: 12px; line-height: 1.6; color: var(--plate-soft); }
+.iv-enter-note b { color: var(--gold); }
 .iv-closed { padding: 12px 14px; border-radius: 12px; background: var(--card); border: 1px solid var(--rule); margin: 0; }
 
 /* opening screen */
-.splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--paper); transition: opacity .5s ease, visibility .5s; }
+.splash { position: fixed; inset: 0; z-index: 2147483000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: var(--paper); transition: opacity .5s ease, visibility .5s; }
 .splash.out { opacity: 0; visibility: hidden; pointer-events: none; }
 .splash .sp-logo { height: 104px; opacity: 0; animation: sp-in 1s cubic-bezier(.2, .7, .2, 1) .1s forwards; }
 .sp-name { font-size: 24px; font-weight: 700; letter-spacing: .12em; color: var(--ink); opacity: 0; animation: sp-in 1s cubic-bezier(.2, .7, .2, 1) .45s forwards; }
@@ -1785,13 +1798,18 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
   background: radial-gradient(120% 120% at 0% 0%, #17423d 0%, transparent 55%), var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
 .tf-h b::before { content: "⚡" !important; }
 .tp-feed { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
-.tp-feed li { display: grid; grid-template-columns: 74px minmax(0, 1fr) auto auto; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 9px; background: rgb(255 255 255 / .04); font-size: 13px; }
+.tp-feed li { display: grid; grid-template-columns: 66px minmax(0, 1fr) 78px 58px; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 9px; background: rgb(255 255 255 / .04); font-size: 13px; }
 .tp-feed li.me { background: rgb(63 182 165 / .2); box-shadow: inset 0 0 0 1px rgb(127 224 207 / .5); }
 .tf-at { font-size: 11px; color: var(--plate-soft); white-space: nowrap; }
-.tf-name { color: #fff; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tf-why { font-size: 10.5px; color: #bfe9e1; padding: 1px 7px; border-radius: 999px; background: rgb(63 182 165 / .18); border: 1px solid rgb(127 224 207 / .3); white-space: nowrap; max-width: 92px; overflow: hidden; text-overflow: ellipsis; }
+.tf-name { min-width: 0; display: flex; }
+.tf-why-c { display: flex; justify-content: flex-start; min-width: 0; }
+/* a name in a round pill (獲得ログ and ランキング) */
+.nm-pill { display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; padding: 2px 10px; border-radius: 999px;
+  color: #fff; font-weight: 700; font-size: 13px; background: rgb(255 255 255 / .09); border: 1px solid rgb(255 255 255 / .2); }
+.rk-list li > span { display: flex; min-width: 0; }
+.rk-list li.me .nm-pill, .tp-feed li.me .nm-pill { background: rgb(63 182 165 / .35); border-color: rgb(127 224 207 / .6); }
+.tf-why { font-size: 10.5px; color: #bfe9e1; padding: 1px 7px; border-radius: 999px; background: rgb(63 182 165 / .18); border: 1px solid rgb(127 224 207 / .3); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .tf-tp { color: var(--gold); font-size: 14px; white-space: nowrap; text-align: right; min-width: 52px; }
-.tf-more { justify-self: center; font: inherit; font-size: 12px; color: #bfe9e1; background: none; border: 0; padding: 4px 10px; }
 /* the TP mark: a small gold coin */
 .tp-coin { display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 7px; border-radius: 50%; font-style: normal; font-family: var(--f-num); font-size: 9px; font-weight: 900; letter-spacing: -.02em; vertical-align: -5px;
   color: #5a3d00; background: radial-gradient(circle at 35% 30%, #fff6cf, #f6d27a 50%, #c99a2e); box-shadow: 0 0 0 1.5px #b9862a inset, 0 1px 4px rgb(201 154 46 / .5); }
@@ -1833,8 +1851,8 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 @keyframes busy-dot { 0%, 100% { opacity: .2; } 40% { opacity: 1; } }
 @keyframes busy-pop { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
 /* 友達を招待: the time left to enter a code */
-.iv-count { margin: 0; font-size: 12.5px; color: var(--plate-soft); }
-.iv-count b { color: var(--gold); font-size: 15px; margin-left: 4px; }
+.iv-count { flex: none; font-size: 11px; color: var(--plate-soft); padding: 3px 10px; border-radius: 999px; background: rgb(0 0 0 / .25); border: 1px solid rgb(246 210 122 / .35); white-space: nowrap; }
+.iv-count b { color: var(--gold); font-size: 12.5px; margin-left: 2px; }
 /* 運営 › 売上 › 月ごと: one card per month */
 .sm-list { display: grid; gap: 8px; }
 .sm-card { display: grid; gap: 8px; padding: 12px 14px; border-radius: var(--r); background: var(--plate); border: 1px solid var(--plate-line); color: var(--plate-ink); box-shadow: 0 6px 14px -10px rgb(10 20 35 / .6); }
@@ -1851,6 +1869,8 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 </style>
 </head>
 <body>
+<!-- opening: the logo and the name rise in softly over the whole screen while everything loads underneath, then it fades away -->
+<div class="splash" id="splash" aria-hidden="true"><img class="logo sp-logo" id="sp-logo" alt=""><span class="sp-name">Themis Portal</span><span class="sp-bar"><i></i></span></div>
 <!-- the page itself never scrolls (an iPhone would move bars fixed to the screen along with it); this area does -->
 <div id="scroller">
 <div class="wrap">
@@ -1858,9 +1878,14 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
     <div class="brand-mark"><img class="logo" alt="Themis" src="data:image/png;base64,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"><span class="brand-name">Themis Portal</span></div>
     <div class="brand-side"><span class="brand-who" id="who"></span><div class="brand-btns"><button type="button" class="tool" id="adminbtn" hidden>管理者画面</button><button type="button" class="tool" id="chpass" hidden>パスワード変更</button><button type="button" class="tool" id="logout" hidden>ログアウト</button></div></div>
   </header>
-  <!-- opening: the logo and the name rise in softly while everything loads underneath, then it fades away -->
-  <div class="splash" id="splash" aria-hidden="true"><img class="logo sp-logo" id="sp-logo" alt=""><span class="sp-name">Themis Portal</span><span class="sp-bar"><i></i></span></div>
-  <script>document.getElementById("sp-logo").src = document.querySelector(".brand .logo").src;</script>
+  <!-- the opening screen (at the top of body) takes the header's logo; it is shown only when the app is newly opened,
+       not when the page is reloaded (更新) within the same visit -->
+  <script>(function () {
+    var sp = document.getElementById("splash"), nav = performance.getEntriesByType ? performance.getEntriesByType("navigation")[0] : null, again = false;
+    try { again = sessionStorage.getItem("tc_opened") === "1"; sessionStorage.setItem("tc_opened", "1"); } catch (e) {}
+    if (again || (nav && nav.type === "reload")) { sp.remove(); return; }
+    document.getElementById("sp-logo").src = document.querySelector(".brand .logo").src;
+  })();</script>
 
   <!-- shown on a phone browser (not the installed app): a nudge to put Themis Portal on the home screen -->
   <div class="install" id="install" hidden role="region" aria-label="アプリとして使う">
@@ -2068,7 +2093,7 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
   </section>
   <!-- ホーム: the お知らせ board under the clock; only its inside scrolls -->
   <section class="nt-home" id="nt-home" aria-label="お知らせ">
-    <div class="nt-home-h"><span class="nt-pin" aria-hidden="true">📣</span><b>お知らせ</b><span class="nt-home-n" id="nt-home-n" hidden></span></div>
+    <div class="nt-home-h"><span class="nt-pin" aria-hidden="true">📣</span><b>お知らせ</b><span class="nt-home-n" id="nt-home-n" hidden></span><button type="button" class="nt-home-post" id="nt-home-post" hidden>＋ お知らせを出す</button></div>
     <div class="nt-board" id="nt-home-list"></div>
   </section>
 
@@ -2560,7 +2585,7 @@ window.addEventListener("error", function (e) {
   let CRED = null, mode = "login";   // login | member | admin
   try { CRED = localStorage.getItem(CRED_KEY); } catch (e) {}
   // signing out also forgets the copy of the records kept for a quick start
-  const setCred = (c) => { CRED = c; try { if (c) localStorage.setItem(CRED_KEY, c); else { localStorage.removeItem(CRED_KEY); localStorage.removeItem("tc_cache"); localStorage.removeItem("tc_inbox"); localStorage.removeItem("tc_tp"); localStorage.removeItem("tc_rank"); dropView(); } } catch (e) {} };
+  const setCred = (c) => { CRED = c; try { if (c) localStorage.setItem(CRED_KEY, c); else { localStorage.removeItem(CRED_KEY); localStorage.removeItem("tc_cache"); localStorage.removeItem("tc_inbox"); localStorage.removeItem("tc_tp"); localStorage.removeItem("tc_rank"); localStorage.removeItem("tc_invite"); dropView(); } } catch (e) {} };
   const viaGas = !!window.google?.script?.run;
   const rawCall = (fn, ...args) => viaGas
     ? new Promise((res, rej) => { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](CRED, ...args); })
@@ -2778,15 +2803,13 @@ window.addEventListener("error", function (e) {
     document.querySelector('.bnav [data-g="menu"]').classList.toggle("has-new", open > 0);
     $("m-admin").classList.toggle("has-new", open > 0);
     $("ad-tabs").querySelector('[data-t="ask"]').classList.toggle("has-new", open > 0);
-    // the newest five, without a scroll of their own (so the page scrolls freely over them); the rest are in the list
-    const board = $("nt-home-list"), top = inbox.items.slice(0, 5);
+    // every お知らせ, in a low box that scrolls inside itself; 運営・代表 post a new one from the button beside the title
+    const board = $("nt-home-list"), top = inbox.items;
     $("nt-home-n").hidden = !n; $("nt-home-n").textContent = `未読 ${n}`;
-    board.innerHTML = top.length ? top.map((x) => `<div class="nt-note${x.unread ? " new" : ""}" data-k="${ntKind(x)}">` + ntRow(x, x.unread) + `</div>`).join("") +
-        (inbox.items.length > top.length ? `<button type="button" class="nt-more" id="nt-home-more">すべてのお知らせを見る ›</button>` : "")
+    $("nt-home-post").hidden = !inbox.owner;
+    board.innerHTML = top.length ? top.map((x) => `<div class="nt-note${x.unread ? " new" : ""}" data-k="${ntKind(x)}">` + ntRow(x, x.unread) + `</div>`).join("")
       : `<p class="nt-empty">お知らせはまだありません。</p>`;
     for (const b of board.querySelectorAll("[data-open]")) b.onclick = () => ntPop(inbox.items.find((y) => y.id === b.dataset.open), "home");
-    const more = $("nt-home-more");
-    if (more) more.onclick = () => showNotice("list", null, "home");
     if (popId && !$("nt-pop").hidden) { const x = inbox.items.find((y) => y.id === popId); if (x) ntPop(x, popFrom); }
   }
   // each note's kind (重要 / えらべるPay / TP付き / お問い合わせ / ふつう) gives it its own mark
@@ -2924,6 +2947,7 @@ window.addEventListener("error", function (e) {
   }
   $("nt-unread").onclick = () => { showNotice("list", null, "home"); loadInbox(); };
   $("m-ask").onclick = () => showNotice("new", null, "menu");
+  $("nt-home-post").onclick = () => showNotice("post", null, "home");
   $("m-invite").onclick = () => pickTab("invite");
   // ---- ポイント（TP）: 1TP = 1円; 50TP for each day's 稼働実績 after 退勤; exchanged for えらべるPay on request ----
   let tp = { bal: null, item: "えらべるPay", amounts: [500, 1000, 3000, 5000], reqs: [] };
@@ -3006,8 +3030,8 @@ window.addEventListener("error", function (e) {
   }
   function rankHTML() {
     if (!tpRank) return `<p class="rk-wait">ランキングを読み込んでいます…</p>`;
-    const panel = (b, title) => `<div class="rk-panel"><div class="rk-h"><b>${title}</b><span>もらったTPの合計</span></div>` +
-      (b.top.length ? `<ol class="rk-list">` + b.top.map((x) => `<li class="rk-${x.rank <= 3 ? x.rank : "n"}${x.name === window.TC_NAME ? " me" : ""}"><i>${x.rank}</i><span>${esc(x.name)}</span><b>${tpN(x.tp)}<small>TP</small></b></li>`).join("") + `</ol>`
+    const panel = (b, title) => `<div class="rk-panel"><div class="rk-h"><b>${title}</b><span>獲得TPの合計</span></div>` +
+      (b.top.length ? `<ol class="rk-list">` + b.top.map((x) => `<li class="rk-${x.rank <= 3 ? x.rank : "n"}${x.name === window.TC_NAME ? " me" : ""}"><i>${x.rank}</i><span><span class="nm-pill">${esc(x.name)}</span></span><b>${tpN(x.tp)}<small>TP</small></b></li>`).join("") + `</ol>`
         : `<p class="rk-none">まだだれもTPをもらっていません。</p>`) +
       (b.me && b.me.rank > 5 ? `<p class="rk-me">あなたは ${b.me.rank}位（${tpN(b.me.tp)}TP）</p>` : !b.me ? `<p class="rk-me">あなたはまだランキングに入っていません</p>` : "") + `</div>`;
     const [y, mo] = tpRank.ym.split("-").map(Number);
@@ -3017,10 +3041,7 @@ window.addEventListener("error", function (e) {
   function paintRank() {
     const box = $("tp-rank");
     if (!box) return;
-    if ($("tp-feed")) {
-      $("tp-feed").innerHTML = feedHTML();
-      if ($("tf-more")) $("tf-more").onclick = () => { feedAll = !feedAll; paintRank(); };
-    }
+    if ($("tp-feed")) $("tp-feed").innerHTML = feedHTML();
     const at = $("rk-track")?.scrollLeft || 0;
     box.innerHTML = rankHTML();
     const tr = $("rk-track");
@@ -3032,16 +3053,13 @@ window.addEventListener("error", function (e) {
     for (const d of dots) d.onclick = () => tr.scrollTo({ left: Number(d.dataset.rk) * tr.clientWidth, behavior: "smooth" });
   }
   // みんなの獲得ログ: everyone's latest TP earned (8 lines, newest first), read along with the ランキング
-  // one short line each (the first FEED_SHORT; もっと見る opens the rest), in a panel like the ランキング
-  const FEED_SHORT = 4;
-  let feedAll = false;
+  // みんなの獲得ログ: the newest FEED_N, one short line each, in a panel like the ランキング
+  const FEED_N = 5;
   function feedHTML() {
     const f = tpRank?.feed;
     if (!f) return "";
-    const list = feedAll ? f : f.slice(0, FEED_SHORT);
-    return `<div class="tf-panel"><div class="rk-h tf-h"><b>みんなの獲得ログ</b><span>最新${f.length}件</span></div>` + (f.length ? `<ol class="tp-feed">` + list.map((x) =>
-      `<li${x.name === window.TC_NAME ? ` class="me"` : ""}><span class="tf-at num">${esc(ntAt(x.at) || "")}</span><b class="tf-name">${esc(x.name)}</b>${x.why ? `<span class="tf-why">${esc(x.why)}</span>` : "<span></span>"}<b class="tf-tp num">＋${tpN(x.tp)}</b></li>`).join("") + `</ol>` +
-      (f.length > FEED_SHORT ? `<button type="button" class="tf-more" id="tf-more">${feedAll ? "閉じる" : `もっと見る（あと${f.length - FEED_SHORT}件）`}</button>` : "")
+    return `<div class="tf-panel"><div class="rk-h tf-h"><b>みんなの獲得ログ</b><span>最新${Math.min(f.length, FEED_N)}件</span></div>` + (f.length ? `<ol class="tp-feed">` + f.slice(0, FEED_N).map((x) =>
+      `<li${x.name === window.TC_NAME ? ` class="me"` : ""}><span class="tf-at num">${esc(ntAt(x.at) || "")}</span><span class="tf-name"><span class="nm-pill">${esc(x.name)}</span></span><span class="tf-why-c">${x.why ? `<span class="tf-why">${esc(x.why)}</span>` : ""}</span><b class="tf-tp num">＋${tpN(x.tp)}</b></li>`).join("") + `</ol>`
       : `<p class="rk-none">まだだれもTPをもらっていません。</p>`) + `</div>`;
   }
   // the screen is built once; later calls only bring the numbers up to date, so the amount box being typed in
@@ -3056,9 +3074,9 @@ window.addEventListener("error", function (e) {
         `<section class="tp-rank" id="tp-rank" aria-label="ランキング"></section>` +
         `<section class="tp-feed-box" id="tp-feed" aria-label="みんなの獲得ログ"></section>` +
         // TP is used as 報酬 on the invoice (a TP報酬 line of its own); a 社員 asks for it to be added to the 給与
-        `<div class="tp-card tp-use"><b>${staff ? "TPを給与に加算" : "TPを報酬に使う"}</b>` +
-        `<p class="hint">${staff ? "申請すると、Themisが給与に加算します（1TP＝1円）。" : "使うと、今の請求書に「TP報酬」として追加されます（1TP＝1円）。"}</p>` +
-        `<div class="tp-row"><span class="tp-in"><input type="number" id="tp-amt" inputmode="numeric" min="1" step="1" placeholder="使うTP" aria-label="使うポイント"><small>TP</small></span>` +
+        `<div class="tp-card tp-use"><b>${staff ? "TPを給与に加算" : "TPを報酬に使用"}</b>` +
+        `<p class="hint">${staff ? "申請すると、Themisが給与に加算します（1TP＝1円）。" : "使用すると、今月の請求書に「TP報酬」として追加されます（1TP＝1円）。"}</p>` +
+        `<div class="tp-row"><span class="tp-in"><input type="number" id="tp-amt" inputmode="numeric" min="1" step="1" placeholder="使用TP" aria-label="使用するポイント"><small>TP</small></span>` +
         `<button type="button" class="btn primary" id="tp-go">${staff ? "給与に加算を申請" : "請求書に追加"}</button></div>` +
         `<p class="hint" id="tp-range"></p></div>`;
       $("tp-go").onclick = useTp;
@@ -3071,7 +3089,7 @@ window.addEventListener("error", function (e) {
   }
   async function useTp() {
     const sel = $("tp-amt"), a = Number(sel.value), bal = tp.bal ?? 0, staff = window.TC_WORK === "社員";
-    if (!Number.isInteger(a) || a < 1) { msg("使うTPの数を入れてください。"); sel.focus(); return; }
+    if (!Number.isInteger(a) || a < 1) { msg("使用するTPの数を入れてください。"); sel.focus(); return; }
     if (a > bal) { msg(`TPが足りません（残高 ${tpN(bal)}TP）。`); sel.focus(); return; }
     if (!await ask(staff ? "給与への加算を申請しますか？" : "請求書に追加しますか？",
       staff ? `${tpN(a)}TP（${tpN(a)}円）を給与に加算するよう申請します。` : `${tpN(a)}TP（${tpN(a)}円）を、請求書のTP報酬に追加します。追加したTPは戻せません。`, staff ? "申請する" : "追加する")) return;
@@ -3105,12 +3123,14 @@ window.addEventListener("error", function (e) {
   }
   function busyOff() { $("busy")?.remove(); if (!document.querySelector(".modal-bg:not([hidden])")) document.body.classList.remove("pop-open"); }
   // ---- 友達を招待: the person's code (to copy or share), the code of whoever invited them, the people they invited ----
+  // the last one read is kept on this device, so the code and the time left show at once; read ahead after opening
   let invite = null;
+  try { const c = JSON.parse(localStorage.getItem("tc_invite") || "null"); if (c && CRED && c.tok === CRED.split(".")[0]) invite = c.v; } catch (e) {}
   async function loadInvite() {
-    try { invite = JSON.parse(await call("api_invite")); } catch (e) { msg(errText(e)); return; }
+    try { invite = JSON.parse(await call("api_invite")); } catch (e) { if (tab === "invite") msg(errText(e)); return; }
+    try { localStorage.setItem("tc_invite", JSON.stringify({ tok: CRED.split(".")[0], v: invite })); } catch (e) {}
     if (tab === "invite") renderInvite();
-  }
-  // the time left to enter a code, counted down every second while 友達を招待 is open
+  }  // the time left to enter a code, counted down every second while 友達を招待 is open
   function ivLeft(until) {
     const s = Math.max(0, Math.floor((until - Date.now()) / 1000)), p = (n) => String(n).padStart(2, "0");
     return `${Math.floor(s / 3600)}時間${p(Math.floor(s / 60) % 60)}分${p(s % 60)}秒`;
@@ -3122,6 +3142,7 @@ window.addEventListener("error", function (e) {
     el.textContent = ivLeft(invite.untilMs);
   }, 1000);
   function renderInvite() {
+    const typed = $("iv-in")?.value || "", typing = document.activeElement?.id === "iv-in";
     const v = invite, bonus = tpN(v?.bonus || 5000), welcome = tpN(v?.welcome || 5000), days = v?.days || 20;
     const url = window.TC_API ? location.origin + location.pathname : "";
     $("iv-body").innerHTML =
@@ -3133,14 +3154,17 @@ window.addEventListener("error", function (e) {
       `<h4 class="bl-h">招待した人</h4>` + (v?.invited?.length ? `<div class="tp-list">` + v.invited.map((x) => `<div><span><b>${esc(x.name)}</b>さん<br><span class="muted">${esc(ntAt(x.since))}から　月${days}日以上の出勤で ${bonus}TP</span></span></div>`).join("") + `</div>`
         : `<p class="hint">まだいません。招待コードを送ってみましょう。</p>`) +
       // the input is shown only to those Themis chose (メンバー › 招待コード); a code already entered still shows
-      (v?.show === false && !(v.entered && v.entered.status !== "却下") ? "" : `<h4 class="bl-h">招待コードを入力</h4>` +
+      (v?.show === false && !(v.entered && v.entered.status !== "却下") ? "" :
       (v?.entered && v.entered.status !== "却下"
         ? `<div class="tp-card iv-entered"><span>${esc(v.entered.name)}さんの招待コードを入力済み</span><span class="st st-${v.entered.status === "許可" ? "done" : "late"}">${v.entered.status === "許可" ? "承認済み" : v.entered.status === "停止" ? "終了" : "確認中"}</span></div>`
         // a code can be entered only within the first 24 hours after the first sign-in
         : v && v.canEnter === false ? `<p class="hint iv-closed">招待コードを入れられるのは、最初にログインしてから${v.hours || 24}時間以内です。</p>`
-        : `<form class="tp-card iv-enter" id="iv-form"><p class="hint">あなたを招待してくれた人のコードを入れてください。Themisが認証すると、あなたと友達に ${welcome}TP が付与されます。${v?.entered ? "（前に入れたコードは承認されませんでした）" : ""}</p>` +
-          (v?.untilMs ? `<p class="iv-count">入力期限まで <b class="num" id="iv-count">${ivLeft(v.untilMs)}</b></p>` : "") +
-          `<div class="tp-row"><input type="text" id="iv-in" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="例：AB12CD" aria-label="招待コード"><button type="submit" class="btn primary">送る</button></div></form>`));
+        // one card: the title with the time left beside it, the box with 送る, and one short line under it
+        : `<form class="iv-enter" id="iv-form"><div class="iv-enter-h"><b>招待コードを入力</b>` +
+          (v?.untilMs ? `<span class="iv-count">残り <b class="num" id="iv-count">${ivLeft(v.untilMs)}</b></span>` : "") + `</div>` +
+          `<div class="iv-enter-row"><input type="text" id="iv-in" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="AB12CD" aria-label="招待コード"><button type="submit" class="btn primary">送る</button></div>` +
+          `<p class="iv-enter-note">Themisが認証すると、あなたと友達に <b>${welcome}TP</b> が付与されます。${v?.entered ? "（前に入れたコードは承認されませんでした）" : ""}</p></form>`));
+    if ($("iv-in") && typed) { $("iv-in").value = typed; if (typing) $("iv-in").focus(); }
     const text = () => `Themis Portal の招待コード：${v.code}${url ? `\n${url}` : ""}`;
     if ($("iv-copy")) $("iv-copy").onclick = async () => { const ok = await copyText(v.code); $("iv-copy").textContent = ok ? "コピーしました" : "コピーできませんでした"; setTimeout(() => { if ($("iv-copy")) $("iv-copy").textContent = "コードをコピー"; }, 1600); };
     if ($("iv-share")) $("iv-share").onclick = () => navigator.share({ title: "Themis Portal に招待", text: text() }).catch(() => {});
@@ -3196,8 +3220,9 @@ window.addEventListener("error", function (e) {
         const text = $("nt-text").value.trim();
         if (!text) { $("nt-text").focus(); return; }
         e.submitter && (e.submitter.disabled = true);
-        try { await call("api_askReply", it.id, text); $("nt-text").value = ""; msg("返信を送りました。"); await loadInbox(); renderNotice(); }
-        catch (err) { msg(errText(err)); if (e.submitter) e.submitter.disabled = false; }
+        busyOn("返信を送信しています");
+        try { await call("api_askReply", it.id, text); $("nt-text").value = ""; await busyDone("返信を送りました"); msg("返信を送りました。"); await loadInbox(); renderNotice(); }
+        catch (err) { busyOff(); msg(errText(err)); if (e.submitter) e.submitter.disabled = false; }
       };
       return;
     }
@@ -3211,14 +3236,16 @@ window.addEventListener("error", function (e) {
         const text = $("nt-text").value.trim();
         if (!text) { $("nt-text").focus(); msg("内容を入力してください。"); return; }
         if (e.submitter) e.submitter.disabled = true;
+        busyOn("お問い合わせを送信しています");
         try {
           // sent: back to where it was written from; Themis's answer comes to the bell
           await call("api_askSend", $("nt-topic").value, text);
           $("nt-text").value = "";
+          await busyDone("送信しました");
           pickTab(nt.from); scrollToY(0);
           msg("お問い合わせを送信しました");
           loadInbox();
-        } catch (err) { msg(errText(err)); if (e.submitter) e.submitter.disabled = false; }
+        } catch (err) { busyOff(); msg(errText(err)); if (e.submitter) e.submitter.disabled = false; }
       };
       return;
     }
@@ -5841,8 +5868,9 @@ window.addEventListener("error", function (e) {
         const text = $("ask-text").value.trim();
         if (!text) { $("ask-text").focus(); return; }
         if (e.submitter) e.submitter.disabled = true;
-        try { await call("api_askReply", it.id, text, true); loadInbox(); adMsg(`${it.name}さんに回答しました。お知らせに届きます。`); adAsk(); }
-        catch (err) { adMsg(errText(err)); if (e.submitter) e.submitter.disabled = false; }
+        busyOn("回答を送信しています");
+        try { await call("api_askReply", it.id, text, true); await busyDone("回答しました"); loadInbox(); adMsg(`${it.name}さんに回答しました。お知らせに届きます。`); adAsk(); }
+        catch (err) { busyOff(); adMsg(errText(err)); if (e.submitter) e.submitter.disabled = false; }
       };
       return;
     }
@@ -6265,6 +6293,7 @@ window.addEventListener("error", function (e) {
     if (!inboxAt) loadInbox();   // the opening call brings it; asked separately only when it did not
     if (tp.bal == null) loadTp();
     setTimeout(loadRank, 1500);   // read ahead, so ポイント shows the ランキング at once
+    setTimeout(loadInvite, 2500);   // and 友達を招待 its code and the time left
   }
   // first the name, address and 勤務形態, then the contract; both block the app (admins too) until done
   function needsSetup() {
