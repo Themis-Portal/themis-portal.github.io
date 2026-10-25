@@ -415,6 +415,8 @@ label.check { -webkit-tap-highlight-color: transparent; }
 .f textarea { font-size: 15px; padding: 7px 9px; color: var(--ink); }
 input::placeholder, textarea::placeholder { color: var(--ink-soft); opacity: .6; font-style: normal; -webkit-text-fill-color: color-mix(in srgb, var(--ink-soft) 60%, transparent); }
 .inv-actions { display: grid; gap: 8px; }
+.inv-actions .inv-note { margin: -2px 0 0; text-align: center; }
+.inv-actions .msg:empty { display: none; }
 .inv-actions .actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .inv-actions .btn { flex: 1 1 auto; padding: 13px 16px; font-size: 15px; }
 fieldset:disabled .f input, fieldset:disabled .f textarea, fieldset:disabled .f select, fieldset:disabled .extra input { border-color: var(--rule); }
@@ -1905,6 +1907,22 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 .ad-pager .tool { padding: 6px 14px; font-size: 13px; }
 .ad-pager .tool:disabled { opacity: .35; }
 .ad-paged { scroll-margin-top: 70px; }
+/* long-press copy only where copying is meant (fields, the 招待コード, the login details); nothing else is picked up */
+body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+/* 年間ランキング 1〜3位: the name's pill (ランキング, 獲得ログ, the name at the top right) turns gold, silver or bronze */
+.nm-pill.yr1, .who-name.yr1 { color: #3a2a00 !important; border: 1px solid #fff1c2 !important; text-shadow: 0 1px 0 rgb(255 255 255 / .5);
+  background: linear-gradient(115deg, #c99a2e 0%, #f6d27a 30%, #fff6cf 45%, #f6d27a 60%, #c99a2e 100%) !important; background-size: 220% 100% !important;
+  box-shadow: 0 0 12px rgb(246 210 122 / .65), inset 0 1px 0 rgb(255 255 255 / .6) !important; animation: yr-shine 3.2s linear infinite; }
+.nm-pill.yr2, .who-name.yr2 { color: #1f2a3a !important; border: 1px solid #fff !important;
+  background: linear-gradient(115deg, #8a95a5 0%, #dfe5ee 35%, #ffffff 48%, #c9d1dc 62%, #8a95a5 100%) !important; background-size: 220% 100% !important;
+  box-shadow: 0 0 10px rgb(201 209 220 / .55), inset 0 1px 0 rgb(255 255 255 / .7) !important; animation: yr-shine 3.6s linear infinite; }
+.nm-pill.yr3, .who-name.yr3 { color: #2a1500 !important; border: 1px solid #ffe0c2 !important;
+  background: linear-gradient(115deg, #9c5f28 0%, #d99a5e 35%, #ffe0c2 48%, #d99a5e 62%, #9c5f28 100%) !important; background-size: 220% 100% !important;
+  box-shadow: 0 0 10px rgb(217 154 94 / .55), inset 0 1px 0 rgb(255 255 255 / .5) !important; animation: yr-shine 4s linear infinite; }
+.nm-pill.yr1::before, .who-name.yr1::before { content: "👑"; margin-right: 4px; }
+@keyframes yr-shine { from { background-position: 100% 0; } to { background-position: -120% 0; } }
+@media (prefers-reduced-motion: reduce) { .nm-pill[class*="yr"], .who-name[class*="yr"] { animation: none; } }
 </style>
 <!-- the opening screen only when the app is newly opened: decided before anything is drawn, so a reload shows nothing of it -->
 <script>(function () {
@@ -2254,9 +2272,9 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
         <button type="button" class="btn okay" id="a-paid" hidden>入金を確認しました</button>
         <button type="button" class="btn danger" id="a-undo" hidden>提出を取り消す</button>
       </div>
+      <p class="hint inv-note">提出すると、この内容の請求書PDFがThemisに届きます。</p>
       <div class="msg" id="inv-msg" role="status" aria-live="polite"></div>
     </div>
-    <p class="hint">提出すると、この内容の請求書PDFがThemisに届きます。交通費の証明画像は、シフト表の日付から添付してください（請求書とは別にThemisに届きます）。</p>
   </section>
 
   <section class="panel menu" id="p-menu" aria-label="メニュー" hidden>
@@ -3073,12 +3091,13 @@ window.addEventListener("error", function (e) {
     rankAt = Date.now();
     try { tpRank = JSON.parse(await call("api_tpRank")); } catch (e) { rankAt = 0; return; }
     try { localStorage.setItem("tc_rank", JSON.stringify(tpRank)); } catch (e) {}
+    paintWho();   // the name at the top right takes its 年間ランキング colour
     if (tab === "point") paintRank();
   }
   function rankHTML() {
     if (!tpRank) return `<p class="rk-wait">ランキングを読み込んでいます…</p>`;
     const panel = (b, title) => `<div class="rk-panel"><div class="rk-h"><b>${title}</b><span>獲得TPの合計</span></div>` +
-      (b.top.length ? `<ol class="rk-list">` + b.top.map((x) => `<li class="rk-${x.rank <= 3 ? x.rank : "n"}${x.name === window.TC_NAME ? " me" : ""}"><i>${x.rank}</i><span><span class="nm-pill">${esc(x.name)}</span></span><b>${tpN(x.tp)}<small>TP</small></b></li>`).join("") + `</ol>`
+      (b.top.length ? `<ol class="rk-list">` + b.top.map((x) => `<li class="rk-${x.rank <= 3 ? x.rank : "n"}${x.name === window.TC_NAME ? " me" : ""}"><i>${x.rank}</i><span><span class="nm-pill${yrCls(x.name)}">${esc(x.name)}</span></span><b>${tpN(x.tp)}<small>TP</small></b></li>`).join("") + `</ol>`
         : `<p class="rk-none">まだだれもTPをもらっていません。</p>`) +
       (b.me && b.me.rank > 5 ? `<p class="rk-me">あなたは ${b.me.rank}位（${tpN(b.me.tp)}TP）</p>` : !b.me ? `<p class="rk-me">あなたはまだランキングに入っていません</p>` : "") + `</div>`;
     const [y, mo] = tpRank.ym.split("-").map(Number);
@@ -3102,11 +3121,15 @@ window.addEventListener("error", function (e) {
   // みんなの獲得ログ: everyone's latest TP earned (8 lines, newest first), read along with the ランキング
   // みんなの獲得ログ: the newest FEED_N, one short line each, in a panel like the ランキング
   const FEED_N = 8;
+  // 年間ランキング 1〜3位 of a name (0 otherwise): their name pill is gold, silver or bronze
+  // (declarations, and safe before the ランキング exists: the name at the top right is drawn early on)
+  function yrOf(name) { try { const t = (tpRank?.yearly?.top || []).find((x) => x.name === name); return t && t.rank <= 3 ? t.rank : 0; } catch (e) { return 0; } }
+  function yrCls(name) { const r = yrOf(name); return r ? ` yr${r}` : ""; }
   function feedHTML() {
     const f = tpRank?.feed;
     if (!f) return "";
     return `<div class="tf-panel"><div class="rk-h tf-h"><b>みんなの獲得ログ</b><span>最新${Math.min(f.length, FEED_N)}件</span></div>` + (f.length ? `<ol class="tp-feed">` + f.slice(0, FEED_N).map((x) =>
-      `<li${x.name === window.TC_NAME ? ` class="me"` : ""}><span class="tf-at num">${esc(ntAt(x.at) || "").replace(" ", "<br>")}</span><span class="tf-name"><span class="nm-pill">${esc(x.name)}</span></span><span class="tf-why-c">${x.why ? `<span class="tf-why">${esc(x.why)}</span>` : ""}</span><b class="tf-tp num">＋${tpN(x.tp)}</b></li>`).join("") + `</ol>`
+      `<li${x.name === window.TC_NAME ? ` class="me"` : ""}><span class="tf-at num">${esc(ntAt(x.at) || "").replace(" ", "<br>")}</span><span class="tf-name"><span class="nm-pill${yrCls(x.name)}">${esc(x.name)}</span></span><span class="tf-why-c">${x.why ? `<span class="tf-why">${esc(x.why)}</span>` : ""}</span><b class="tf-tp num">＋${tpN(x.tp)}</b></li>`).join("") + `</ol>`
       : `<p class="rk-none">まだだれもTPをもらっていません。</p>`) + `</div>`;
   }
   // the screen is built once; later calls only bring the numbers up to date, so the amount box being typed in
@@ -4679,7 +4702,7 @@ window.addEventListener("error", function (e) {
     keepTp();
     const tpChip = tp.bal == null ? "" : `<span class="who-tp${tpN(tp.bal).length > 6 ? " long" : tpN(tp.bal).length > 5 ? " mid" : ""}" aria-label="${tpN(tp.bal)} TP"><span class="tp-coin" aria-hidden="true">TP</span><b>${tpN(tp.bal)}</b></span>`;
     // drawn only when it changes (the clock calls this every second)
-    const who = name ? `<span class="who-row"><span class="who-name"><span class="who-nm">${esc(name)}</span></span>${tpChip}</span>` + (tags ? `<span class="who-tags">${tags}</span>` : "") : "";
+    const who = name ? `<span class="who-row"><span class="who-name${yrCls(window.TC_NAME)}"><span class="who-nm">${esc(name)}</span></span>${tpChip}</span>` + (tags ? `<span class="who-tags">${tags}</span>` : "") : "";
     if ($("who").dataset.h !== who) { $("who").dataset.h = who; $("who").innerHTML = who; }
   }
   function showPerson(me) {
