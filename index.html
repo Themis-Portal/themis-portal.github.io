@@ -2464,7 +2464,7 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
         <div class="proofs" id="f-proofs" hidden></div>
         <label class="tool upl" for="f-file">画像を添付</label>
         <input type="file" id="f-file" accept="image/*" multiple hidden>
-        <span class="hint">乗換案内の画面か、地図アプリで自宅から現場までの距離が分かる画面のスクリーンショットを添付してください。交通機関か距離を入れた日は必須です（徒歩・自転車だけの日は不要）。</span>
+        <span class="hint">乗換案内の画面か、地図アプリで自宅から現場までの距離が分かる画面のスクリーンショットを添付してください。交通機関か距離を入れた日は必須です（徒歩・自転車だけの日は不要）</span>
         <span class="hint perr" id="f-perr" role="alert"></span>
       </div>
       <div class="sec wide sec-row"><span>稼働実績</span><button type="button" class="tool" id="f-resedit">修正</button></div>
@@ -3275,7 +3275,7 @@ window.addEventListener("error", function (e) {
   async function useTp() {
     const sel = $("tp-amt"), a = Number(sel.value), bal = tp.bal ?? 0, staff = window.TC_WORK === "社員";
     if (!Number.isInteger(a) || a < 1) { msg("使用するTPの数を入れてください。"); sel.focus(); return; }
-    if (a > bal) { msg(`TPが足りません（残高 ${tpN(bal)}TP）。`); sel.focus(); return; }
+    if (a > bal) { msg(`TPが足りません（残高 ${tpN(bal)}TP）`); sel.focus(); return; }
     if (!await ask(staff ? "給与への加算を申請しますか？" : "請求書に追加しますか？",
       staff ? `${tpN(a)}TP（${tpN(a)}円）を給与に加算するよう申請します。` : `${tpN(a)}TP（${tpN(a)}円）を、請求書のTP報酬に追加します。追加したTPは戻せません。`, staff ? "申請する" : "追加する")) return;
     busyOn(staff ? "申請しています" : "請求書に追加しています", `${tpN(a)}TP`);
@@ -3306,7 +3306,7 @@ window.addEventListener("error", function (e) {
     const ticket = (on) => `<i class="thx-tk${on ? "" : " used"}" aria-hidden="true"><svg viewBox="0 0 36 22"><path d="M4 2h28a2 2 0 0 1 2 2v4a3 3 0 0 0 0 6v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a3 3 0 0 0 0-6V4a2 2 0 0 1 2-2z"/><path class="tk-cut" d="M25 4v14" /><path class="tk-heart" d="M15 16.5l-4.3-4.1a2.6 2.6 0 0 1 3.7-3.7l.6.6.6-.6a2.6 2.6 0 0 1 3.7 3.7z"/></svg></i>`;
     const was = { to: $("thx-to")?.value || "", msg: $("thx-msg")?.value || "" };
     box.innerHTML = `<div class="thx-card"><div class="thx-h"><b>ありがとうチケット</b><span class="thx-left">${Array.from({ length: thx.per }, (_, i) => ticket(i < thx.left)).join("")}<span>残り <b class="num">${thx.left}</b>/${thx.per}枚</span></span></div>` +
-      `<p class="thx-how">仲間に「ありがとう」を送れます。1枚で相手に <b>${thx.tp}TP</b>（あなたのTPは減りません）。毎月1日に${thx.per}枚にリセットされます（使わなかった分は持ち越せません）。</p>` +
+      `<p class="thx-how">仲間に「ありがとう」を送れます。1枚で相手に <b>${thx.tp}TP</b>（あなたのTPは減りません）<br>毎月1日に${thx.per}枚にリセットされます（使わなかった分は持ち越せません）</p>` +
       (thx.left > 0
         ? `<form class="thx-form" id="thx-form"><select id="thx-to" aria-label="送る相手"><option value="">送る相手を選ぶ</option>${thx.people.map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("")}</select>` +
           `<div class="thx-row"><input type="text" id="thx-msg" maxlength="100" autocomplete="off" placeholder="ひと言（例：昨日はヘルプありがとう！）" aria-label="ひと言メッセージ"><button type="submit" class="btn primary">送る</button></div></form>`
@@ -3420,7 +3420,7 @@ window.addEventListener("error", function (e) {
       }).join("") + `</div>` +
       (top.length ? `<h4 class="bl-h">よく行った店舗</h4><ol class="sx-stores">` + top.map(([n, c], i) => `<li><i>${i + 1}</i><span>${esc(n)}</span><b class="num">${c}回</b></li>`).join("") + `</ol>` : "") +
       `<h4 class="bl-h">誕生日</h4><form class="sx-birth" id="sx-birth"><label class="f">生年月日<input type="date" id="sx-bd" min="1930-01-01" max="${today}" value="${esc(p.birth || "")}"></label>` +
-      `<button type="submit" class="btn primary">保存</button><p class="hint">誕生日の当日は、ホームでみんなにお知らせされて「おめでとう」が届きます（生まれた年は表示されません）。</p></form>`;
+      `<button type="submit" class="btn primary">保存</button><p class="hint">誕生日の当日は、ホームでみんなにお知らせされて「おめでとう」が届きます（生まれた年は表示されません）</p></form>`;
     $("sx-birth").onsubmit = async (e) => {
       e.preventDefault();
       const v = $("sx-bd").value;
@@ -5734,7 +5734,7 @@ window.addEventListener("error", function (e) {
   function payWire(ym, pays) {
     const rates = adData.payRates || { child: 0.0036, employ: 0.009, rousai: 0.003 };
     if ($("pay-rates")) $("pay-rates").onclick = () => {
-      adDialog("会社負担の料率", `<p class="hint">総支給額にかける割合です（％）。毎年4月などに変わるので、見直してください。健康保険・介護保険・厚生年金は、本人の額と同じ額を会社負担にします。</p>` +
+      adDialog("会社負担の料率", `<p class="hint">総支給額にかける割合です（％）<br>毎年4月などに変わるので、見直してください。健康保険・介護保険・厚生年金は、本人の額と同じ額を会社負担にします。</p>` +
         PAY_RATE_LABEL.map(([k, l]) => `<label class="f">${l}（％）<input type="number" step="0.001" min="0" max="10" inputmode="decimal" data-rate="${k}" value="${+(rates[k] * 100).toFixed(4)}"></label>`).join(""),
         "保存する", async () => {
           const out = {};
@@ -6310,7 +6310,7 @@ window.addEventListener("error", function (e) {
     };
     const who = (id) => ivAd.list.find((x) => x.id === id);
     for (const b of $("ad-body").querySelectorAll("[data-iv-ok]")) b.onclick = () => { const x = who(b.dataset.ivOk);
-      act(x.id, "ok", "招待を許可しますか？", `${x.inviteeName}さんと${x.inviterName}さんに ${tpN(ivAd.welcome || 5000)}TP ずつ届きます。さらに${x.inviterName}さんには、${x.inviteeName}さんが月${ivAd.days || 20}日以上出勤した月ごとに ${tpN(ivAd.bonus)}TP が付きます（今月の分から）。`, "許可する", false, "許可しました。"); };
+      act(x.id, "ok", "招待を許可しますか？", `${x.inviteeName}さんと${x.inviterName}さんに ${tpN(ivAd.welcome || 5000)}TP ずつ届きます。さらに${x.inviterName}さんには、${x.inviteeName}さんが月${ivAd.days || 20}日以上出勤した月ごとに ${tpN(ivAd.bonus)}TP が付きます（今月の分から）`, "許可する", false, "許可しました。"); };
     for (const b of $("ad-body").querySelectorAll("[data-iv-ng]")) b.onclick = () => { const x = who(b.dataset.ivNg);
       act(x.id, "ng", "招待を却下しますか？", `${x.inviteeName}さんが入れた、${x.inviterName}さんの招待コードを認めません。`, "却下する", true, "却下しました。"); };
     for (const b of $("ad-body").querySelectorAll("[data-iv-stop]")) b.onclick = () => { const x = who(b.dataset.ivStop);
