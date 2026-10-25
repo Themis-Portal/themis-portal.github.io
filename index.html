@@ -1938,8 +1938,17 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
 .thx-left { display: inline-flex; align-items: center; gap: 2px; font-size: 11.5px; color: var(--plate-soft); }
 .thx-left > span { margin-left: 6px; }
 .thx-left b { color: #ffb3d1; font-size: 14px; }
-.thx-tk { font-style: normal; font-size: 16px; filter: drop-shadow(0 0 4px rgb(255 140 190 / .6)); }
-.thx-tk.used { filter: grayscale(1); opacity: .3; }
+.thx-tk { display: inline-block; width: 26px; height: 16px; animation: tk-wiggle 3s ease-in-out infinite; }
+.thx-tk:nth-child(2) { animation-delay: .2s; } .thx-tk:nth-child(3) { animation-delay: .4s; } .thx-tk:nth-child(4) { animation-delay: .6s; } .thx-tk:nth-child(5) { animation-delay: .8s; }
+.thx-tk svg { width: 100%; height: 100%; display: block; overflow: visible; filter: drop-shadow(0 1px 3px rgb(255 120 180 / .55)); }
+.thx-tk svg path:first-child { fill: #ff9cc6; stroke: #ffd1e6; stroke-width: 1.2; }
+.thx-tk .tk-cut { fill: none; stroke: #fff; stroke-width: 1.2; stroke-dasharray: 2 2; opacity: .8; }
+.thx-tk .tk-heart { fill: #fff; }
+.thx-tk.used { animation: none; }
+.thx-tk.used svg { filter: none; }
+.thx-tk.used svg path:first-child { fill: #4a5568; stroke: #64708a; }
+.thx-tk.used .tk-heart { fill: #8a95a5; }
+@keyframes tk-wiggle { 0%, 80%, 100% { transform: none; } 85% { transform: rotate(-8deg); } 90% { transform: rotate(6deg); } 95% { transform: rotate(-3deg); } }
 .thx-how { margin: 0; font-size: 12px; line-height: 1.6; color: var(--plate-soft); }
 .thx-how b { color: var(--gold); }
 .thx-form { display: grid; gap: 8px; }
@@ -1954,6 +1963,8 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
 .thx-msg p { margin: 0; padding: 6px 10px; border-radius: 4px 12px 12px 12px; background: rgb(255 179 209 / .12); border: 1px solid rgb(255 179 209 / .25); color: #fff; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
 .rk-thx { background: radial-gradient(120% 120% at 100% 0%, #5a2a4a 0%, transparent 55%), var(--plate) !important; }
 .rk-thx .rk-h b::before { content: "💌" !important; }
+.rk-h b, .rk-h span { white-space: nowrap; }
+.rk-h b { min-width: 0; overflow: hidden; }
 /* 今日のお祝い (ホーム) */
 .celebs { display: grid; gap: 8px; }
 .celebs[hidden] { display: none; }
@@ -2363,10 +2374,10 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
     <!-- 友達を招待: its own lit box at the top, so it is seen -->
     <button type="button" class="menu-invite" id="m-invite"><span class="mi-gift" aria-hidden="true">🎁</span><span><b>友達を招待する</b><small>友達も自分も <em>5,000TP</em>。さらに毎月 <em>5,000TP</em> のチャンス</small></span></button>
     <div class="menu-list">
-      <button type="button" class="menu-item" id="tab-inv"><b>請求書</b><small>毎月の請求書を作って提出</small></button>
-      <button type="button" class="menu-item" id="tab-pay" hidden><b>給与明細</b><small>毎月の給与明細を見る</small></button>
-      <button type="button" class="menu-item" id="m-ask"><b>お問い合わせ</b><small>Themisに質問・連絡する</small></button>
       <button type="button" class="menu-item" id="m-stats"><b>マイ記録</b><small>出勤の記録・誕生日の登録</small></button>
+      <button type="button" class="menu-item" id="tab-pay" hidden><b>給与明細</b><small>毎月の給与明細を見る</small></button>
+      <button type="button" class="menu-item" id="tab-inv"><b>請求書</b><small>毎月の請求書を作って提出</small></button>
+      <button type="button" class="menu-item" id="m-ask"><b>お問い合わせ</b><small>Themisに質問・連絡する</small></button>
     </div>
     <div class="menu-list">
       <button type="button" class="menu-item" id="m-pass"><b>パスワード変更</b></button>
@@ -3187,14 +3198,19 @@ window.addEventListener("error", function (e) {
   function rankHTML() {
     if (!tpRank) return `<p class="rk-wait">ランキングを読み込んでいます…</p>`;
     // th: the ありがとうランキング (how many ありがとう each person received this month)
-    const panel = (b, title, th) => `<div class="rk-panel${th ? " rk-thx" : ""}"><div class="rk-h"><b>${title}</b><span>${th ? "もらったありがとうの数" : "獲得TPの合計"}</span></div>` +
+    const panel = (b, title, th) => `<div class="rk-panel${th ? " rk-thx" : ""}"><div class="rk-h"><b>${title}</b><span>${th ? "もらった数" : "獲得TPの合計"}</span></div>` +
       (b.top.length ? `<ol class="rk-list">` + b.top.map((x) => `<li class="rk-${x.rank <= 3 ? x.rank : "n"}${x.name === window.TC_NAME ? " me" : ""}"><i>${x.rank}</i><span><span class="nm-pill${yrCls(x.name)}">${esc(x.name)}</span></span>` +
         (th ? `<b>${x.n}<small>回</small></b>` : `<b>${tpN(x.tp)}<small>TP</small></b>`) + `</li>`).join("") + `</ol>`
         : `<p class="rk-none">${th ? "まだだれもありがとうをもらっていません。" : "まだだれもTPをもらっていません。"}</p>`) +
       (b.me && b.me.rank > 5 ? `<p class="rk-me">あなたは ${b.me.rank}位（${th ? `${b.me.n}回` : `${tpN(b.me.tp)}TP`}）</p>` : !b.me ? `<p class="rk-me">あなたはまだランキングに入っていません</p>` : "") + `</div>`;
-    const [y, mo] = tpRank.ym.split("-").map(Number), thx = tpRank.thanks;
-    return `<div class="rk-track" id="rk-track">${panel(tpRank.month, `${mo}月の月間ランキング`)}${panel(tpRank.yearly, `${y}年の年間ランキング`)}${thx ? panel(thx, `${mo}月のありがとうランキング`, true) : ""}</div>` +
-      `<div class="rk-dots"><button type="button" data-rk="0" aria-label="月間" class="on"></button><button type="button" data-rk="1" aria-label="年間"></button>${thx ? `<button type="button" data-rk="2" aria-label="ありがとう"></button>` : ""}</div>`;
+    const [y, mo] = tpRank.ym.split("-").map(Number);
+    // the ランキング in turn: TP this month, TP this year, then ありがとう this month and this year
+    const panels = [panel(tpRank.month, `${mo}月の月間ランキング`), panel(tpRank.yearly, `${y}年の年間ランキング`)];
+    if (tpRank.thanks) panels.push(panel(tpRank.thanks, `${mo}月のありがとう`, true));
+    if (tpRank.thanksYear) panels.push(panel(tpRank.thanksYear, `${y}年のありがとう`, true));
+    const names = ["月間", "年間", "今月のありがとう", "今年のありがとう"];
+    return `<div class="rk-track" id="rk-track">${panels.join("")}</div>` +
+      `<div class="rk-dots">${panels.map((_, i) => `<button type="button" data-rk="${i}" aria-label="${names[i]}"${i ? "" : ` class="on"`}></button>`).join("")}</div>`;
   }
   function paintRank() {
     const box = $("tp-rank");
@@ -3286,7 +3302,8 @@ window.addEventListener("error", function (e) {
     const box = $("tp-thx");
     // not drawn over while a message is being written
     if (!box || !thx || box.contains(document.activeElement)) return;
-    const ticket = (on) => `<i class="thx-tk${on ? "" : " used"}" aria-hidden="true">🎫</i>`;
+    // a small pink ticket with a heart in the middle (grey once used)
+    const ticket = (on) => `<i class="thx-tk${on ? "" : " used"}" aria-hidden="true"><svg viewBox="0 0 36 22"><path d="M4 2h28a2 2 0 0 1 2 2v4a3 3 0 0 0 0 6v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a3 3 0 0 0 0-6V4a2 2 0 0 1 2-2z"/><path class="tk-cut" d="M25 4v14" /><path class="tk-heart" d="M15 16.5l-4.3-4.1a2.6 2.6 0 0 1 3.7-3.7l.6.6.6-.6a2.6 2.6 0 0 1 3.7 3.7z"/></svg></i>`;
     const was = { to: $("thx-to")?.value || "", msg: $("thx-msg")?.value || "" };
     box.innerHTML = `<div class="thx-card"><div class="thx-h"><b>ありがとうチケット</b><span class="thx-left">${Array.from({ length: thx.per }, (_, i) => ticket(i < thx.left)).join("")}<span>残り <b class="num">${thx.left}</b>/${thx.per}枚</span></span></div>` +
       `<p class="thx-how">仲間に「ありがとう」を送れます。1枚で相手に <b>${thx.tp}TP</b>（あなたのTPは減りません）。毎月1日に${thx.per}枚にリセットされます（使わなかった分は持ち越せません）。</p>` +
@@ -5390,9 +5407,10 @@ window.addEventListener("error", function (e) {
 
   // 常勤, 週末 and 社員 are always listed apart, each numbered from 001 so the head count is plain to see
   // 代表 has no 勤務形態 and is listed on its own, first
-  const WORK_GROUPS = ["代表", "社員", "常勤", "週末", ""];
+  // テスト用 accounts are grouped apart, at the end of every list
+  const WORK_GROUPS = ["代表", "社員", "常勤", "週末", "", "テスト用"];
   const groupName = (t) => t || "勤務形態が未回答";
-  const groupOf = (m) => (m.rep ? "代表" : m.workType || "");
+  const groupOf = (m) => (m?.test ? "テスト用" : m?.rep ? "代表" : m?.workType || "");
   const byWork = (list, key = (x) => x) => WORK_GROUPS.map((t) => [t, list.filter((x) => groupOf(key(x)) === t)]).filter(([, l]) => l.length);
   const numName = (i, name) => `<span class="no">${String(i + 1).padStart(3, "0")}</span>${esc(name)}`;
 
@@ -5598,7 +5616,7 @@ window.addEventListener("error", function (e) {
       if (!r || r[4] === "下書き") return worked.has(m.name) || (r && r[10]) ? "none" : "nobill";
       return r[4] === "提出済み" ? "sent" : r[9] ? "ok" : "paid";
     };
-    const cnt = (k) => live.filter((m) => stOf(m) === k).length;
+    const cnt = (k) => live.filter((m) => !m.test && stOf(m) === k).length;
     const label = { nobill: "請求なし", none: "未提出", sent: "提出済み", paid: "入金完了・本人の確認待ち", ok: "本人が入金を確認済み" };
     $("ad-body").innerHTML = payCards(staff, pays) + (live.length ? `<h4 class="bl-h">業務委託の請求書</h4>` : "") +
       `<div class="ad-stats">` + [["未提出", "none"], ["提出済み", "sent"], ["確認待ち", "paid"], ["確認済み", "ok"]]
@@ -5956,6 +5974,7 @@ window.addEventListener("error", function (e) {
             ? `<span class="ad-signed">${esc(signed)} 締結</span><button type="button" class="tool" data-contract>見る</button><button type="button" class="tool" data-cdl>保存</button>`
             : `<span class="st st-late">未締結</span>${askable ? askChk(m.contractAsk, 'data-k="contractAsk"') : ""}`}</dd>` +
           (owner && !m.rep ? `<dt>招待コード</dt><dd>${ivChk(m.inviteShow, "data-ivshow")}</dd>` : "") +
+          (owner && !m.rep ? `<dt>テスト用</dt><dd><label class="check"><input type="checkbox" data-test${m.test ? " checked" : ""}> ランキングや集計に出さない</label></dd>` : "") +
           // 生年月日 (the person's own entry) and 入社日 (entered here, for the 在籍記念)
           (owner ? `<dt>生年月日</dt><dd>${m.birth ? esc(jDate(m.birth)) : `<span class="muted">未登録</span>`}</dd>` +
             `<dt>入社日</dt><dd><input type="date" class="ad-join" data-join value="${esc(m.join || "")}" max="${dayKey(new Date())}" aria-label="${esc(m.name)}さんの入社日"></dd>` : "") +
@@ -6023,6 +6042,13 @@ window.addEventListener("error", function (e) {
       const m = person(card(el)), on = el.checked;
       el.disabled = true;
       try { await call("api_inviteShow", m.id, on); m.inviteShow = on; adMsg(`${m.name}さんの招待コードの入力欄を${on ? "表示する" : "表示しない"}にしました。`); }
+      catch (err) { el.checked = !on; adMsg(errText(err)); }
+      el.disabled = false;
+    };
+    for (const el of $("ad-body").querySelectorAll("[data-test]")) el.onchange = async () => {
+      const m = person(card(el)), on = el.checked;
+      el.disabled = true;
+      try { await call("api_adminSetTest", m.id, on); m.test = on; adChanged(); adMsg(on ? `${m.name}さんをテスト用にしました。ランキング・ありがとう・お祝い・人件費やTP経費に出なくなります。` : `${m.name}さんをテスト用から外しました。`); }
       catch (err) { el.checked = !on; adMsg(errText(err)); }
       el.disabled = false;
     };
