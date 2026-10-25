@@ -1441,6 +1441,155 @@ button.pcal-c { cursor: pointer; }
 .ad-card.dim > .ad-card-h { color: var(--plate-soft); }
 /* the 戻る of the admin screen */
 #adminbtn { background: var(--plate); color: #fff !important; }
+
+/* ---- the game look on the remaining screens ---- */
+/* 修正 on the day's plan: black */
+.shifts .shift-today .st-fix { color: #fff; background: #0b111b; border-color: #0b111b; box-shadow: inset 0 1px 0 rgb(255 255 255 / .12), 0 3px 0 #000; }
+/* today's and tomorrow's plan and the clock framed alike: no thick edge on the left, the same thin lit line across
+   the top (teal on today and the clock, gold on tomorrow) */
+.shifts .shift-today { border-left-width: 1px; overflow: hidden; }
+.shifts .shift-today::before, .clock::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; border-radius: 0; background: linear-gradient(90deg, #3fb6a5, #7fe0cf 50%, #3fb6a5); box-shadow: 0 0 10px rgb(63 182 165 / .6); }
+.shifts .shift-today.small::before { background: linear-gradient(90deg, #c99a2e, var(--gold) 50%, #c99a2e); box-shadow: 0 0 10px rgb(246 210 122 / .5); }
+.shifts .shift-today.absent::before { background: #e5373d; box-shadow: 0 0 10px rgb(229 55 61 / .6); }
+.clock-tp { margin-top: 4px; font-size: 12.5px; color: var(--plate-soft); }
+.clock-tp b { font-family: var(--f-num); color: var(--gold); font-size: 14px; }
+/* シフト: the calendar alone; 週末 staff go to シフト希望 by the button beside the month */
+#shift-seg { display: none !important; }
+.month-nav .m-hope { margin-left: auto; font-weight: 800; color: #fff; border-color: #7fe0cf; background: linear-gradient(180deg, #3fb6a5, #217066); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 3px 0 #0f3d37, 0 0 12px -2px rgb(63 182 165 / .55); white-space: nowrap; }
+.month-nav .m-hope[hidden] { display: none; }
+.bar-month .month-nav { width: 100%; }
+/* a シフト希望 mark on a day of the シフト表 that has no shift yet */
+.day .hp { align-self: flex-start; font-size: 15px; font-weight: 800; line-height: 1.1; display: inline-flex; align-items: baseline; gap: 2px; }
+.day .hp small { font-size: 9px; font-weight: 700; color: var(--ink-soft); letter-spacing: .05em; }
+.day .hp-ok { color: var(--hope-ok); } .day .hp-maybe { color: var(--hope-maybe); } .day .hp-far { font-size: 13px; }
+/* シフト希望 on the member's side: the head and the calendar as plates */
+.hope-head { background: var(--plate); border-color: var(--plate-line); color: var(--plate-ink); }
+.hope-stat { color: var(--plate-soft); }
+.hope-stat b { color: var(--gold); }
+.hope-far-note { color: var(--plate-soft); }
+.hope-due { background: rgb(229 55 61 / .18); color: #ff9a8a; }
+.hope-due.closed { background: rgb(255 255 255 / .06); color: var(--plate-soft); }
+.hope-sent { color: #7fe0cf; }
+.hope-cal { background: #1a2536; border-color: var(--plate-line); }
+.hope-cal .cal-wd div { color: var(--plate-soft); }
+.hope-grid { background: #1a2536; gap: 2px; padding: 2px; }
+.hc { border-radius: 6px; }
+
+/* the お知らせ board on ホーム: calm. A quiet navy plate, the notes as plain rows with a small coloured mark */
+.nt-home { border: 1px solid var(--plate-line); background: #172131; box-shadow: 0 8px 20px -14px rgb(10 20 35 / .6); }
+.nt-home-h { padding: 12px 16px 8px; border-bottom: 1px solid rgb(255 255 255 / .07); }
+.nt-home-h .nt-pin { filter: none; font-size: 15px; }
+.nt-home-h b { font-size: 15px; letter-spacing: .12em; background: none; -webkit-background-clip: border-box; background-clip: border-box; color: #fff; }
+.nt-home-n { box-shadow: none; }
+.nt-board { max-height: none; overflow: visible; padding: 4px 8px 8px; gap: 0; background: none; }
+.nt-board::before { display: none; }
+.nt-note { border: 0; border-radius: 10px; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; padding-left: 18px; }
+.nt-note + .nt-note { border-top: 1px solid rgb(255 255 255 / .06); border-radius: 0; }
+.nt-note::before { content: ""; left: 8px; top: 19px; width: 8px; height: 8px; font-size: 0; border: 0; box-shadow: none; background: #6b7a93; }
+.nt-note[data-k="imp"]::before { content: ""; background: #e5373d; border: 0; box-shadow: none; }
+.nt-note[data-k="tp"]::before { content: ""; background: var(--gold); border: 0; box-shadow: none; }
+.nt-note[data-k="gift"]::before { content: ""; background: #3fb6a5; border: 0; box-shadow: none; }
+.nt-note[data-k="ask"]::before { content: ""; background: #8fb1ee; border: 0; }
+.nt-note.new { background: rgb(255 255 255 / .04); border-color: rgb(255 255 255 / .06); }
+.nt-board .nt-item { padding: 11px 12px 11px 6px; }
+.nt-board .nt-item .nt-sub, .nt-board .nt-item .nt-at { color: #8d9bb3; }
+.nt-board .nt-item.unread b::before { background: #e5373d; box-shadow: none; }
+.nt-more { display: block; width: 100%; margin-top: 4px; padding: 10px; border: 0; border-top: 1px solid rgb(255 255 255 / .06); background: none; color: #7fe0cf; font: inherit; font-size: 13px; font-weight: 700; text-align: center; }
+
+/* one お知らせ opened over the screen: the title, a line, then the text; a tap anywhere closes it */
+.nt-pop-bg { z-index: 40; background: rgb(6 10 18 / .6); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.nt-pop { width: min(520px, 100%); max-height: calc(100% - 40px); background: var(--plate); border: 1px solid var(--plate-line); color: var(--plate-ink); gap: 12px; cursor: pointer;
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / .7), inset 0 1px 0 rgb(255 255 255 / .08); border-top: 3px solid #3fb6a5; }
+.nt-pop[data-k="imp"] { border-top-color: #e5373d; } .nt-pop[data-k="tp"] { border-top-color: var(--gold); } .nt-pop[data-k="ask"] { border-top-color: #8fb1ee; }
+.nt-pop-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.nt-pop-t { margin: 0; font-size: 19px; line-height: 1.45; color: #fff; overflow-wrap: anywhere; }
+.nt-rule { width: 100%; margin: 0; border: 0; border-top: 1px solid rgb(127 140 165 / .35); }
+.nt-doc .nt-rule { border-top-color: var(--rule); }
+.nt-pop .nt-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; line-height: 1.8; }
+.nt-pop-acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: flex-end; }
+.nt-pop .nt-ok { color: #7fe0cf; font-weight: 700; }
+.nt-pop .nt-msg p { background: rgb(255 255 255 / .06); border-color: rgb(255 255 255 / .12); color: #fff; }
+.nt-pop .nt-msg.me p { background: rgb(63 182 165 / .22); border-color: rgb(63 182 165 / .45); }
+.nt-pop-close { margin: 0; text-align: center; font-size: 11px; color: var(--plate-soft); letter-spacing: .1em; }
+
+/* lists of お知らせ / お問い合わせ (the お知らせ screen, 問い合わせ, 運営画面 › お知らせ): dark plates */
+.nt-list { background: var(--plate); border-color: var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
+.nt-list .nt-item { color: #fff; }
+.nt-list .nt-item + .nt-item { border-top-color: rgb(255 255 255 / .08); }
+.nt-list .nt-item .nt-at, .nt-list .nt-item .nt-sub { color: var(--plate-soft); }
+.nt-list .nt-item:active { background: rgb(255 255 255 / .05); }
+.nt-tag.ask { color: #dbe4f2; background: rgb(143 177 238 / .2); border-color: rgb(143 177 238 / .5); }
+/* forms and one お知らせ / お問い合わせ read on its own: a light card under a dark band with its title */
+.nt-doc { padding: 0 16px 16px; overflow: hidden; border-color: var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
+.nt-doc > h3 { margin: 0 -16px; padding: 12px 16px; background: var(--plate); color: #fff; font-size: 16px; letter-spacing: .04em; }
+.nt-doc.imp > h3 { box-shadow: inset 0 -2px 0 #e5373d; }
+.nt-doc > span:first-child { margin-top: 12px; }
+.nt-chat .nt-msg p { box-shadow: 0 2px 6px -4px rgb(10 20 35 / .4); }
+.nt-msg.me p { background: linear-gradient(160deg, #2a8f81, #1f6b5f); border-color: #217066; color: #fff; }
+
+/* ポイント: えらべるPay の交換 and the requests as plates */
+.tp-card:not(.tp-hero) { background: var(--plate); border-color: var(--plate-line); color: var(--plate-ink); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
+.tp-card:not(.tp-hero) > b { color: #fff; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.tp-card:not(.tp-hero) > b::before { content: "🎁"; font-size: 18px; }
+.tp-card:not(.tp-hero) .hint { color: var(--plate-soft); }
+.tp-row select { background: #0f1724; color: #fff; border-color: var(--plate-line); flex: 1 1 180px; }
+.tp-row .btn { flex: none; }
+.tp-list, .tp-log { background: var(--plate); border-color: var(--plate-line); color: var(--plate-ink); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
+.tp-list > div + div, .tp-log > div + div { border-top-color: rgb(255 255 255 / .08); }
+.tp-list .muted, .tp-log .muted { color: var(--plate-soft); }
+.tp-list b, .tp-log-top b { color: #fff; }
+.tp-log-top .tp-amt { color: var(--gold); }
+.tp-log-top .tp-amt.neg { color: #ff9a8a; }
+.tp-log-why { color: var(--plate-ink); }
+.tp-list .tool { color: #fff; background: rgb(255 255 255 / .08); border-color: rgb(255 255 255 / .22); box-shadow: none; }
+.tp-list .tool[data-sent] { border-color: #7fe0cf; background: linear-gradient(180deg, #3fb6a5, #217066); }
+.tp-list .tool.danger { color: #ff9a8a; border-color: rgb(255 154 138 / .5); }
+
+/* メンバーを追加: a dark band with its title over the form */
+.ad-add { padding: 0 12px 12px; overflow: hidden; border-color: var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
+.ad-add > b { margin: 0 -12px 2px; padding: 10px 14px; background: var(--plate); color: #fff; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.ad-add > b::before { content: "＋"; color: #7fe0cf; font-weight: 900; }
+
+/* 売上 · 月ごと: a dark table, the money in gold */
+.sl-wrap { background: var(--plate); border-color: var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
+.sl-tbl { color: var(--plate-ink); }
+.sl-tbl th, .sl-tbl td { border-bottom-color: rgb(255 255 255 / .08); }
+.sl-tbl thead th { color: var(--plate-soft); background: rgb(0 0 0 / .2); font-weight: 700; }
+.sl-tbl tbody th { color: #fff; font-weight: 700; }
+.sl-tbl td:nth-child(5) { color: var(--gold); font-weight: 700; }
+.sl-tbl tr.warn td:nth-child(n+4) { color: #ff9a8a; }
+
+/* 請求書 (the member's): each box a light card under a dark band with its title */
+.fs-card { padding-top: 0; overflow: hidden; border-color: var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
+.fs-card > .fs-h { margin: 0 -16px 2px; padding: 11px 16px; background: var(--plate); color: #fff; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.fs-card > .fs-h::before { content: ""; width: 4px; height: 1.1em; border-radius: 2px; background: linear-gradient(180deg, #7fe0cf, #217066); box-shadow: 0 0 8px rgb(63 182 165 / .6); }
+.inv-head { background: var(--plate); border: 1px solid var(--plate-line); border-radius: 12px; padding: 12px 16px; }
+.inv-head h2 { color: #fff; }
+.sheet-scroll { background: #1a2536; border-color: var(--plate-line); }
+.sheet-scroll .thumb-cap { color: var(--plate-soft); }
+.hours b { color: var(--accent); }
+
+/* the admin calendars (全員のシフト希望, one person's month): dark, the marks lit */
+.pcal { background: #1a2536; border: 1px solid var(--plate-line); border-radius: 12px; padding: 4px; gap: 3px; box-shadow: 0 10px 22px -16px rgb(10 20 35 / .7); }
+.pcal-w { color: var(--plate-soft); }
+.pcal-w.wd-0 { color: #ff9a8a; } .pcal-w.wd-6 { color: #8fb1ee; }
+.pcal-c { background: #223047; border-color: rgb(255 255 255 / .07); color: var(--plate-ink); }
+.pcal-c .pcal-d { color: var(--plate-ink); }
+.pcal-c.wd-0 .pcal-d, .pcal-c.hol .pcal-d { color: #ff9a8a; } .pcal-c.wd-6 .pcal-d { color: #8fb1ee; }
+.pcal-s { color: #fff; }
+.pcal-c.v-ok { background: color-mix(in srgb, #4fd18e 22%, #223047); }
+.pcal-c.v-maybe { background: color-mix(in srgb, #ffad42 22%, #223047); }
+.pcal-c.v-far { background: color-mix(in srgb, #7fb0ff 24%, #223047); }
+.pcal-c.v-ok .pcal-m, .pcal-c.v-ok .pcal-n:not(.maybe), .pcal-n { color: #6fe0a5; }
+.pcal-c.v-maybe .pcal-m, .pcal-n.maybe { color: #ffbf6b; }
+.pcal-c.k-work { background: color-mix(in srgb, #3fb6a5 26%, #223047); } .pcal-c.k-work .pcal-t { color: #7fe0cf; }
+.pcal-c.k-early { background: color-mix(in srgb, #f2c14e 22%, #223047); } .pcal-c.k-early .pcal-t { color: var(--gold); }
+.pcal-c.k-abs { background: color-mix(in srgb, #e5373d 24%, #223047); } .pcal-c.k-abs .pcal-t { color: #ff9a8a; }
+.pcal-c.k-plan { border-color: rgb(159 180 214 / .5); } .pcal-c.k-plan .pcal-t { color: var(--plate-soft); }
+.pcal-c.sel { outline-color: #7fe0cf; box-shadow: 0 0 12px rgb(63 182 165 / .5); }
+.pcal-detail { border-color: var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
+.pcal-detail .ad-plan { justify-self: start; margin-top: 10px; }
+.pcal-ym { display: flex; align-items: center; gap: 8px; }
 </style>
 </head>
 <body>
@@ -1634,6 +1783,7 @@ button.pcal-c { cursor: pointer; }
       <div>
         <div class="date" id="date">—</div>
         <div class="time" id="time">--:--<span class="sec">:--</span></div>
+        <div class="clock-tp">退勤後に稼働実績を出すと <b>+50TP</b> もらえます</div>
       </div>
       <div class="clock-side">
         <span class="pill" id="status" data-s="off">勤務外</span>
@@ -1667,6 +1817,8 @@ button.pcal-c { cursor: pointer; }
       <b id="m-label">—</b>
       <button type="button" id="m-next" aria-label="次の月">›</button>
       <button type="button" id="m-now">今月</button>
+      <!-- 週末 staff: the way to シフト希望 (and back), beside the month -->
+      <button type="button" class="m-hope" id="m-hope" hidden>シフト希望を出す</button>
     </div>
   </div>
 
@@ -1837,6 +1989,10 @@ button.pcal-c { cursor: pointer; }
   </div>
 </nav>
 
+<!-- one お知らせ opened large over the screen; a tap anywhere but on its buttons closes it -->
+<div class="modal-bg nt-pop-bg" id="nt-pop" hidden>
+  <div class="modal nt-pop" id="nt-pop-in" role="dialog" aria-modal="true"></div>
+</div>
 <!-- a second look before ログアウト / パスワード変更 / 管理画面 -->
 <div class="modal-bg" id="ask-sheet" hidden>
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ask-h">
@@ -2170,7 +2326,7 @@ window.addEventListener("error", function (e) {
   let CRED = null, mode = "login";   // login | member | admin
   try { CRED = localStorage.getItem(CRED_KEY); } catch (e) {}
   // signing out also forgets the copy of the records kept for a quick start
-  const setCred = (c) => { CRED = c; try { if (c) localStorage.setItem(CRED_KEY, c); else { localStorage.removeItem(CRED_KEY); localStorage.removeItem("tc_cache"); localStorage.removeItem("tc_inbox"); dropView(); } } catch (e) {} };
+  const setCred = (c) => { CRED = c; try { if (c) localStorage.setItem(CRED_KEY, c); else { localStorage.removeItem(CRED_KEY); localStorage.removeItem("tc_cache"); localStorage.removeItem("tc_inbox"); localStorage.removeItem("tc_tp"); dropView(); } } catch (e) {} };
   const viaGas = !!window.google?.script?.run;
   const rawCall = (fn, ...args) => viaGas
     ? new Promise((res, rej) => { google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](CRED, ...args); })
@@ -2207,6 +2363,8 @@ window.addEventListener("error", function (e) {
         changed();
       },
       watch(name) { this.load([name]); },
+      // read again (a shift Themis put in shows without reopening); a record being saved is left alone
+      refresh(names) { names.forEach((n) => { if (!busy(n)) loaded.delete(n); }); return this.load(names); },
       async get(name) { const data = await call("api_getProof", name.slice(2)); return data ? { data } : null; },
       put(name, body) { return call("api_putProof", name.slice(2), body.data); },
       save(name) {
@@ -2336,6 +2494,8 @@ window.addEventListener("error", function (e) {
     if (GROUP[t] === "shift") shiftTab = t;
     view = tabView[t]; clampView(); watchView(); fillForms(true);
     $("m-now").textContent = { inv: "先月分", pay: "先月分", hope: "来月" }[t] || "今月";
+    $("m-hope").hidden = !(GROUP[t] === "shift" && tabOk("hope"));
+    $("m-hope").textContent = t === "hope" ? "‹ シフト表に戻る" : "シフト希望を出す";
     for (const k of ["card", "hope"]) $("tab-" + k).setAttribute("aria-selected", t === k);
     for (const k of ["card", "hope", "inv", "pay", "menu", "notice", "point"]) $("p-" + k).hidden = t !== k;
     $("sub-act").replaceChildren();
@@ -2380,41 +2540,47 @@ window.addEventListener("error", function (e) {
     document.querySelector('.bnav [data-g="menu"]').classList.toggle("has-new", open > 0);
     $("m-admin").classList.toggle("has-new", open > 0);
     $("ad-tabs").querySelector('[data-t="ask"]').classList.toggle("has-new", open > 0);
-    // drawn again in place: the board keeps where it was scrolled to, and the one opened stays open
-    const board = $("nt-home-list"), y = board.scrollTop, top = inbox.items.slice(0, 50);
+    // the newest five, without a scroll of their own (so the page scrolls freely over them); the rest are in the list
+    const board = $("nt-home-list"), top = inbox.items.slice(0, 5);
     $("nt-home-n").hidden = !n; $("nt-home-n").textContent = `未読 ${n}`;
-    // each note's kind (重要 / えらべるPay / TP付き / お問い合わせ / ふつう) gives it its own mark on the timeline
-    const kind = (x) => (x.kind === "q" ? "ask" : x.url ? "gift" : x.important ? "imp" : x.reward > 0 ? "tp" : "info");
-    board.innerHTML = top.length ? top.map((x) => `<div class="nt-note${x.id === ntOpen ? " open" : ""}${x.unread ? " new" : ""}" data-k="${kind(x)}">` + ntRow(x, x.unread) + (x.id === ntOpen ? ntOpenHTML(x) : "") + `</div>`).join("")
+    board.innerHTML = top.length ? top.map((x) => `<div class="nt-note${x.unread ? " new" : ""}" data-k="${ntKind(x)}">` + ntRow(x, x.unread) + `</div>`).join("") +
+        (inbox.items.length > top.length ? `<button type="button" class="nt-more" id="nt-home-more">すべてのお知らせを見る（${inbox.items.length}件）›</button>` : "")
       : `<p class="nt-empty">お知らせはまだありません。</p>`;
-    board.scrollTop = y;
-    // a tap opens it right there on the board (and a second tap closes it); reading it marks it read, but a 重要
-    // one waits for 確認しました
-    for (const b of board.querySelectorAll("[data-open]")) b.onclick = () => {
-      const x = inbox.items.find((y) => y.id === b.dataset.open);
-      ntOpen = ntOpen === x.id ? null : x.id;
-      if (ntOpen && !(x.kind === "n" && x.important)) markSeen([x.id]);
-      paintBell();
-    };
-    const ok = $("nt-home-ok");
-    if (ok) ok.onclick = () => markSeen([ok.dataset.id]);
-    const re = $("nt-home-reply");
-    if (re) re.onclick = () => showNotice("q", re.dataset.id, "home");
+    for (const b of board.querySelectorAll("[data-open]")) b.onclick = () => ntPop(inbox.items.find((y) => y.id === b.dataset.open), "home");
+    const more = $("nt-home-more");
+    if (more) more.onclick = () => showNotice("list", null, "home");
+    if (popId && !$("nt-pop").hidden) { const x = inbox.items.find((y) => y.id === popId); if (x) ntPop(x, popFrom); }
   }
-  let ntOpen = null;
-  // what an opened お知らせ shows on the board: all of its text, 受け取る, 確認しました for a 重要 one; an
-  // お問い合わせ shows the exchange, with 返信する to answer
-  function ntOpenHTML(x) {
-    if (x.kind === "q") return `<div class="nt-open"><div class="nt-chat">` + x.msgs.map((m) =>
-      `<div class="nt-msg${m.admin ? "" : " me"}"><span class="nt-who">${esc(m.admin ? "Themis" : m.by)}　${esc(ntAt(m.at))}</span><p>${esc(m.text)}</p></div>`).join("") +
-      `</div><button type="button" class="tool" id="nt-home-reply" data-id="${esc(x.id)}">返信する</button></div>`;
-    const waiting = x.important && x.unread;
-    return `<div class="nt-open"><span class="nt-meta">${esc(ntAt(x.at))}　${esc(x.by)}</span>` +
-      rewardTag(x) +
-      `<div class="nt-text">${esc(x.text)}</div>` +
-      (x.url ? `<a class="btn primary nt-get" href="${esc(x.url)}" target="_blank" rel="noopener">受け取る</a>` : "") +
-      (waiting ? `<button type="button" class="btn primary" id="nt-home-ok" data-id="${esc(x.id)}">確認しました</button>` : x.important ? `<span class="nt-ok">✓ 確認済み</span>` : "") + `</div>`;
+  // each note's kind (重要 / えらべるPay / TP付き / お問い合わせ / ふつう) gives it its own mark
+  const ntKind = (x) => (x.kind === "q" ? "ask" : x.url ? "gift" : x.important ? "imp" : x.reward > 0 ? "tp" : "info");
+  // a tapped お知らせ opens large over the screen: the title, a line, then all of its text, 受け取る, and
+  // 確認しました for a 重要 one (reading it marks it read; a 重要 one waits for that button). An お問い合わせ
+  // shows the exchange, with 返信する to answer. A tap anywhere but on a button closes it
+  let popId = null, popFrom = "home";
+  function ntPop(x, from) {
+    if (!x) return;
+    popId = x.id; popFrom = from || "home";
+    const imp = x.kind === "n" && x.important, waiting = imp && x.unread;
+    const tags = (imp ? `<span class="nt-tag imp">重要</span>` : x.kind === "q" ? `<span class="nt-tag ask">お問い合わせ</span>` : "") + rewardTag(x);
+    const body = x.kind === "q"
+      ? `<div class="nt-chat">` + x.msgs.map((m) => `<div class="nt-msg${m.admin ? "" : " me"}"><p>${esc(m.text)}</p></div>`).join("") + `</div>` +
+        `<div class="nt-pop-acts"><button type="button" class="btn primary" id="nt-pop-reply">返信する</button></div>`
+      : `<div class="nt-text">${esc(x.text)}</div>` +
+        ((x.url || imp) ? `<div class="nt-pop-acts">` + (x.url ? `<a class="btn primary nt-get" href="${esc(x.url)}" target="_blank" rel="noopener">受け取る</a>` : "") +
+          (waiting ? `<button type="button" class="btn primary" id="nt-pop-ok">確認しました</button>` : imp ? `<span class="nt-ok">✓ 確認済み</span>` : "") + `</div>` : "");
+    const box = $("nt-pop-in");
+    box.dataset.k = ntKind(x);
+    box.innerHTML = (tags ? `<div class="nt-pop-tags">${tags}</div>` : "") + `<h3 class="nt-pop-t">${esc(x.kind === "n" ? x.title : askTitle(x))}</h3><hr class="nt-rule">` + body +
+      `<p class="nt-pop-close">タップで閉じる</p>`;
+    $("nt-pop").hidden = false;
+    if (!imp) markSeen([x.id]);
+    const ok = $("nt-pop-ok");
+    if (ok) ok.onclick = () => { markSeen([x.id]); ntPop(x, popFrom); };
+    const re = $("nt-pop-reply");
+    if (re) re.onclick = () => { closePop(); showNotice("q", x.id, popFrom); };
   }
+  const closePop = () => { $("nt-pop").hidden = true; popId = null; };
+  $("nt-pop").addEventListener("click", (e) => { if (!e.target.closest("a, button")) closePop(); });
   // one row of a list: a red dot while new, 重要 / お問い合わせ tags, the date, and the start of the text
   function ntRow(x, dot) {
     const imp = x.kind === "n" && x.important, last = x.kind === "q" ? x.msgs[x.msgs.length - 1] : null;
@@ -2430,7 +2596,7 @@ window.addEventListener("error", function (e) {
     `<label class="f">内容<textarea id="nt-text" rows="6" maxlength="2000"></textarea></label>` +
     `<label class="check"><input type="checkbox" id="nt-imp"> 重要（「確認しました」を押すまで未読のまま）</label>` +
     `<label class="f">読んだ人に付与するTP（なしは0）<input type="number" id="nt-reward" inputmode="numeric" min="0" max="10000" step="1" value="0"></label>` +
-    `<label class="f">TPの受け取り期限<select id="nt-period"><option value="week">1週間</option><option value="month">1か月</option><option value="year">1年</option></select></label>` +
+    `<label class="f">TPの受け取り期限<select id="nt-period"><option value="week">1週間</option><option value="month">1カ月</option><option value="year">1年</option></select></label>` +
     `<button type="submit" class="btn primary">お知らせを出す</button>`;
   // the TP for reading, with its deadline (none after it)
   const rewardTag = (x) => {
@@ -2467,7 +2633,12 @@ window.addEventListener("error", function (e) {
   }
   paintBell();
   setInterval(() => { if (document.visibilityState === "visible" && mode !== "login") loadInbox(); }, 60000);
-  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") loadInbox(); });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible") return;
+    loadInbox();
+    // this month's and the month on screen's records too, for a shift Themis put in meanwhile
+    if (mode === "member" && backend?.refresh) { const cur = ymOf(dayKey(new Date())); backend.refresh([...new Set(["m-" + cur, "m-" + viewYm()])]); }
+  });
   function markSeen(ids) {
     const want = ids.filter((id) => inbox.items.some((x) => x.id === id && x.unread));
     if (!want.length) return;
@@ -2488,8 +2659,18 @@ window.addEventListener("error", function (e) {
   }
   $("nt-unread").onclick = () => { showNotice("list", null, "home"); loadInbox(); };
   $("m-ask").onclick = () => showNotice("new", null, "menu");
-  // ---- ポイント（TP）: 1TP = 1円; 100TP for each day's 稼働実績 after 退勤; exchanged for えらべるPay on request ----
+  // ---- ポイント（TP）: 1TP = 1円; 50TP for each day's 稼働実績 after 退勤; exchanged for えらべるPay on request ----
   let tp = { bal: null, item: "えらべるPay", amounts: [500, 1000, 3000, 5000], reqs: [] };
+  // the last balance and requests are kept on this device, so the TP shows beside the name at once on opening
+  const TP_KEY = "tc_tp";
+  let tpKept = "";
+  try { const c = JSON.parse(localStorage.getItem(TP_KEY) || "null"); if (c && CRED && c.tok === CRED.split(".")[0]) { tp.bal = c.bal; tp.reqs = c.reqs || []; tpKept = JSON.stringify([c.bal, c.reqs || []]); } } catch (e) {}
+  function keepTp() {
+    const s = JSON.stringify([tp.bal, tp.reqs || []]);
+    if (tp.bal == null || !CRED || s === tpKept) return;
+    tpKept = s;
+    try { localStorage.setItem(TP_KEY, JSON.stringify({ tok: CRED.split(".")[0], bal: tp.bal, reqs: tp.reqs || [] })); } catch (e) {}
+  }
   const tpN = (n) => Number(n || 0).toLocaleString("ja-JP");
   async function loadTp() {
     if (!CRED || mode === "login") return;
@@ -2511,7 +2692,7 @@ window.addEventListener("error", function (e) {
     const bal = tp.bal ?? 0, reqs = (tp.reqs || []).slice().sort((a, b) => String(b.at).localeCompare(String(a.at)));
     $("tp-body").innerHTML =
       `<div class="tp-card tp-hero"><span class="tp-cap">YOUR POINTS</span><div class="tp-bal">${tp.bal == null ? "—" : tpN(bal)}<small>TP</small></div>` +
-      `<p class="tp-how">退勤後に稼働実績を提出すると <b>+100TP</b><br>（実働7時間以上か早退の日。予定の出勤時間から5分以上遅れた打刻は打刻忘れとして対象外）<br>1TP＝1円分</p></div>` +
+      `<p class="tp-how">1TP＝1円分</p></div>` +
       `<div class="tp-card"><b>${esc(tp.item)}に交換</b><p class="hint">申請するとポイントが減り、Themisから${esc(tp.item)}が届きます。</p>` +
       `<div class="tp-row"><select id="tp-amt" aria-label="交換する金額">${tp.amounts.map((a) => `<option value="${a}"${a > bal ? " disabled" : ""}>${tpN(a)}円分（${tpN(a)}TP）</option>`).join("")}</select>` +
       `<button type="button" class="btn primary" id="tp-go"${bal < Math.min(...tp.amounts) ? " disabled" : ""}>交換を申請</button></div>` +
@@ -2545,7 +2726,8 @@ window.addEventListener("error", function (e) {
       // a 重要 one shown as new keeps its dot until it is confirmed; the others were just marked seen above
       box.innerHTML = `<div class="nt-list">` + (items.length ? items.map((x) => ntRow(x, x.unread && x.kind === "n" && x.important)).join("")
         : `<p class="nt-empty">お知らせはまだありません。</p>`) + `</div>`;
-      for (const b of box.querySelectorAll("[data-open]")) b.onclick = () => { const x = items.find((y) => y.id === b.dataset.open); showNotice(x.kind, x.id); };
+      // an お知らせ opens large over the list; an お問い合わせ opens its exchange with the reply box
+      for (const b of box.querySelectorAll("[data-open]")) b.onclick = () => { const x = items.find((y) => y.id === b.dataset.open); if (x.kind === "n") ntPop(x, nt.from); else showNotice(x.kind, x.id); };
       for (const b of $("sub-act").querySelectorAll("[data-nt]")) b.onclick = () => showNotice(b.dataset.nt);
       return;
     }
@@ -2556,7 +2738,7 @@ window.addEventListener("error", function (e) {
       const waiting = it.important && it.unread;
       if (!it.important) markSeen([it.id]);
       box.innerHTML = `<article class="nt-doc${it.important ? " imp" : ""}">${it.important ? `<span><span class="nt-tag imp">重要</span></span>` : ""}<h3>${esc(it.title)}</h3>` +
-        `<span class="nt-meta">${esc(ntAt(it.at))}　${esc(it.by)}</span>${rewardTag(it)}<div class="nt-text">${esc(it.text)}</div>` +
+        `${rewardTag(it)}<hr class="nt-rule"><div class="nt-text">${esc(it.text)}</div>` +
         (it.url ? `<a class="btn primary nt-get" href="${esc(it.url)}" target="_blank" rel="noopener">受け取る</a>` : "") +
         `<div class="nt-tools">` + (waiting ? `<button type="button" class="btn primary" id="nt-ok">確認しました</button>` : it.important ? `<span class="nt-ok">✓ 確認済み</span>` : "") + `</div></article>`;
       if (waiting) $("nt-ok").onclick = () => { markSeen([it.id]); renderNotice(); };
@@ -2617,12 +2799,14 @@ window.addEventListener("error", function (e) {
   const pickTab = (t) => { viewPicked = true; setTab(t); };
   $("tab-card").onclick = () => pickTab("card");
   $("tab-hope").onclick = () => pickTab("hope");
+  $("m-hope").onclick = () => pickTab(tab === "hope" ? "card" : "hope");
   // 常勤 staff hand in no shift wishes, so they never see that tab; 社員 send no invoice and hand in no wishes:
   // they get their 給与明細 instead
   // 代表 has no 勤務形態 and sees every tab
   const tabOk = (t) => t === "card" || t === "home" || t === "menu" || t === "notice" || t === "point" || !!window.TC_REP || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
   function applyWork() {
     $("tab-hope").hidden = !tabOk("hope"); $("tab-inv").hidden = !tabOk("inv"); $("tab-pay").hidden = !tabOk("pay");
+    $("m-hope").hidden = !(GROUP[tab] === "shift" && tabOk("hope"));
     if (!tabOk(tab)) setTab("card");
   }
   $("tab-inv").onclick = () => pickTab("inv");
@@ -2634,7 +2818,8 @@ window.addEventListener("error", function (e) {
   function watchView() {
     if (!backend) return;
     backend.watch("m-" + viewYm()); backend.watch("inv-" + viewYm());
-    if (tab === "hope") backend.watch("hope-" + viewYm());
+    // the シフト表 shows the marks sent as シフト希望 on days with no shift yet
+    if (tab === "hope" || (tab === "card" && tabOk("hope"))) backend.watch("hope-" + viewYm());
     if (tab === "pay") backend.watch("pay-" + viewYm());
   }
   // invoices are for finished months only: the invoice tab never goes past last month
@@ -3259,7 +3444,8 @@ ${v.addr}`;
     }
     // rebuild the calendar only when its content changes, so the 1-second tick keeps keyboard focus
     // the minute is part of the key so a planned shift flips to worked once its time has passed
-    const sig = viewYm() + today + Math.floor(now / 60000) + JSON.stringify(month(viewYm()).days);
+    const hopes = tabOk("hope") ? docs["hope-" + viewYm()]?.days || {} : {};
+    const sig = viewYm() + today + Math.floor(now / 60000) + JSON.stringify(month(viewYm()).days) + JSON.stringify(hopes);
     if (sig !== lastCalSig) {
       lastCalSig = sig;
       const frag = document.createDocumentFragment();
@@ -3287,6 +3473,8 @@ ${v.addr}`;
           (r?.in ? `<span class="tm">${shown}${r.out ? "" : '<span class="live">勤務中</span>'}</span>`
             : (r?.store || r?.planIn) && key >= today ? `<span class="plan"><span class="pw">予定</span>${r.planIn ? span(r.planIn, r.planOut) : ""}</span>` : "") +
           (r?.early && r?.in ? `<span class="el">早退</span>` : "") +
+          // a day with no shift yet shows the mark sent as シフト希望 (🚄 遠方可 / ○ / △)
+          (!r?.in && !r?.store && !r?.planIn && !r?.absent && hopes[key] ? `<span class="hp hp-${{ "○遠": "far", "△": "maybe" }[hopes[key]] || "ok"}">${{ "○遠": "🚄", "△": "△" }[hopes[key]] || "○"}<small>希望</small></span>` : "") +
           (r?.transport || r?.km != null ? `<span class="tr">${esc(r.transport || "")}${r.rideWith ? `（${esc(r.rideWith)}）` : ""}${r.km != null ? ` ${r.km}km` : ""}</span>` : "") +
           (missingProof(r) ? `<span class="np"><span class="pw">画像</span>未添付</span>` : r?.proofs?.length && !r.absent ? `<span class="pf">画像${r.proofs.length}枚</span>` : "");
         cell.setAttribute("aria-label", `${date.getMonth() + 1}月${date.getDate()}日（${WD[date.getDay()]}）${hol ? " " + hol : ""}${r?.absent ? " 欠勤" : ""}${r?.store ? " " + r.store : ""}${time ? " " + time : ""}${r?.early && r?.in ? " 早退" : ""}`);
@@ -4042,6 +4230,7 @@ ${v.addr}`;
       (window.TC_WORK ? tag(esc(window.TC_WORK), { 常勤: "full", 週末: "wkend" }[window.TC_WORK] || "staff") : "");
     // the name in a round badge
     // the ポイント sit right of the name in a badge of their own: "TP" stacked upright, the number beside it
+    keepTp();
     const tpChip = tp.bal == null ? "" : `<span class="who-tp" aria-label="${tpN(tp.bal)} TP"><i aria-hidden="true"><span>T</span><span>P</span></i><b>${tpN(tp.bal)}</b></span>`;
     $("who").innerHTML = name ? `<span class="who-row"><span class="who-name"><span class="who-nm">${esc(name)}</span></span>${tpChip}</span>` + (tags ? `<span class="who-tags">${tags}</span>` : "") : "";
   }
@@ -4434,6 +4623,8 @@ ${v.addr}`;
     // the 運営画面's own read (他社請求・売上) starts in the background once this screen is up
     if (window.TC_OWNER && !blData) blFetch().catch(() => {});
     if (window.TC_OWNER && !tpAdCache) call("api_tpAdmin").then((s) => { tpAdCache ||= JSON.parse(s); }).catch(() => {});
+    // and the お問い合わせ, so 問い合わせ opens at once
+    if (Date.now() - askAt > 60000) askFetch().catch(() => {});
     saveView();
   }
   // the months either side of the one on screen are read in the background, so ‹ › shows them at once
@@ -4554,7 +4745,7 @@ ${v.addr}`;
     $("ad-body").innerHTML =
       `<div class="ad-stats"><div class="ad-stat"><span>提出済み</span><b class="num">${sent} / ${live.length}</b></div>` +
       `<div class="ad-stat${live.length - sent ? " warn" : ""}"><span>未提出</span><b class="num">${live.length - sent}</b></div></div>` +
-      `<h3 class="ad-grp">全員のシフト希望</h3>` +
+      `<h3 class="ad-grp">全員のシフト希望</h3><h3 class="pcal-ym">${esc(ymLabel(ym))}</h3>` +
       monthCal(ym, (key) => {
         const ok = who(key, "○").length + who(key, "○遠方可").length, maybe = who(key, "△").length;
         return ok || maybe ? { cls: ok ? "v-ok" : "v-maybe", html: (ok ? `<span class="pcal-n">○${ok}</span>` : "") + (maybe ? `<span class="pcal-n maybe">△${maybe}</span>` : "") } : {};
@@ -4625,11 +4816,13 @@ ${v.addr}`;
             html: `<span class="pcal-s">${esc(r[DH.store])}</span>` + times.map((t) => `<span class="pcal-t num">${esc(t)}</span>`).join("") };
         }, sel) +
         `<div class="pcal-detail" id="pcal-detail">${dayDetail(sel, rows[sel])}</div>`;
+      bindPlan(m, rows);
       for (const b of $("ad-body").querySelectorAll(".pcal-c[data-day]")) b.onclick = () => {
         adPerson.day = b.dataset.day;
         for (const c of $("ad-body").querySelectorAll(".pcal-c.sel")) c.classList.remove("sel");
         b.classList.add("sel");
         $("pcal-detail").innerHTML = dayDetail(b.dataset.day, rows[b.dataset.day]);
+        bindPlan(m, rows);
       };
     }
     $("ad-back").onclick = async () => { adPerson = null; await adLoad(); scrollToY(adListY); };
@@ -4638,15 +4831,34 @@ ${v.addr}`;
   function dayDetail(key, r) {
     if (!key) return `<p class="hint">この月の記録はありません。</p>`;
     const [y, mo, d] = key.split("-").map(Number), wd = new Date(y, mo - 1, d).getDay();
+    // 運営以上: the day's shift (store and planned times) is put in or changed from here
+    const plan = adData.owner ? `<button type="button" class="btn primary ad-plan" data-plan="${key}">${r && (r[DH.store] || r[DH.pIn]) ? "シフトを変更" : "シフトを入力"}</button>` : "";
     const title = `<h3 class="ad-h3">${mo}月${d}日（${WD[wd]}）${holidayName(key) ? `<small>${esc(holidayName(key))}</small>` : ""}</h3>`;
-    if (!r) return title + `<p class="hint">この日の記録はありません。</p>`;
+    if (!r) return title + `<p class="hint">この日の記録はありません。</p>` + plan;
     const items = [["区分", `${r[DH.kind]}${r[DH.early] ? "・早退" : ""}`], ["稼働店舗", r[DH.store]], ["予定", r[DH.pIn] ? `${r[DH.pIn]}–${r[DH.pOut]}` : ""],
       ["起床", r[DH.wake]], ["出発", r[DH.dep]], ["出勤", r[DH.in]], ["退勤", r[DH.out]], ["実働", r[DH.work]],
       ["交通機関", r[DH.transport]], ["同乗者", r[DH.ride]], ["距離", r[DH.km] ? `${r[DH.km]} km` : ""],
       ["欠勤理由", r[DH.absWhy]], ["早退理由", r[DH.earlyWhy]], ["稼働実績", r[DH.result]], ["メモ", r[DH.memo]]].filter(([, v]) => v);
     const imgs = r[DH.imgs] ? r[DH.imgs].split("\n").map((u, i) => link(u, `画像${i + 1}`)).join(" ") : "";
     return title + `<dl class="ad-kv">` + items.map(([t, v]) => `<dt>${t}</dt><dd>${esc(v)}</dd>`).join("") +
-      (imgs ? `<dt>証明画像</dt><dd>${imgs}</dd>` : "") + `</dl>`;
+      (imgs ? `<dt>証明画像</dt><dd>${imgs}</dd>` : "") + `</dl>` + plan;
+  }
+  // the shift of one person's day, typed in by 運営以上: store, 出勤, 退勤 (all blank takes the shift away)
+  function bindPlan(m, rows) {
+    const b = $("ad-body").querySelector("[data-plan]");
+    if (!b) return;
+    b.onclick = () => {
+      const key = b.dataset.plan, r = rows[key], [, mo, d] = key.split("-").map(Number);
+      adDialog(`${m.name}さん　${mo}月${d}日のシフト`,
+        `<p>店舗と時間を入れてください。本人のシフト表に入ります。全部空にすると、この日のシフトを消します。</p><div class="fields">` +
+        `<label class="f wide">店舗名<input type="text" id="pl-store" maxlength="60" autocomplete="off" placeholder="例：〇〇デンキ 新宿西口店" value="${esc(r?.[DH.store] || "")}"></label>` +
+        `<label class="f">出勤<input type="time" id="pl-in" step="300" value="${esc(r?.[DH.pIn] || "")}"></label>` +
+        `<label class="f">退勤<input type="time" id="pl-out" step="300" value="${esc(r?.[DH.pOut] || "")}"></label></div>`, "保存する", async () => {
+          await call("api_adminSetPlan", m.id, key, $("pl-store").value.trim(), $("pl-in").value, $("pl-out").value);
+          $("ad-dlg").hidden = true; adMsg(`${m.name}さんの${mo}月${d}日のシフトを保存しました。`);
+          adPerson.day = key; await adLoad(true);
+        });
+    };
   }
 
   // the owner's list: each person's PDF, and 入金完了 once paid; the member then confirms the money arrived
@@ -5212,13 +5424,24 @@ ${v.addr}`;
   }
   // 管理者画面 › 問い合わせ: every お問い合わせ (the ones waiting for an answer first, marked 未回答); one opened shows
   // the exchange and a reply box. The answer reaches the sender's お知らせ as 「お問い合わせについて」
-  let askSel = null;
-  async function adAsk() {
-    $("ad-body").innerHTML = `<p class="ad-loading">読み込んでいます…</p>`;
-    let qs;
-    try { qs = JSON.parse(await call("api_askAdmin")); } catch (e) { $("ad-body").innerHTML = ""; adMsg(errText(e)); return; }
-    if (mode !== "admin" || adTab !== "ask") return;
+  // the last read is drawn at once (it is also read ahead when the admin screen opens); the fresh one replaces it
+  let askSel = null, askCache = null, askAt = 0;
+  async function askFetch() {
+    const qs = JSON.parse(await call("api_askAdmin"));
+    askCache = qs; askAt = Date.now();
     inbox.askOpen = qs.filter((q) => q.open).length; paintBell();
+    return qs;
+  }
+  async function adAsk() {
+    if (askCache) drawAsk(askCache); else $("ad-body").innerHTML = `<p class="ad-loading">読み込んでいます…</p>`;
+    // a reply box being typed in is not drawn over
+    let qs;
+    try { qs = await askFetch(); } catch (e) { if (!askCache) $("ad-body").innerHTML = ""; adMsg(errText(e)); return; }
+    if (mode !== "admin" || adTab !== "ask") return;
+    if ($("ask-text")?.value.trim()) return;
+    drawAsk(qs);
+  }
+  function drawAsk(qs) {
     const it = askSel && qs.find((q) => q.id === askSel);
     if (it) {
       $("ad-body").innerHTML = `<div class="ad-back"><button type="button" class="tool" id="ask-back">‹ 一覧に戻る</button>` +
@@ -5250,7 +5473,7 @@ ${v.addr}`;
     $("ad-body").innerHTML = `<form class="nt-form nt-doc" id="ad-ntpost"><h3>お知らせを出す</h3><p class="hint">全員のホームのお知らせに届きます。</p>` + noticeFormHTML() + `</form>` +
       `<h4 class="bl-h">出したお知らせ</h4>` + (list.length ? `<div class="nt-list">` + list.map((x) => ntRow(x, false)).join("") + `</div>` : `<p class="hint">まだありません。</p>`);
     bindNoticeForm($("ad-ntpost"), () => { if (adTab === "notices") adNotices(); }, adMsg);
-    for (const b of $("ad-body").querySelectorAll("[data-open]")) b.disabled = true;
+    for (const b of $("ad-body").querySelectorAll("[data-open]")) b.onclick = () => ntPop(list.find((x) => x.id === b.dataset.open), "home");
   }
   // 運営画面 › ポイント: the exchange requests to send, giving TP to someone, everyone's balance and the log
   // (the log is shown here only, to 運営 and 代表)
