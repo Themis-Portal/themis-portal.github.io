@@ -2021,6 +2021,10 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
 #st-body { display: grid; gap: 14px; }
 .thx-form[hidden], .thx-none[hidden] { display: none !important; }
 #thx-msg, #thx-to { font-size: 16px; }
+.sx-prof { display: grid; gap: 10px; margin-top: 18px; padding: 14px; border-radius: var(--r); background: var(--card); border: 1px solid var(--rule); }
+.sx-prof .bl-h { margin: 0; }
+.sx-prof .btn { justify-self: stretch; padding: 12px; font-weight: 800; }
+.ad-addr-view { display: grid; gap: 2px; font-size: 13px; overflow-wrap: anywhere; }
 .ad-addr-form { display: grid; gap: 6px; }
 .ad-addr-form .f { margin: 0; }
 .ad-addr-form .tool { justify-self: start; }
@@ -2499,6 +2503,21 @@ html, body { touch-action: manipulation; }
 
   <section class="panel" id="p-mypage" aria-label="マイページ" hidden>
     <div id="st-body"></div>
+    <form class="sx-prof" id="mp-form" novalidate>
+      <h4 class="bl-h">プロフィール</h4>
+      <label class="f">お名前（アプリでみんなに表示されます）<input id="mp-name" type="text" maxlength="30" autocomplete="name"></label>
+      <div class="f">生年月日<span id="mp-birth"></span></div>
+      <div class="zip-row">
+        <label class="f">郵便番号<input id="mp-zip" type="text" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="160-0023"></label>
+        <span class="hint" id="mp-zipmsg">7桁を入れると住所が自動で入ります</span>
+      </div>
+      <label class="f">住所<input id="mp-address" type="text" maxlength="120" autocomplete="off"></label>
+      <label class="f">建物名・部屋番号<input id="mp-building" type="text" maxlength="80" autocomplete="off"></label>
+      <label class="f">電話番号<input id="mp-tel" type="text" inputmode="tel" maxlength="20" autocomplete="off"></label>
+      <p class="hint">住所と電話番号は、請求書にも載ります。</p>
+      <span class="hint perr" id="mp-err" role="alert"></span>
+      <button type="submit" class="btn primary">保存する</button>
+    </form>
   </section>
 
   <section class="panel" id="p-point" aria-label="ポイント" hidden>
@@ -3021,7 +3040,7 @@ window.addEventListener("error", function (e) {
     if (t === "notice") renderNotice();
     if (t === "point") { renderPoint(); loadTp(); }
     if (t === "invite") { renderInvite(); loadInvite(); }
-    if (t === "mypage") { renderStats(); loadStats(); }
+    if (t === "mypage") { renderStats(); loadStats(); fillProf(); }
     if (t === "plaza") { paintRank(); loadRank(); paintThanks(); loadThanks(); }
     for (const b of document.querySelectorAll(".bnav button")) {
       if (b.dataset.g === GROUP[t]) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
@@ -3516,6 +3535,35 @@ window.addEventListener("error", function (e) {
     if (tab === "mypage") renderStats();
   }
   $("sx-open").onclick = () => pickTab("mypage");
+  // プロフィール: what is saved now, put in when マイページ opens (代表's name stays as on the sheet)
+  function fillProf() {
+    if ($("mp-form").contains(document.activeElement)) return;
+    const b = doc("billing");
+    splitOldBilling(b);
+    $("mp-name").value = window.TC_NAME || ""; $("mp-name").disabled = !!window.TC_REP;
+    $("mp-birth").innerHTML = ymdSel(myProf?.birth, 1930); ymdWire($("mp-birth"), () => {});
+    for (const k of ADDR) $("mp-" + k).value = b[k] || "";
+    $("mp-err").textContent = "";
+  }
+  zipField($("mp-zip"), $("mp-address"), $("mp-zipmsg"));
+  $("mp-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const name = $("mp-name").value.trim(), birth = ymdVal($("mp-birth")), err = (t) => { $("mp-err").textContent = t; };
+    if (!name) { err("お名前を入力してください。"); $("mp-name").focus(); return; }
+    if (!birth) { err("生年月日を選んでください。"); return; }
+    if (!$("mp-address").value.trim()) { err("住所を入力してください。"); $("mp-address").focus(); return; }
+    document.activeElement?.blur();
+    busyOn("プロフィールを保存しています");
+    try {
+      if (!window.TC_REP && name !== window.TC_NAME) { window.TC_NAME = await call("api_setMyName", name); paintWho(); }
+      if (birth !== (myProf?.birth || "")) { myProf = myProf || {}; myProf.birth = await call("api_setBirth", birth); loadCelebs(); }
+      const b = doc("billing");
+      for (const k of ADDR) b[k] = $("mp-" + k).value.trim();
+      composeBilling(b);
+      await persist("billing");
+      err(""); await busyDone("保存しました");
+    } catch (x) { busyOff(); err(errText(x)); }
+  };
   function renderStats() {
     const now = new Date(), y = now.getFullYear(), cm = now.getMonth() + 1, today = dayKey(now), t = Date.now();
     const monthOf = (ym) => {
@@ -4815,6 +4863,7 @@ window.addEventListener("error", function (e) {
 
   // first visit: the name and address the invoice needs, asked once before anything else
   function openSetup() {
+    if (!$("setup-sheet").hidden) return;
     const b = doc("billing");
     splitOldBilling(b);
     $("s-from").value = b.from || (window.TC_NEED_NAME ? "" : window.TC_NAME || "");
@@ -4841,6 +4890,29 @@ window.addEventListener("error", function (e) {
     $("s-bd").value = Number(was) <= n ? was : "";
   }
   $("s-by").onchange = $("s-bm").onchange = () => birthDays();
+  // 年・月・日 as three pulldowns in one box (an iPhone's date box is hard to use); the 日 list follows the month.
+  // ymdWire calls done(value) once all three are picked, or done("") once all three are blank again
+  function ymdSel(v, from, attr) {
+    const [y, m, d] = String(v || "").split("-"), now = new Date().getFullYear();
+    const o = (val, t, on) => `<option value="${val}"${on ? " selected" : ""}>${t}</option>`, n = new Date(Number(y) || 2000, Number(m) || 1, 0).getDate();
+    return `<span class="bd-row" ${attr || ""}>` +
+      `<select data-p="y" aria-label="年">${o("", "年")}${Array.from({ length: now - from + 1 }, (_, i) => now - i).map((k) => o(k, `${k}年`, String(k) === y)).join("")}</select>` +
+      `<select data-p="m" aria-label="月">${o("", "月")}${Array.from({ length: 12 }, (_, i) => o(pad(i + 1), `${i + 1}月`, pad(i + 1) === m)).join("")}</select>` +
+      `<select data-p="d" aria-label="日">${o("", "日")}${Array.from({ length: n }, (_, i) => o(pad(i + 1), `${i + 1}日`, pad(i + 1) === d)).join("")}</select></span>`;
+  }
+  const ymdVal = (box) => { const v = [...box.querySelectorAll("select")].map((x) => x.value); return v.every(Boolean) ? v.join("-") : ""; };
+  function ymdWire(box, done) {
+    const s = (p) => box.querySelector(`[data-p="${p}"]`);
+    box.onchange = () => {
+      const n = new Date(Number(s("y").value) || 2000, Number(s("m").value) || 1, 0).getDate(), d = s("d").value;
+      if (s("d").options.length - 1 !== n) {
+        s("d").innerHTML = `<option value="">日</option>` + Array.from({ length: n }, (_, i) => `<option value="${pad(i + 1)}">${i + 1}日</option>`).join("");
+        s("d").value = Number(d) <= n ? d : "";
+      }
+      const v = ["y", "m", "d"].map((p) => s(p).value);
+      if (v.every(Boolean)) done(v.join("-")); else if (!v.some(Boolean)) done("");
+    };
+  }
   const birthVal = () => ($("s-by").value && $("s-bm").value && $("s-bd").value ? `${$("s-by").value}-${$("s-bm").value}-${$("s-bd").value}` : "");
   zipField($("s-zip"), $("s-address"), $("s-zipmsg"));
   $("setup-form").addEventListener("submit", async (e) => {
@@ -5151,7 +5223,7 @@ window.addEventListener("error", function (e) {
   // invoice tab of the admin screen (運営 only). Also used for the quick copy shown while the app opens
   // the name in the header, with small tags for 常勤 / 週末 and, for admins, 運営 / 管理者
   function paintWho() {
-    const name = doc("billing").from || window.TC_NAME || "";
+    const name = window.TC_NAME || doc("billing").from || "";   // the name on the メンバー sheet (not the invoice's 氏名・屋号)
     const tag = (t, cls) => `<span class="who-tag ${cls}">${t}</span>`;
     const tags = (window.TC_ADMIN ? tag(window.TC_REP ? "代表" : window.TC_OWNER ? "運営" : "管理者", window.TC_REP ? "role rep" : "role") : "") +
       (window.TC_WORK ? tag(esc(window.TC_WORK), { 常勤: "full", 週末: "wkend" }[window.TC_WORK] || "staff") : "");
@@ -6130,8 +6202,8 @@ window.addEventListener("error", function (e) {
     const roleSel = (v, name, attr) => seg(name, (rep ? [["運営", "運営"]] : []).concat([["管理者", "管理者"], ["", "メンバー"]]), v || "", attr);
     const picked = (el) => (el.querySelector("input:checked") || {}).value;
     // whether the contract is put in front of the person when they first open the app (blank on the sheet = 表示する)
-    // shown as 契約済 (ticked: the contract is not put in front of them, it is already signed on paper)
-    const askChk = (v, attr) => `<label class="check"><input type="checkbox" ${attr}${v === false ? " checked" : ""}> 契約済</label>`;
+    // shown as 締結済 (ticked: the contract is not put in front of them, it is already signed on paper)
+    const askChk = (v, attr) => `<label class="check"><input type="checkbox" ${attr}${v === false ? " checked" : ""}> 締結済</label>`;
     // whether the person sees the 招待コード input in 友達を招待 (ticked: shown)
     const ivChk = (v, attr) => `<label class="check"><input type="checkbox" ${attr}${v !== false ? " checked" : ""}> 入力欄を表示する</label>`;
     const badge = (m) => m.rep ? `<span class="st st-rep">代表</span>` : m.role === "運営" ? `<span class="st st-done">運営</span>` : m.role === "管理者" ? `<span class="st st-work">管理者</span>` : "";
@@ -6156,7 +6228,7 @@ window.addEventListener("error", function (e) {
         // (name and ログインID on top, then one line each for 勤務形態 · 役割 · 契約, and the account buttons last)
         const open = adOpenCards.has(m.id);
         const sum = [m.loginId ? `<span class="num">${esc(m.loginId)}</span>` : "", esc(m.rep ? "勤務形態なし" : m.workType || "未回答"), esc(m.rep ? "代表" : m.role || "メンバー"),
-          m.hasContract ? `<span class="sum-ok">締結済み</span>` : `<span class="sum-ng">未締結</span>`].filter(Boolean).join(`<i>・</i>`);
+          m.hasContract ? `<span class="sum-ok">締結済</span>` : `<span class="sum-ng">未締結</span>`].filter(Boolean).join(`<i>・</i>`);
         return `<div class="ad-card ad-fold${open ? " open" : ""}" data-id="${esc(m.id)}" data-name="${esc(m.name)}">` +
           `<div class="ad-sum" role="button" tabindex="0" aria-expanded="${open}">` +
           `<div class="ad-card-h"><span>${numName(i, m.name)}</span><span class="ad-sum-r">${badge(m)}<span class="ad-chev" aria-hidden="true"></span></span></div>` +
@@ -6175,8 +6247,8 @@ window.addEventListener("error", function (e) {
           (owner && !m.rep ? `<dt>テスト用</dt><dd><label class="check"><input type="checkbox" data-test${m.test ? " checked" : ""}> ランキングや集計に出さない</label></dd>` : "") +
           // 生年月日 (the person's own entry) and 入社日 (entered here, for the 在籍記念)
           (owner ? `<dt>生年月日</dt><dd>${m.birth ? esc(jDate(m.birth)) : `<span class="muted">未登録</span>`}</dd>` +
-            `<dt>入社日</dt><dd><input type="date" class="ad-join" data-join value="${esc(m.join || "")}" max="${dayKey(new Date())}" aria-label="${esc(m.name)}さんの入社日"></dd>` +
-            `<dt>住所</dt><dd class="ad-addr"><button type="button" class="tool" data-addr>住所を確認・変更</button></dd>` : "") +
+            `<dt>入社日</dt><dd>${ymdSel(m.join, 2000, 'data-join')}</dd>` +
+            `<dt>住所</dt><dd class="ad-addr"><button type="button" class="tool" data-addr>住所を見る</button></dd>` : "") +
           `</dl>` +
           (touch ? `<div class="ad-acts"><button type="button" class="tool" data-temp>仮パスワードを発行</button><button type="button" class="tool danger" data-del>削除</button></div>` : "") +
           `</div></div>`;
@@ -6234,7 +6306,7 @@ window.addEventListener("error", function (e) {
         adChanged();
         if (!saved) adMsg(`${m.name}さんを保存しましたが、サーバーが古いため反映されていないかもしれません。Code.gs を「新しいバージョン」でデプロイし直してください。`);
         else if (saved[k] !== v) adMsg(`${m.name}さんの${{ role: "役割", workType: "勤務形態", contractAsk: "契約書の表示", gender: "性別" }[k]}は変えられませんでした。`);
-        else adMsg(k === "contractAsk" ? `${m.name}さんを${v ? "未契約（最初に契約書を表示）" : "契約済"}にしました。`
+        else adMsg(k === "contractAsk" ? `${m.name}さんを${v ? "未締結（最初に契約書を表示）" : "締結済"}にしました。`
           : `${m.name}さんの${{ role: "役割", workType: "勤務形態", gender: "性別" }[k]}を「${v || "メンバー"}」にしました。`);
       } catch (err) { adMsg(errText(err)); el.disabled = false; }
     };
@@ -6252,31 +6324,24 @@ window.addEventListener("error", function (e) {
       catch (err) { el.checked = !on; adMsg(errText(err)); }
       el.disabled = false;
     };
-    // 住所: read when opened; 保存 writes it into the person's 請求書 › 毎月共通の設定
+    // 住所: read when opened, to check only (the person changes it from マイページ)
     for (const el of $("ad-body").querySelectorAll("[data-addr]")) el.onclick = async () => {
       const m = person(card(el)), dd = el.parentElement;
       el.disabled = true;
       let a;
       try { a = JSON.parse(await call("api_adminAddr", m.id)); } catch (err) { el.disabled = false; adMsg(errText(err)); return; }
-      const f = (k, label, ph, mode) => `<label class="f">${label}<input data-ak="${k}" value="${esc(a[k] || "")}" placeholder="${ph}"${mode ? ` inputmode="${mode}"` : ""} autocomplete="off"></label>`;
-      dd.innerHTML = `<div class="ad-addr-form">` + f("zip", "郵便番号", "160-0023", "numeric") + f("address", "住所", "東京都新宿区…") + f("building", "建物名・部屋番号", "") + f("tel", "電話番号", "090-1234-5678", "tel") +
-        `<button type="button" class="tool" data-addr-save>保存</button></div>`;
-      dd.querySelector("[data-addr-save]").onclick = async (ev) => {
-        const info = {};
-        for (const i of dd.querySelectorAll("[data-ak]")) info[i.dataset.ak] = i.value.trim();
-        ev.target.disabled = true;
-        try { await call("api_adminSetAddr", m.id, info); adMsg(`${m.name}さんの住所を保存しました。`); }
-        catch (err) { adMsg(errText(err)); }
-        ev.target.disabled = false;
-      };
+      const lines = [a.zip ? `〒${a.zip}` : "", [a.address, a.building].filter(Boolean).join(" "), a.tel ? `TEL ${a.tel}` : ""].filter(Boolean);
+      dd.innerHTML = `<div class="ad-addr-view">${lines.length ? lines.map((x) => `<span>${esc(x)}</span>`).join("") : `<span class="muted">未登録</span>`}</div>`;
     };
-    for (const el of $("ad-body").querySelectorAll("[data-join]")) el.onchange = async () => {
-      const m = person(card(el)), v = el.value;
-      el.disabled = true;
+    // saved once all three are picked (or all three set back to blank)
+    for (const el of $("ad-body").querySelectorAll("[data-join]")) ymdWire(el, async (v) => {
+      const m = person(card(el)), sels = [...el.querySelectorAll("select")];
+      if (v === (m.join || "")) return;
+      sels.forEach((x) => { x.disabled = true; });
       try { m.join = await call("api_adminSetJoin", m.id, v); adMsg(v ? `${m.name}さんの入社日を ${jDate(v)} にしました。` : `${m.name}さんの入社日を消しました。`); }
-      catch (err) { el.value = m.join || ""; adMsg(errText(err)); }
-      el.disabled = false;
-    };
+      catch (err) { adMsg(errText(err)); }
+      sels.forEach((x) => { x.disabled = false; });
+    });
     const conFile = (name) => `業務委託契約書_${name}.pdf`;
     for (const b of $("ad-body").querySelectorAll("[data-contract]")) b.onclick = () => showPdf(`${card(b).dataset.name}さんの業務委託契約書`, card(b).dataset.id, "contract", "", conFile(card(b).dataset.name));
     for (const b of $("ad-body").querySelectorAll("[data-cdl]")) b.onclick = () => busyBtn(b, () => downloadPdf(card(b).dataset.id, "contract", "", conFile(card(b).dataset.name)));
