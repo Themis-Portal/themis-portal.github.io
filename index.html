@@ -2023,7 +2023,14 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
 #thx-msg, #thx-to { font-size: 16px; }
 .sx-prof { display: grid; gap: 10px; margin-top: 18px; padding: 14px; border-radius: var(--r); background: var(--card); border: 1px solid var(--rule); }
 .sx-prof .bl-h { margin: 0; }
-.sx-prof .btn { justify-self: stretch; padding: 12px; font-weight: 800; }
+.sx-prof .btn { padding: 12px; font-weight: 800; }
+.sx-prof[hidden], .sx-prof-view[hidden] { display: none; }
+.sx-prof-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sx-prof-h .btn { padding: 8px 16px; }
+.sx-prof-dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 12px; margin: 0; font-size: 14px; }
+.sx-prof-dl dt { color: var(--ink-soft); }
+.sx-prof-dl dd { margin: 0; overflow-wrap: anywhere; }
+.sx-prof-acts { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; }
 .ad-addr-view { display: grid; gap: 2px; font-size: 13px; overflow-wrap: anywhere; }
 .ad-addr-form { display: grid; gap: 6px; }
 .ad-addr-form .f { margin: 0; }
@@ -2503,8 +2510,12 @@ html, body { touch-action: manipulation; }
 
   <section class="panel" id="p-mypage" aria-label="マイページ" hidden>
     <div id="st-body"></div>
-    <form class="sx-prof" id="mp-form" novalidate>
-      <h4 class="bl-h">プロフィール</h4>
+    <div class="sx-prof sx-prof-view" id="mp-view">
+      <div class="sx-prof-h"><h4 class="bl-h">プロフィール</h4><button type="button" class="btn" id="mp-edit">編集する</button></div>
+      <dl class="sx-prof-dl" id="mp-sum"></dl>
+    </div>
+    <form class="sx-prof" id="mp-form" novalidate hidden>
+      <h4 class="bl-h">プロフィールを編集</h4>
       <label class="f">お名前（アプリでみんなに表示されます）<input id="mp-name" type="text" maxlength="30" autocomplete="name"></label>
       <div class="f">生年月日<span id="mp-birth"></span></div>
       <div class="zip-row">
@@ -2516,7 +2527,7 @@ html, body { touch-action: manipulation; }
       <label class="f">電話番号<input id="mp-tel" type="text" inputmode="tel" maxlength="20" autocomplete="off"></label>
       <p class="hint">住所と電話番号は、請求書にも載ります。</p>
       <span class="hint perr" id="mp-err" role="alert"></span>
-      <button type="submit" class="btn primary">保存する</button>
+      <div class="sx-prof-acts"><button type="button" class="btn" id="mp-cancel">閉じる</button><button type="submit" class="btn primary" id="mp-save">保存する</button></div>
     </form>
   </section>
 
@@ -2645,7 +2656,7 @@ html, body { touch-action: manipulation; }
     <label class="f">住所<input id="s-address" type="text" autocomplete="off" maxlength="100" placeholder="東京都新宿区西新宿1-2-3"></label>
     <label class="f">建物名・部屋番号（任意）<input id="s-building" type="text" autocomplete="off" maxlength="60" placeholder="〇〇マンション 101"></label>
     <label class="f">電話番号<input id="s-tel" type="tel" inputmode="tel" autocomplete="off" maxlength="15" placeholder="090-1234-5678"></label>
-    <div class="f">生年月日<span class="bd-row"><select id="s-by" aria-label="年"></select><select id="s-bm" aria-label="月"></select><select id="s-bd" aria-label="日"></select></span><span class="hint">誕生日の当日は、ホームでみんなにお知らせされます（生まれた年は表示されません）</span></div>
+    <div class="f">生年月日<span id="s-birth"></span><span class="hint">誕生日の当日は、ホームでみんなにお知らせされます（生まれた年は表示されません）</span></div>
     <div class="f" role="radiogroup" aria-labelledby="s-work-h" id="s-work-box"><span id="s-work-h">勤務形態</span>
       <div class="s-work"><label class="check"><input type="radio" name="s-work" value="常勤"> 常勤</label><label class="check"><input type="radio" name="s-work" value="週末"> 週末</label><label class="check"><input type="radio" name="s-work" value="社員"> 社員</label></div>
       <span class="hint">常勤の人は、シフト希望の提出はありません。社員の人は、シフト表だけを使います。</span></div>
@@ -3040,7 +3051,7 @@ window.addEventListener("error", function (e) {
     if (t === "notice") renderNotice();
     if (t === "point") { renderPoint(); loadTp(); }
     if (t === "invite") { renderInvite(); loadInvite(); }
-    if (t === "mypage") { renderStats(); loadStats(); fillProf(); }
+    if (t === "mypage") { renderStats(); loadStats(); showProf(false); }
     if (t === "plaza") { paintRank(); loadRank(); paintThanks(); loadThanks(); }
     for (const b of document.querySelectorAll(".bnav button")) {
       if (b.dataset.g === GROUP[t]) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
@@ -3535,9 +3546,17 @@ window.addEventListener("error", function (e) {
     if (tab === "mypage") renderStats();
   }
   $("sx-open").onclick = () => pickTab("mypage");
-  // プロフィール: what is saved now, put in when マイページ opens (代表's name stays as on the sheet)
-  function fillProf() {
-    if ($("mp-form").contains(document.activeElement)) return;
+  // プロフィール: what is saved, shown closed with 編集する; the form is filled once when it opens and is not redrawn
+  // while it is open (代表's name stays as on the sheet)
+  function profSum() {
+    const b = doc("billing"), bd = myProf?.birth, row = (k, v) => `<dt>${k}</dt><dd>${v ? esc(v) : `<span class="muted">未登録</span>`}</dd>`;
+    splitOldBilling(b);
+    $("mp-sum").innerHTML = row("お名前", window.TC_NAME) + row("生年月日", bd ? jDate(bd) : "") +
+      row("住所", [b.zip ? `〒${b.zip}` : "", [b.address, b.building].filter(Boolean).join(" ")].filter(Boolean).join(" ")) + row("電話番号", b.tel);
+  }
+  function showProf(open) {
+    $("mp-form").hidden = !open; $("mp-view").hidden = open;
+    if (!open) { profSum(); return; }
     const b = doc("billing");
     splitOldBilling(b);
     $("mp-name").value = window.TC_NAME || ""; $("mp-name").disabled = !!window.TC_REP;
@@ -3545,14 +3564,18 @@ window.addEventListener("error", function (e) {
     for (const k of ADDR) $("mp-" + k).value = b[k] || "";
     $("mp-err").textContent = "";
   }
-  zipField($("mp-zip"), $("mp-address"), $("mp-zipmsg"));
+  $("mp-edit").onclick = () => showProf(true);
+  $("mp-cancel").onclick = () => showProf(false);  zipField($("mp-zip"), $("mp-address"), $("mp-zipmsg"));
   $("mp-form").onsubmit = async (e) => {
     e.preventDefault();
-    const name = $("mp-name").value.trim(), birth = ymdVal($("mp-birth")), err = (t) => { $("mp-err").textContent = t; };
+    const name = $("mp-name").value.trim(), birth = ymdVal($("mp-birth"));
+    // said both under the form and as a line at the bottom of the screen, so it is not missed
+    const err = (t) => { $("mp-err").textContent = t; if (t) msg(t); };
     if (!name) { err("お名前を入力してください。"); $("mp-name").focus(); return; }
-    if (!birth) { err("生年月日を選んでください。"); return; }
+    if (!birth || birth === "bad") { err(birth ? "生年月日の日付が正しくありません（その月にない日です）。" : "生年月日を選んでください。"); return; }
     if (!$("mp-address").value.trim()) { err("住所を入力してください。"); $("mp-address").focus(); return; }
     document.activeElement?.blur();
+    $("mp-save").disabled = true; $("mp-save").textContent = "保存しています…";
     busyOn("プロフィールを保存しています");
     try {
       if (!window.TC_REP && name !== window.TC_NAME) { window.TC_NAME = await call("api_setMyName", name); paintWho(); }
@@ -3560,9 +3583,11 @@ window.addEventListener("error", function (e) {
       const b = doc("billing");
       for (const k of ADDR) b[k] = $("mp-" + k).value.trim();
       composeBilling(b);
-      await persist("billing");
-      err(""); await busyDone("保存しました");
+      if (!await persist("billing")) throw new Error("住所を保存できませんでした。通信状況を確認して、もう一度押してください。");
+      $("mp-err").textContent = ""; await busyDone("保存しました");
+      showProf(false);
     } catch (x) { busyOff(); err(errText(x)); }
+    $("mp-save").disabled = false; $("mp-save").textContent = "保存する";
   };
   function renderStats() {
     const now = new Date(), y = now.getFullYear(), cm = now.getMonth() + 1, today = dayKey(now), t = Date.now();
@@ -4876,44 +4901,34 @@ window.addEventListener("error", function (e) {
     $("setup-sheet").hidden = false;
     focusIfMouse($("s-from"));
   }
-  // 生年月日: 年・月・日 as three pulldowns; the 日 list follows the month (and a leap year)
-  function birthPick(v) {
-    const now = new Date().getFullYear(), [y, m, d] = String(v || "").split("-");
-    const opt = (val, txt) => `<option value="${val}">${txt}</option>`;
-    $("s-by").innerHTML = opt("", "年") + Array.from({ length: now - 1929 }, (_, i) => now - i).map((n) => opt(n, `${n}年`)).join("");
-    $("s-bm").innerHTML = opt("", "月") + Array.from({ length: 12 }, (_, i) => opt(pad(i + 1), `${i + 1}月`)).join("");
-    $("s-by").value = y || ""; $("s-bm").value = m || ""; birthDays(d || "");
-  }
-  function birthDays(keep) {
-    const n = new Date(Number($("s-by").value) || 2000, Number($("s-bm").value) || 1, 0).getDate(), was = keep ?? $("s-bd").value;
-    $("s-bd").innerHTML = `<option value="">日</option>` + Array.from({ length: n }, (_, i) => `<option value="${pad(i + 1)}">${i + 1}日</option>`).join("");
-    $("s-bd").value = Number(was) <= n ? was : "";
-  }
-  $("s-by").onchange = $("s-bm").onchange = () => birthDays();
-  // 年・月・日 as three pulldowns in one box (an iPhone's date box is hard to use); the 日 list follows the month.
-  // ymdWire calls done(value) once all three are picked, or done("") once all three are blank again
+  // 年・月・日 as three pulldowns in one box (an iPhone's date box is hard to use). Nothing in them is redrawn while
+  // they are used (an iPhone put a pulldown back when the 日 list was rebuilt under it): 日 is always 1〜31, and a date
+  // that does not exist (2月30日) is caught by ymdCheck
   function ymdSel(v, from, attr) {
     const [y, m, d] = String(v || "").split("-"), now = new Date().getFullYear();
-    const o = (val, t, on) => `<option value="${val}"${on ? " selected" : ""}>${t}</option>`, n = new Date(Number(y) || 2000, Number(m) || 1, 0).getDate();
+    const o = (val, t, on) => `<option value="${val}"${on ? " selected" : ""}>${t}</option>`;
     return `<span class="bd-row" ${attr || ""}>` +
       `<select data-p="y" aria-label="年">${o("", "年")}${Array.from({ length: now - from + 1 }, (_, i) => now - i).map((k) => o(k, `${k}年`, String(k) === y)).join("")}</select>` +
       `<select data-p="m" aria-label="月">${o("", "月")}${Array.from({ length: 12 }, (_, i) => o(pad(i + 1), `${i + 1}月`, pad(i + 1) === m)).join("")}</select>` +
-      `<select data-p="d" aria-label="日">${o("", "日")}${Array.from({ length: n }, (_, i) => o(pad(i + 1), `${i + 1}日`, pad(i + 1) === d)).join("")}</select></span>`;
+      `<select data-p="d" aria-label="日">${o("", "日")}${Array.from({ length: 31 }, (_, i) => o(pad(i + 1), `${i + 1}日`, pad(i + 1) === d)).join("")}</select></span>`;
   }
-  const ymdVal = (box) => { const v = [...box.querySelectorAll("select")].map((x) => x.value); return v.every(Boolean) ? v.join("-") : ""; };
+  // "" while any is blank, "bad" for a day the month does not have, else yyyy-MM-dd
+  const ymdOf = (y, m, d) => (!y || !m || !d ? "" : new Date(Number(y), Number(m) - 1, Number(d)).getDate() === Number(d) ? `${y}-${m}-${d}` : "bad");
+  const ymdVal = (box) => ymdOf(...["y", "m", "d"].map((p) => box.querySelector(`[data-p="${p}"]`).value));
+  // done(value) once all three are picked (a real date), or done("") once all three are blank again
   function ymdWire(box, done) {
-    const s = (p) => box.querySelector(`[data-p="${p}"]`);
     box.onchange = () => {
-      const n = new Date(Number(s("y").value) || 2000, Number(s("m").value) || 1, 0).getDate(), d = s("d").value;
-      if (s("d").options.length - 1 !== n) {
-        s("d").innerHTML = `<option value="">日</option>` + Array.from({ length: n }, (_, i) => `<option value="${pad(i + 1)}">${i + 1}日</option>`).join("");
-        s("d").value = Number(d) <= n ? d : "";
-      }
-      const v = ["y", "m", "d"].map((p) => s(p).value);
-      if (v.every(Boolean)) done(v.join("-")); else if (!v.some(Boolean)) done("");
+      const v = ymdVal(box), any = [...box.querySelectorAll("select")].some((x) => x.value);
+      if (v === "bad") msg("その月にない日付です。日を選び直してください。");
+      else if (v) done(v); else if (!any) done("");
     };
   }
-  const birthVal = () => ($("s-by").value && $("s-bm").value && $("s-bd").value ? `${$("s-by").value}-${$("s-bm").value}-${$("s-bd").value}` : "");
+  // 初めに's 生年月日 (the same pulldowns)
+  function birthPick(v) {
+    $("s-birth").innerHTML = ymdSel(v, 1930);
+    ymdWire($("s-birth"), () => {});
+  }
+  const birthVal = () => ymdVal($("s-birth"));
   zipField($("s-zip"), $("s-address"), $("s-zipmsg"));
   $("setup-form").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -4930,7 +4945,7 @@ window.addEventListener("error", function (e) {
       catch (err) { $("s-err").textContent = errText(err); return; }
     }
     const birth = birthVal();
-    if (!birth) { $("s-err").textContent = "生年月日を入力してください。"; $(!$("s-by").value ? "s-by" : !$("s-bm").value ? "s-bm" : "s-bd").focus(); return; }
+    if (!birth || birth === "bad") { $("s-err").textContent = birth ? "生年月日の日付が正しくありません（その月にない日です）。" : "生年月日を選んでください。"; return; }
     if (birth !== (myProf?.birth || "")) {
       $("s-err").textContent = "保存しています…";
       try { myProf.birth = await call("api_setBirth", birth); $("s-err").textContent = ""; loadCelebs(); }
