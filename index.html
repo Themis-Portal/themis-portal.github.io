@@ -2008,6 +2008,7 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
 /* マイ記録 */
 #st-body { display: grid; gap: 14px; }
 .thx-form[hidden], .thx-none[hidden] { display: none !important; }
+#thx-msg, #thx-to { font-size: 16px; }
 .ad-addr-form { display: grid; gap: 6px; }
 .ad-addr-form .f { margin: 0; }
 .ad-addr-form .tool { justify-self: start; }
@@ -3329,7 +3330,7 @@ window.addEventListener("error", function (e) {
   // the screen is built once; later calls only bring the numbers up to date, so the amount box being typed in
   // (and the phone's keyboard) is never replaced
   function renderPoint() {
-    const bal = tp.bal ?? 0, staff = window.TC_WORK === "社員";
+    const bal = tp.bal ?? 0, staff = window.TC_WORK === "社員" || !!window.TC_REP;
     if (!$("tp-amt") || $("tp-body").dataset.staff !== String(staff)) {
       $("tp-body").dataset.staff = String(staff);
       $("tp-body").innerHTML =
@@ -3356,7 +3357,7 @@ window.addEventListener("error", function (e) {
     paintRank(); paintThanks();
   }
   async function useTp() {
-    const sel = $("tp-amt"), a = Number(sel.value), bal = tp.bal ?? 0, staff = window.TC_WORK === "社員";
+    const sel = $("tp-amt"), a = Number(sel.value), bal = tp.bal ?? 0, staff = window.TC_WORK === "社員" || !!window.TC_REP;
     if (!Number.isInteger(a) || a < 1) { msg("使用するTPの数を入れてください。"); sel.focus(); return; }
     if (a > bal) { msg(`TPが足りません（残高 ${tpN(bal)}TP）`); sel.focus(); return; }
     if (!await ask(staff ? "給与への加算を申請しますか？" : "請求書に追加しますか？",
@@ -3393,6 +3394,7 @@ window.addEventListener("error", function (e) {
         `<div class="thx-row"><input type="text" id="thx-msg" maxlength="100" autocomplete="off" placeholder="ひと言（例：昨日はヘルプありがとう！）" aria-label="ひと言メッセージ"><button type="submit" class="btn primary">送る</button></div></form>` +
         `<p class="thx-none" id="thx-none"></p><div id="thx-got"></div></div>`;
       $("thx-form").onsubmit = sendThanks;
+      $("thx-to").onchange = () => $("thx-to").blur();
     }
     $("thx-left").innerHTML = Array.from({ length: thx.per }, (_, i) => thxTicket(i < thx.left)).join("") + `<span>残り <b class="num">${thx.left}</b>/${thx.per}枚</span>`;
     $("thx-how").innerHTML = `仲間に「ありがとう」を送れます。1枚で相手に <b>${thx.tp}TP</b>（あなたのTPは減りません）<br>毎月1日に${thx.per}枚にリセットされます（使わなかった分は持ち越せません）`;
@@ -3678,7 +3680,7 @@ window.addEventListener("error", function (e) {
   // 常勤 staff hand in no shift wishes, so they never see that tab; 社員 send no invoice and hand in no wishes:
   // they get their 給与明細 instead
   // 代表 has no 勤務形態 and sees every tab
-  const tabOk = (t) => t === "card" || t === "home" || t === "menu" || t === "notice" || t === "point" || t === "invite" || t === "plaza" || t === "mypage" || !!window.TC_REP || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
+  const tabOk = (t) => t === "card" || t === "home" || t === "menu" || t === "notice" || t === "point" || t === "invite" || t === "plaza" || t === "mypage" || (window.TC_REP ? t !== "inv" : false) || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
   function applyWork() {
     $("tab-hope").hidden = !tabOk("hope"); $("tab-inv").hidden = !tabOk("inv"); $("tab-pay").hidden = !tabOk("pay");
     $("m-hope").hidden = !(GROUP[tab] === "shift" && tabOk("hope"));
@@ -5093,7 +5095,7 @@ window.addEventListener("error", function (e) {
   fillForms(true);
   // the clock ticks every second, but not while a pulldown is open or a sheet is up: an iPhone closes an open
   // pulldown (and the picker of a sheet) when the page under it is drawn again
-  setInterval(() => { if (document.activeElement?.tagName === "SELECT" || document.querySelector(".modal-bg:not([hidden]), .tp-fx, .snd-fx, #busy")) return; render(); }, 1000);
+  setInterval(() => { if (document.activeElement?.tagName === "SELECT" || document.activeElement?.id === "thx-msg" || document.querySelector(".modal-bg:not([hidden]), .tp-fx, .snd-fx, #busy")) return; render(); }, 1000);
 
   // ---- sign-in ----
   // the session string is kept on this device; without one (or once it has expired) the login screen shows
@@ -5788,9 +5790,9 @@ window.addEventListener("error", function (e) {
   function adInv() {
     const ym = adMonth.inv, byName = Object.fromEntries(adData.invs.map((r) => [r[0], r]));
     const pays = adData.pays || {};
-    const staff = adData.members.filter((m) => m.workType === "社員" && (m.active || pays[m.id]));
-    // 代表 neither invoices nor gets a payslip (unless an invoice of theirs is already there)
-    const live = adData.members.filter((m) => m.workType !== "社員" && (m.active && !m.rep || byName[m.name]));
+    // 代表 is paid like a 社員: a payslip, no invoice
+    const staff = adData.members.filter((m) => (m.workType === "社員" || m.rep) && (m.active || pays[m.id]));
+    const live = adData.members.filter((m) => m.workType !== "社員" && !m.rep && (m.active || byName[m.name]));
     const worked = new Set(adData.worked || []);
     // nobody expects an invoice from someone who did not work that month and was given no amount
     const stOf = (m) => {
@@ -6151,7 +6153,7 @@ window.addEventListener("error", function (e) {
           (m.rep ? "" : `<dt>勤務形態</dt><dd>${workSel(m.workType, `wt-${esc(m.id)}`, 'data-k="workType"')}</dd>`) +
           (touch ? `<dt>役割</dt><dd>${roleSel(m.role, `rl-${esc(m.id)}`, 'data-k="role"')}</dd>` : "") +
           // 社員: 性別 for the 賃金台帳
-          (owner && m.workType === "社員" ? `<dt>性別</dt><dd>${seg(`gd-${esc(m.id)}`, [["男性", "男性"], ["女性", "女性"]], m.gender || "", 'data-k="gender"')}</dd>` : "") +
+          (owner && (m.workType === "社員" || m.rep) ? `<dt>性別</dt><dd>${seg(`gd-${esc(m.id)}`, [["男性", "男性"], ["女性", "女性"]], m.gender || "", 'data-k="gender"')}</dd>` : "") +
           `<dt>契約</dt><dd>${m.hasContract
             ? `<span class="ad-signed">${esc(signed)} 締結</span><button type="button" class="tool" data-contract>見る</button><button type="button" class="tool" data-cdl>保存</button>`
             : `<span class="st st-late">未締結</span>${askable ? askChk(m.contractAsk, 'data-k="contractAsk"') : ""}`}</dd>` +
