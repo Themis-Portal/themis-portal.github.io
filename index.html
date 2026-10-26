@@ -1486,6 +1486,7 @@ button.pcal-c { cursor: pointer; }
 .nt-note[data-k="imp"]::before { content: ""; background: #e5373d; border: 0; box-shadow: none; }
 .nt-note[data-k="tp"]::before { content: ""; background: var(--gold); border: 0; box-shadow: none; }
 .nt-note[data-k="gift"]::before { content: ""; background: #3fb6a5; border: 0; box-shadow: none; }
+.nt-tag.tp.got { opacity: .5; }
 .nt-note[data-k="ask"]::before { content: ""; background: #8fb1ee; border: 0; }
 .nt-note.new { background: rgb(255 255 255 / .04); border-color: rgb(255 255 255 / .06); }
 .nt-board .nt-item { padding: 11px 12px 11px 6px; }
@@ -1767,7 +1768,7 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
   background: radial-gradient(120% 140% at 100% 0%, #3a2f5c 0%, transparent 55%), var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
 .iv-enter-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .iv-enter-h > b { color: #fff; font-size: 15px; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-.iv-enter-h > b::before { content: ""; display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; background: center / contain no-repeat; background-image: var(--ic-ticket); }
+.iv-enter-h > b::before { content: ""; display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; background: center / contain no-repeat; background-image: var(--ic-key); }
 .iv-enter-row { display: flex; gap: 8px; }
 .iv-enter-row input { flex: 1; min-width: 0; font: inherit; font-family: var(--f-num); font-size: 20px; font-weight: 800; letter-spacing: .28em; text-transform: uppercase; text-align: center; padding: 9px 10px; border-radius: 12px; border: 1.5px dashed rgb(246 210 122 / .6); background: #0f1724; color: #fff; }
 .iv-enter-row input::placeholder { color: rgb(255 255 255 / .22); }
@@ -1804,7 +1805,7 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
   background: radial-gradient(120% 120% at 0% 0%, #17423d 0%, transparent 55%), var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
 .tf-h b::before { background-image: var(--ic-bolt) !important; }
 .tp-feed { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
-.tp-feed li { display: grid; grid-template-columns: 38px minmax(0, 1fr) 70px 66px; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 9px; background: rgb(255 255 255 / .04); font-size: 13px; }
+.tp-feed li { display: grid; grid-template-columns: 38px minmax(0, 1fr) 66px 74px; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 9px; background: rgb(255 255 255 / .04); font-size: 13px; }
 .tp-feed li.me { background: rgb(63 182 165 / .2); box-shadow: inset 0 0 0 1px rgb(127 224 207 / .5); }
 .tf-at { font-size: 10px; line-height: 1.25; color: var(--plate-soft); white-space: nowrap; overflow: hidden; }
 .tf-name { min-width: 0; display: flex; }
@@ -1816,6 +1817,7 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 .rk-list li.me .nm-pill, .tp-feed li.me .nm-pill { background: rgb(63 182 165 / .35); border-color: rgb(127 224 207 / .6); }
 .tf-why { font-size: 10.5px; line-height: 1.3; color: #bfe9e1; padding: 1px 7px; border-radius: 10px; background: rgb(63 182 165 / .18); border: 1px solid rgb(127 224 207 / .3); max-width: 100%; overflow-wrap: anywhere; word-break: break-all; }
 .tf-tp { color: var(--gold); font-size: 13px; white-space: nowrap; text-align: right; min-width: 0; }
+.tf-tp small { font-size: 10px; margin-left: 1px; }
 .tp-locked { color: #ff9a8a !important; font-weight: 700; }
 /* the TP mark: a small gold coin */
 .tp-coin { display: inline-grid; place-items: center; width: 22px; height: 22px; margin-right: 7px; border-radius: 50%; font-style: normal; font-family: var(--f-num); font-size: 9px; font-weight: 900; letter-spacing: -.02em; vertical-align: -5px;
@@ -1843,6 +1845,26 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 .is-bank span { color: var(--ink-soft); margin-right: 8px; }
 
 /* 処理中 / 完了: over everything while something takes a while */
+.busy-screen.gone { opacity: 0 !important; animation: none; }
+.snd-fx { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: radial-gradient(circle, rgb(30 14 30 / .5), rgb(6 10 18 / .7)); animation: tpfx-in .25s ease-out; }
+.snd-fx.out { opacity: 0; transition: opacity .4s; }
+.snd-card { display: grid; justify-items: center; gap: 6px; padding: 24px 34px 22px; border-radius: 22px; color: #fff; text-align: center;
+  background: radial-gradient(120% 120% at 50% 0%, #4a2a52 0%, transparent 60%), var(--plate); border: 1.5px solid #ff9cc6;
+  box-shadow: 0 0 40px rgb(255 156 198 / .4), 0 30px 60px -20px rgb(0 0 0 / .7); animation: tpfx-pop .6s cubic-bezier(.2, 1.6, .4, 1); }
+.snd-fx.party .snd-card { border-color: var(--gold); box-shadow: 0 0 40px rgb(246 210 122 / .45), 0 30px 60px -20px rgb(0 0 0 / .7); }
+.snd-card b { font-size: 18px; }
+.snd-card small { font-size: 13px; color: var(--plate-ink); }
+.snd-art { position: relative; width: 96px; height: 96px; display: grid; place-items: center; }
+.snd-art svg { width: 86px; height: 86px; }
+.snd-fx.party .snd-art svg { animation: snd-pop .7s cubic-bezier(.2, 1.6, .4, 1); }
+.snd-fx.thx .snd-art svg { animation: snd-fly 1s cubic-bezier(.2, 1.2, .4, 1); }
+.snd-bits { position: absolute; left: 50%; top: 45%; width: 0; height: 0; }
+.snd-bits i { position: absolute; width: 7px; height: 11px; margin: -5px -3px; border-radius: 2px; background: var(--c); opacity: 0; transform: rotate(var(--a)) translateY(0); animation: snd-burst 1.3s cubic-bezier(.15, .7, .3, 1) calc(var(--d) + .25s) forwards; }
+.snd-fx.thx .snd-bits i { width: 12px; height: 12px; margin: -6px; border-radius: 0; clip-path: path("M6 11.5L1.3 7A3 3 0 0 1 6 2.6A3 3 0 0 1 10.7 7Z"); }
+@keyframes snd-burst { 0% { opacity: 1; transform: rotate(var(--a)) translateY(0) rotate(0); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-120px) rotate(300deg); } }
+@keyframes snd-pop { 0% { transform: scale(.4) rotate(-30deg); } 45% { transform: scale(1.15) rotate(10deg); } 100% { transform: none; } }
+@keyframes snd-fly { 0% { transform: translate(-60px, 40px) rotate(-25deg) scale(.5); opacity: 0; } 60% { transform: translate(0, -6px) rotate(6deg) scale(1.1); opacity: 1; } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .snd-fx, .snd-card, .snd-art svg { animation: none !important; } .snd-bits { display: none; } }
 .busy-screen { position: fixed; inset: 0; z-index: 9000; display: grid; place-items: center; padding: 24px; background: rgb(8 14 24 / .62); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); animation: sp-fade .2s ease forwards; opacity: 0; }
 .busy-card { display: grid; justify-items: center; gap: 8px; min-width: 230px; max-width: 320px; padding: 26px 24px 22px; border-radius: 18px; text-align: center; color: #fff;
   background: radial-gradient(120% 120% at 50% 0%, #17423d 0%, transparent 60%), var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 18px 40px -16px rgb(0 0 0 / .7); }
@@ -1975,14 +1997,24 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
 .cel-ic { font-size: 28px; flex: none; animation: cel-bob 2.4s ease-in-out infinite; }
 @keyframes cel-bob { 50% { transform: translateY(-3px) rotate(-6deg); } }
 .cel-t { flex: 1; min-width: 0; display: grid; gap: 2px; }
-.cel-t > b { font-size: 14px; line-height: 1.5; }
+.cel-t > b { font-size: 14px; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cel-t .nm-pill { margin: 0 2px; font-size: 12.5px; }
 .cel-t small { font-size: 11.5px; color: var(--plate-soft); }
 .cel-t small b { color: var(--gold); }
-.cel-go { flex: none; padding: 8px 14px; font-weight: 800; }
+.cel-go { flex: none; display: inline-flex; align-items: center; gap: 4px; padding: 8px 11px; font-size: 13px; font-weight: 800; }
 .cel-sent { flex: none; font-size: 12px; font-weight: 700; color: #7fe0cf; }
 /* マイ記録 */
 #st-body { display: grid; gap: 14px; }
+.bd-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 6px; }
+.bd-row select { min-width: 0; }
+/* マイページ: one button; a tap opens it under the button */
+.sx-hero.sx-open { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; width: 100%; text-align: left; font: inherit; cursor: pointer; }
+.sx-open .sx-cap, .sx-open b, .sx-open small { grid-column: 1; }
+.sx-open b { color: #fff; font-size: 18px; }
+.sx-open small { font-size: 12px; color: var(--plate-soft); }
+.sx-chev { grid-column: 2; grid-row: 1 / 4; align-self: center; width: 10px; height: 10px; border-right: 2.5px solid #7fe0cf; border-bottom: 2.5px solid #7fe0cf; transform: rotate(45deg); transition: transform .2s; }
+.sx-open.on .sx-chev { transform: rotate(-135deg); }
+.sx-in { display: grid; gap: 14px; }
 .sx-hero { display: grid; gap: 10px; padding: 18px; border-radius: var(--r); color: var(--plate-ink);
   background: radial-gradient(120% 120% at 100% 0%, #17423d 0%, transparent 55%), var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
 .sx-cap { font-family: var(--f-num); font-size: 11px; letter-spacing: .3em; color: #7fe0cf; }
@@ -2027,6 +2059,7 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
   --ic-star: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f6d27a' stroke='%23c99a2e' stroke-width='1' stroke-linejoin='round' d='M12 2.5l2.9 6 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.2 1.3-6.6-4.9-4.6 6.6-.8z'/%3E%3C/svg%3E");
   --ic-bolt: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f6d27a' stroke='%23c99a2e' stroke-width='.8' stroke-linejoin='round' d='M13.5 2 5 13.5h6L9.5 22 19 9.5h-6.2z'/%3E%3C/svg%3E");
   --ic-ticket: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ff9cc6' stroke='%23ffd1e6' stroke-width='1' d='M3 6h18a1.5 1.5 0 0 1 1.5 1.5V10a2 2 0 0 0 0 4v2.5A1.5 1.5 0 0 1 21 18H3a1.5 1.5 0 0 1-1.5-1.5V14a2 2 0 0 0 0-4V7.5A1.5 1.5 0 0 1 3 6z'/%3E%3Cpath stroke='%23fff' stroke-width='1.2' stroke-dasharray='1.6 1.6' d='M16.5 7.5v9'/%3E%3Cpath fill='%23fff' d='M10 15.6l-2.9-2.8a1.8 1.8 0 0 1 2.6-2.5l.3.3.3-.3a1.8 1.8 0 0 1 2.6 2.5z'/%3E%3C/svg%3E");
+  --ic-key: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f6d27a' fill-rule='evenodd' d='M7 7.5a4.5 4.5 0 1 0 0 9a4.5 4.5 0 1 0 0-9zm0 2.8a1.7 1.7 0 1 1 0 3.4a1.7 1.7 0 1 1 0-3.4z'/%3E%3Crect x='11' y='10.8' width='11' height='2.4' rx='.6' fill='%23f6d27a'/%3E%3Crect x='17' y='12.6' width='2' height='3.4' fill='%23e0a92a'/%3E%3Crect x='20' y='12.6' width='2' height='2.4' fill='%23e0a92a'/%3E%3C/svg%3E");
   --ic-trophy: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f6d27a' d='M7 3h10v5a5 5 0 0 1-10 0z'/%3E%3Cpath fill='none' stroke='%23f6d27a' stroke-width='1.8' d='M7 5H4.5v1.5A3.5 3.5 0 0 0 8 10M17 5h2.5v1.5A3.5 3.5 0 0 1 16 10'/%3E%3Crect x='10.8' y='12.5' width='2.4' height='4' fill='%23e0a92a'/%3E%3Cpath fill='%23c99a2e' d='M7.5 17h9l1 4h-11z'/%3E%3C/svg%3E");
 }
 .ico { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; background: center / contain no-repeat; font-style: normal; flex: none; }
@@ -2562,7 +2595,8 @@ html, body { touch-action: manipulation; }
   <form class="modal" id="setup-form" novalidate>
     <h3>初めに</h3>
     <p class="hint">請求書に載せる情報を入力してください。後からメニューの「請求書」にある「毎月共通の設定」で変更できます。</p>
-    <label class="f">氏名・屋号<input id="s-from" type="text" maxlength="60" placeholder="例：山田 太郎"></label>
+    <label class="f" id="s-name-box" hidden>お名前（アプリでみんなに表示されます）<input id="s-name" type="text" maxlength="30" autocomplete="name" placeholder="例：山田 太郎"></label>
+    <label class="f">氏名・屋号（請求書に載ります）<input id="s-from" type="text" maxlength="60" placeholder="例：山田 太郎"></label>
     <div class="zip-row">
       <label class="f">郵便番号<input id="s-zip" type="text" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="160-0023"></label>
       <span class="hint" id="s-zipmsg">7桁を入れると住所が自動で入ります</span>
@@ -2570,7 +2604,7 @@ html, body { touch-action: manipulation; }
     <label class="f">住所<input id="s-address" type="text" autocomplete="off" maxlength="100" placeholder="東京都新宿区西新宿1-2-3"></label>
     <label class="f">建物名・部屋番号（任意）<input id="s-building" type="text" autocomplete="off" maxlength="60" placeholder="〇〇マンション 101"></label>
     <label class="f">電話番号<input id="s-tel" type="tel" inputmode="tel" autocomplete="off" maxlength="15" placeholder="090-1234-5678"></label>
-    <label class="f">生年月日<input id="s-birth" type="date" min="1930-01-01"><span class="hint">誕生日の当日は、ホームでみんなにお知らせされます（生まれた年は表示されません）</span></label>
+    <label class="f">生年月日<span class="bd-row"><select id="s-by" aria-label="年"></select><select id="s-bm" aria-label="月"></select><select id="s-bd" aria-label="日"></select></span><span class="hint">誕生日の当日は、ホームでみんなにお知らせされます（生まれた年は表示されません）</span></label>
     <div class="f" role="radiogroup" aria-labelledby="s-work-h" id="s-work-box"><span id="s-work-h">勤務形態</span>
       <div class="s-work"><label class="check"><input type="radio" name="s-work" value="常勤"> 常勤</label><label class="check"><input type="radio" name="s-work" value="週末"> 週末</label><label class="check"><input type="radio" name="s-work" value="社員"> 社員</label></div>
       <span class="hint">常勤の人は、シフト希望の提出はありません。社員の人は、シフト表だけを使います。</span></div>
@@ -2965,7 +2999,7 @@ window.addEventListener("error", function (e) {
     if (t === "notice") renderNotice();
     if (t === "point") { renderPoint(); loadTp(); }
     if (t === "invite") { renderInvite(); loadInvite(); }
-    if (t === "plaza") { renderStats(); loadStats(); paintRank(); loadRank(); paintThanks(); loadThanks(); }
+    if (t === "plaza") { renderStats(); if (myOpen) loadStats(); paintRank(); loadRank(); paintThanks(); loadThanks(); }
     for (const b of document.querySelectorAll(".bnav button")) {
       if (b.dataset.g === GROUP[t]) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
     }
@@ -3078,7 +3112,7 @@ window.addEventListener("error", function (e) {
     const title = x.kind === "n" ? x.title : askTitle(x);
     const sub = x.kind === "n" ? x.text : `${last.admin ? "Themis" : last.by}：${last.text}`;
     return `<button type="button" class="nt-item${dot ? " unread" : ""}" data-open="${esc(x.id)}">` +
-      `<b>${dot ? `<span class="nt-tag new">未読</span>` : ""}${imp ? `<span class="nt-tag imp">重要</span>` : x.kind === "q" ? `<span class="nt-tag ask">お問い合わせ</span>` : ""}${tpOpen(x) ? `<span class="nt-tag tp">+${tpN(x.reward)}TP</span>` : ""}${esc(title)}</b>` +
+      `<b>${dot ? `<span class="nt-tag new">未読</span>` : ""}${imp ? `<span class="nt-tag imp">重要</span>` : x.kind === "q" ? `<span class="nt-tag ask">お問い合わせ</span>` : ""}${x.kind === "n" && x.reward > 0 ? `<span class="nt-tag tp${tpOpen(x) ? "" : " got"}">+${tpN(x.reward)}TP</span>` : ""}${esc(title)}</b>` +
       `<span class="nt-at">${esc(ntAt(x.last || x.at))}</span><span class="nt-sub">${esc(sub)}</span></button>`;
   }
   // the form for a new お知らせ (from お知らせ and from 運営画面): title, text, 重要, TP for each reader
@@ -3247,9 +3281,9 @@ window.addEventListener("error", function (e) {
       (b.me && b.me.rank > 5 ? `<p class="rk-me">あなたは ${b.me.rank}位（${th ? `${b.me.n}回` : `${tpN(b.me.tp)}TP`}）</p>` : !b.me ? `<p class="rk-me">あなたはまだランキングに入っていません</p>` : "") + `</div>`;
     const [y, mo] = tpRank.ym.split("-").map(Number);
     // the ランキング in turn: TP this month, TP this year, then ありがとう this month and this year
-    const panels = [panel(tpRank.month, `${mo}月の月間ランキング`), panel(tpRank.yearly, `${y}年の年間ランキング`)];
-    if (tpRank.thanks) panels.push(panel(tpRank.thanks, `${mo}月のありがとう`, true));
-    if (tpRank.thanksYear) panels.push(panel(tpRank.thanksYear, `${y}年のありがとう`, true));
+    const panels = [panel(tpRank.month, `${mo}月の月間獲得TP`), panel(tpRank.yearly, `${y}年の年間獲得TP`)];
+    if (tpRank.thanks) panels.push(panel(tpRank.thanks, `${mo}月のありがとうランキング`, true));
+    if (tpRank.thanksYear) panels.push(panel(tpRank.thanksYear, `${y}年の年間ありがとうランキング`, true));
     const names = ["月間", "年間", "今月のありがとう", "今年のありがとう"];
     return `<div class="rk-track" id="rk-track">${panels.join("")}</div>` +
       `<div class="rk-dots">${panels.map((_, i) => `<button type="button" data-rk="${i}" aria-label="${names[i]}"${i ? "" : ` class="on"`}></button>`).join("")}</div>`;
@@ -3279,7 +3313,7 @@ window.addEventListener("error", function (e) {
     const f = tpRank?.feed;
     if (!f) return "";
     return `<div class="tf-panel"><div class="rk-h tf-h"><b>みんなの獲得ログ</b><span>最新${Math.min(f.length, FEED_N)}件</span></div>` + (f.length ? `<ol class="tp-feed">` + f.slice(0, FEED_N).map((x) =>
-      `<li${x.name === window.TC_NAME ? ` class="me"` : ""}><span class="tf-at num">${esc(ntAt(x.at) || "").replace(" ", "<br>")}</span><span class="tf-name"><span class="nm-pill${yrCls(x.name)}">${esc(x.name)}</span></span><span class="tf-why-c">${x.why ? `<span class="tf-why">${esc(x.why)}</span>` : ""}</span><b class="tf-tp num">＋${tpN(x.tp)}</b></li>`).join("") + `</ol>`
+      `<li${x.name === window.TC_NAME ? ` class="me"` : ""}><span class="tf-at num">${esc(ntAt(x.at) || "").replace(" ", "<br>")}</span><span class="tf-name"><span class="nm-pill${yrCls(x.name)}">${esc(x.name)}</span></span><span class="tf-why-c">${x.why ? `<span class="tf-why">${esc(x.why)}</span>` : ""}</span><b class="tf-tp num">＋${tpN(x.tp)}<small>TP</small></b></li>`).join("") + `</ol>`
       : `<p class="rk-none">まだだれもTPをもらっていません。</p>`) + `</div>`;
   }
   // the screen is built once; later calls only bring the numbers up to date, so the amount box being typed in
@@ -3364,8 +3398,8 @@ window.addEventListener("error", function (e) {
         thx = JSON.parse(await call("api_thanksSend", to, msgText));
         try { localStorage.setItem("tc_thx", JSON.stringify({ tok: CRED.split(".")[0], v: thx })); } catch (e2) {}
         $("thx-msg").value = ""; $("thx-to").value = "";
-        await busyDone("ありがとうを送りました", `${who ? who.name + "さんに " : ""}${thx.tp}TP`);
-        paintThanks(); rankAt = 0; loadRank();
+        busyOff(); paintThanks(); rankAt = 0; loadRank();
+        sendFx("thx", "ありがとうを送りました", `${who ? who.name + "さんに " : ""}${thx.tp}TP`);
       } catch (err) { busyOff(); msg(errText(err)); }
     };
   }
@@ -3385,7 +3419,31 @@ window.addEventListener("error", function (e) {
     el.innerHTML = `<div class="busy-card"><div class="busy-ok" aria-hidden="true">✓</div><b>${esc(title)}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</div>`;
     return new Promise((r) => setTimeout(() => { busyOff(); r(); }, 1300));
   }
-  function busyOff() { $("busy")?.remove(); if (!document.querySelector(".modal-bg:not([hidden])")) document.body.classList.remove("pop-open"); }
+  // taken away a moment after it goes clear: a tap made just as it closes would otherwise land on the screen under it
+  // (after お問い合わせ, on the メニュー's 給与明細)
+  function busyOff() {
+    const el = $("busy");
+    if (el) { el.removeAttribute("id"); el.classList.add("gone"); setTimeout(() => el.remove(), 450); }
+    if (!document.querySelector(".modal-bg:not([hidden])")) document.body.classList.remove("pop-open");
+  }
+  // 送った時の演出: おめでとう (a popper bursting) and ありがとう (a ticket flying off with hearts); a tap or 2 seconds closes it
+  const FX_ART = {
+    party: `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 56l14-36 22 22z" fill="#f6d27a"/><path d="M8 56l6-15 9 9z" fill="#e0a92a"/><path d="M15 38l11 11M18.5 29l16.5 16.5" stroke="#ff6fa5" stroke-width="3"/>` +
+      `<path d="M30 18c4-6 10-4 12-10" stroke="#7fe0cf" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M44 32c6-2 9 4 15 1" stroke="#a78bfa" stroke-width="3" fill="none" stroke-linecap="round"/>` +
+      `<circle cx="50" cy="17" r="3" fill="#ff6fa5"/><circle cx="40" cy="6" r="2.5" fill="#f6d27a"/><circle cx="57" cy="25" r="2.5" fill="#8fb1ee"/></svg>`,
+    thx: `<svg viewBox="0 0 64 40" aria-hidden="true"><path d="M6 4h52a3 3 0 0 1 3 3v7a6 6 0 0 0 0 12v7a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-7a6 6 0 0 0 0-12V7a3 3 0 0 1 3-3z" fill="#ff9cc6" stroke="#ffd1e6" stroke-width="1.5"/>` +
+      `<path d="M46 8v24" stroke="#fff" stroke-width="2" stroke-dasharray="3 3"/><path d="M26 31l-8-7.6a4.6 4.6 0 0 1 6.5-6.5l1.5 1.5 1.5-1.5a4.6 4.6 0 0 1 6.5 6.5z" fill="#fff"/></svg>`,
+  };
+  function sendFx(kind, title, sub) {
+    const fx = document.createElement("div"), cols = ["#f6d27a", "#ff6fa5", "#7fe0cf", "#a78bfa", "#8fb1ee"];
+    fx.className = `snd-fx ${kind}`; fx.setAttribute("role", "status");
+    const bits = Array.from({ length: 18 }, (_, i) => `<i style="--a:${-85 + i * 10}deg;--d:${(i % 6) * 45}ms;--c:${kind === "thx" ? (i % 2 ? "#ff6fa5" : "#ffd1e6") : cols[i % 5]}"></i>`).join("");
+    fx.innerHTML = `<div class="snd-card"><div class="snd-art">${FX_ART[kind]}<span class="snd-bits">${bits}</span></div><b>${esc(title)}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</div>`;
+    document.body.appendChild(fx);
+    let gone = false;
+    const close = () => { if (gone) return; gone = true; fx.classList.add("out"); setTimeout(() => fx.remove(), 400); };
+    fx.onclick = close; setTimeout(close, 2300);
+  }
   // ---- 誕生日・在籍記念: today's, on ホーム for everyone; a tap sends 「おめでとう」 (once each) ----
   let celebs = [], myProf = {};
   async function loadCelebs() {
@@ -3401,20 +3459,19 @@ window.addEventListener("error", function (e) {
       return `<div class="cel-card${c.me ? " me" : ""}"><span class="cel-ic" aria-hidden="true">${icon}</span>` +
         (c.me
           ? `<div class="cel-t"><b>${c.kind === "birth" ? "お誕生日" : what}おめでとうございます！</b><small>みんなから「おめでとう」が <b class="num">${c.count}</b>件 届いています</small></div>`
-          : `<div class="cel-t"><b>今日は<span class="nm-pill${yrCls(c.name)}">${esc(c.name)}</span>さんの${what}です</b><small>${c.count ? `${c.count}人がおめでとうを送りました` : "最初のおめでとうを送ろう"}</small></div>` +
-            (c.sent ? `<span class="cel-sent">✓ 送りました</span>` : `<button type="button" class="btn primary cel-go" data-congrats="${esc(c.id)}">おめでとう</button>`)) + `</div>`;
+          : `<div class="cel-t"><b><span class="nm-pill${yrCls(c.name)}">${esc(c.name)}</span>さんの${what}</b><small>${c.count ? `今日です！ ${c.count}人がおめでとうを送りました` : `今日です！ おめでとうで${c.tp || 10}TPが届きます`}</small></div>` +
+            (c.sent ? `<span class="cel-sent">✓ 送りました</span>` : `<button type="button" class="btn primary cel-go" data-congrats="${esc(c.id)}"><i class="ico ico-party" aria-hidden="true"></i>おめでとう</button>`)) + `</div>`;
     }).join("");
     for (const b of box.querySelectorAll("[data-congrats]")) b.onclick = async () => {
       const c = celebs.find((x) => x.id === b.dataset.congrats);
       busyOn("おめでとうを送っています");
-      try { celebs = JSON.parse(await call("api_congrats", c.id)); await busyDone("おめでとうを送りました", `${c.name}さんへ`); paintCelebs(); }
+      try { celebs = JSON.parse(await call("api_congrats", c.id)); busyOff(); paintCelebs(); sendFx("party", "おめでとうを送りました", `${c.name}さんに ${c.tp || 10}TP`); }
       catch (e) { busyOff(); msg(errText(e)); }
     };
   }
 
   // ---- マイページ (top of 広場): this month, and the totals over every month on record (read once, when opened) ----
-  const hmJ = (min) => `${Math.floor(min / 60)}時間${min % 60 ? `${min % 60}分` : ""}`;
-  let myStats = null;
+  let myStats = null, myOpen = false;
   try { const c = JSON.parse(localStorage.getItem("tc_stats") || "null"); if (c && CRED && c.tok === CRED.split(".")[0]) myStats = c.v; } catch (e) {}
   async function loadStats() {
     try { myStats = JSON.parse(await call("api_myStats")); } catch (e) { return; }
@@ -3446,23 +3503,22 @@ window.addEventListener("error", function (e) {
     let run = 0, best = 0;
     for (const m of months) for (const [k, r] of Object.entries((docs["m-" + m.ym] || {}).days || {}).sort()) {
       if (k > today || !r || (!r.in && !r.absent) || (k === today && r.in && !r.out)) continue;
-      if (dayKept(r)) best = Math.max(best, ++run); else run = 0;
+      if (dayKept(r, k)) best = Math.max(best, ++run); else run = 0;
     }
     const diff = (a, b, unit) => (last.have ? `<span class="sx-diff${a - b < 0 ? " down" : ""}">先月より ${a - b >= 0 ? "+" : "−"}${Math.abs(a - b)}${unit}</span>` : "");
-    const yearMonths = Array.from({ length: 12 }, (_, i) => (i < cm ? monthOf(`${y}-${pad(i + 1)}`) : null));
-    const maxD = Math.max(1, ...yearMonths.filter(Boolean).map((m) => m.days));
     $("st-body").innerHTML =
-      `<div class="sx-hero"><span class="sx-cap">MY PAGE</span><h2>${cm}月のふりかえり</h2>` +
+      `<button type="button" class="sx-hero sx-open${myOpen ? " on" : ""}" id="sx-open" aria-expanded="${myOpen}"><span class="sx-cap">MY PAGE</span><b>マイページ</b>` +
+      `<small>${myOpen ? "タップで閉じる" : "今月のふりかえりと、累計の記録を見る"}</small><i class="sx-chev" aria-hidden="true"></i></button>` + (!myOpen ? "" :
+      `<div class="sx-in"><div class="sx-hero"><h2>${cm}月のふりかえり</h2>` +
       `<div class="sx-big"><div><span>出勤</span><b class="num">${cur.days}<small>日</small></b>${diff(cur.days, last.days, "日")}</div>` +
       `<div><span>稼働</span><b class="num">${Math.floor(cur.min / 60)}<small>時間</small></b>${diff(Math.floor(cur.min / 60), Math.floor(last.min / 60), "時間")}</div>` +
       `<div><span><i class="ico ico-fire" aria-hidden="true"></i> 連続</span><b class="num">${streakDays()}<small>日</small></b></div></div></div>` +
       `<h4 class="bl-h">累計の記録${loading ? "（読み込んでいます…）" : ""}</h4>` +
-      `<div class="sx-tiles">` + [["出勤日数", `${all.length}日`], ["稼働時間", hmJ(months.reduce((s, m) => s + m.min, 0))], ["獲得TP", myStats ? `${tpN(myStats.tp)}TP` : "—"],
+      `<div class="sx-tiles">` + [["出勤日数", `${all.length}日`], ["獲得TP", myStats ? `${tpN(myStats.tp)}TP` : "—"],
         ["もらったありがとう", myStats ? `${myStats.thanks}回` : "—"], ["行った店舗", `${Object.keys(stores).length}店舗`], ["最高の連続", `${best}日`]]
         .map(([k, v]) => `<div><span>${k}</span><b class="num">${v}</b></div>`).join("") + `</div>` +
-      `<h4 class="bl-h">${y}年の月ごとの出勤</h4><div class="sx-bars" aria-label="月ごとの出勤日数">` + yearMonths.map((m, i) =>
-        `<div class="sx-bar${i + 1 === cm ? " now" : ""}"><span class="num">${m ? m.days : ""}</span><i style="height:${m ? Math.round((m.days / maxD) * 100) : 0}%"></i><small>${i + 1}</small></div>`).join("") + `</div>` +
-      (top.length ? `<h4 class="bl-h">よく行った店舗</h4><ol class="sx-stores">` + top.map(([n, c], i) => `<li><i>${i + 1}</i><span>${esc(n)}</span><b class="num">${c}回</b></li>`).join("") + `</ol>` : "");
+      (top.length ? `<h4 class="bl-h">よく行った店舗</h4><ol class="sx-stores">` + top.map(([n, c], i) => `<li><i>${i + 1}</i><span>${esc(n)}</span><b class="num">${c}回</b></li>`).join("") + `</ol>` : "") + `</div>`);
+    $("sx-open").onclick = () => { myOpen = !myOpen; renderStats(); if (myOpen) loadStats(); };
   }
   // ---- 友達を招待: the person's code (to copy or share), the code of whoever invited them, the people they invited ----
   // the last one read is kept on this device, so the code and the time left show at once; read ahead after opening
@@ -4095,11 +4151,17 @@ window.addEventListener("error", function (e) {
   }
   const holidayName = (key) => holidaysOf(Number(key.slice(0, 4)))[key] || "";
 
-  // 🔥 連続: the work days in a row (days off skipped) that were punched on time, not left early and had their
-  // 稼働実績 sent. Today counts once it is clocked out; a day that falls short ends the run. Counted from the months
-  // on this device (this month and last month)
-  function dayKept(r) {
-    if (r.absent || r.early || (r.autoOut && r.autoReason !== "残業") || !r.out || !String(r.result || "").trim()) return false;
+  // 🔥 連続: the work days in a row (days off skipped) that were punched with the 出勤 and 退勤 keys (a 自動退勤 the
+  // person called 残業 stands for the 退勤 key), on time, not left early and with their 稼働実績 sent. Today counts once
+  // it is clocked out; a day that falls short ends the run. Shown from 2 days on. Counted from the months on this
+  // device (this month and last month)
+  function dayKept(r, key) {
+    if (r.absent || r.early || !r.out || !String(r.result || "").trim()) return false;
+    const legacy = key && key < "2026-10-26";   // punched before the key presses were kept
+    if (!r.punchIn && !legacy) return false;
+    if (!r.punchOut && !legacy && !(r.autoOut && r.autoReason === "残業")) return false;
+    if (r.autoOut && r.autoReason !== "残業") return false;
+    if (!legacy && leftEarly(key, r.planIn, r.planOut, r.out)) return false;   // 早退 by the times, even with the check taken off
     if (r.planIn) {
       const [h, mi] = String(r.planIn).split(":").map(Number), t = new Date(r.punchIn || r.in);
       if (t.getHours() * 60 + t.getMinutes() > h * 60 + mi + 5) return false;
@@ -4116,13 +4178,13 @@ window.addEventListener("error", function (e) {
       const r = (m.days || {})[key];
       if (!r || (!r.in && !r.absent)) continue;      // no work that day
       if (i === 0 && r.in && !r.out) continue;       // today, still at work
-      if (!dayKept(r)) break;
+      if (!dayKept(r, key)) break;
       n++;
     }
     return n;
   }
   function paintStreak() {
-    const n = streakDays(), el = $("streak"), h = n ? `<i class="ico ico-fire" aria-hidden="true"></i><b class="num">${n}</b>日連続` : "";
+    const n = streakDays() >= 2 ? streakDays() : 0, el = $("streak"), h = n ? `<i class="ico ico-fire" aria-hidden="true"></i><b class="num">${n}</b>日連続` : "";
     if (el.dataset.h !== h) { el.dataset.h = h; el.innerHTML = h; el.hidden = !n; el.classList.toggle("hot", n >= 7); }
   }
 
@@ -4728,24 +4790,48 @@ window.addEventListener("error", function (e) {
   function openSetup() {
     const b = doc("billing");
     splitOldBilling(b);
-    $("s-from").value = b.from || window.TC_NAME || "";
+    $("s-from").value = b.from || (window.TC_NEED_NAME ? "" : window.TC_NAME || "");
+    $("s-name-box").hidden = !window.TC_NEED_NAME; $("s-name").value = "";
     for (const k of ADDR) $("s-" + k).value = b[k] || "";
     for (const r of document.getElementsByName("s-work")) r.checked = r.value === window.TC_WORK;
-    $("s-birth").value = myProf?.birth || ""; $("s-birth").max = dayKey(new Date());
+    birthPick(myProf?.birth);
     $("s-work-box").hidden = !!window.TC_REP;   // 代表 has no 勤務形態
     $("s-err").textContent = "";
     $("setup-sheet").hidden = false;
     focusIfMouse($("s-from"));
   }
+  // 生年月日: 年・月・日 as three pulldowns; the 日 list follows the month (and a leap year)
+  function birthPick(v) {
+    const now = new Date().getFullYear(), [y, m, d] = String(v || "").split("-");
+    const opt = (val, txt) => `<option value="${val}">${txt}</option>`;
+    $("s-by").innerHTML = opt("", "年") + Array.from({ length: now - 1929 }, (_, i) => now - i).map((n) => opt(n, `${n}年`)).join("");
+    $("s-bm").innerHTML = opt("", "月") + Array.from({ length: 12 }, (_, i) => opt(pad(i + 1), `${i + 1}月`)).join("");
+    $("s-by").value = y || ""; $("s-bm").value = m || ""; birthDays(d || "");
+  }
+  function birthDays(keep) {
+    const n = new Date(Number($("s-by").value) || 2000, Number($("s-bm").value) || 1, 0).getDate(), was = keep ?? $("s-bd").value;
+    $("s-bd").innerHTML = `<option value="">日</option>` + Array.from({ length: n }, (_, i) => `<option value="${pad(i + 1)}">${i + 1}日</option>`).join("");
+    $("s-bd").value = Number(was) <= n ? was : "";
+  }
+  $("s-by").onchange = $("s-bm").onchange = () => birthDays();
+  const birthVal = () => ($("s-by").value && $("s-bm").value && $("s-bd").value ? `${$("s-by").value}-${$("s-bm").value}-${$("s-bd").value}` : "");
   zipField($("s-zip"), $("s-address"), $("s-zipmsg"));
   $("setup-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const from = $("s-from").value.trim(), val = (k) => $("s-" + k).value.trim();
+    const myName = $("s-name").value.trim();
+    if (window.TC_NEED_NAME && !myName) { $("s-err").textContent = "お名前を入力してください。"; $("s-name").focus(); return; }
     if (!from) { $("s-err").textContent = "氏名・屋号を入力してください。"; $("s-from").focus(); return; }
     if (!val("address")) { $("s-err").textContent = "住所を入力してください。"; $("s-address").focus(); return; }
     if (!val("tel")) { $("s-err").textContent = "電話番号を入力してください。"; $("s-tel").focus(); return; }
-    const birth = $("s-birth").value;
-    if (!birth) { $("s-err").textContent = "生年月日を入力してください。"; $("s-birth").focus(); return; }
+    // added by Themis without a name: the person's own, saved first
+    if (window.TC_NEED_NAME) {
+      $("s-err").textContent = "保存しています…";
+      try { window.TC_NAME = await call("api_setMyName", myName); window.TC_NEED_NAME = false; paintWho(); $("s-name-box").hidden = true; $("s-err").textContent = ""; }
+      catch (err) { $("s-err").textContent = errText(err); return; }
+    }
+    const birth = birthVal();
+    if (!birth) { $("s-err").textContent = "生年月日を入力してください。"; $(!$("s-by").value ? "s-by" : !$("s-bm").value ? "s-bm" : "s-bd").focus(); return; }
     if (birth !== (myProf?.birth || "")) {
       $("s-err").textContent = "保存しています…";
       try { myProf.birth = await call("api_setBirth", birth); $("s-err").textContent = ""; loadCelebs(); }
@@ -4951,7 +5037,7 @@ window.addEventListener("error", function (e) {
     if (!v) return;
     for (const k of Object.keys(tabView)) if (/^\d{4}-\d{2}$/.test(v.months?.[k] || "")) { const [y, m] = v.months[k].split("-").map(Number); tabView[k] = new Date(y, m - 1, 1); }
     view = tabView[tab];
-    setTab(["card", "inv", "hope", "pay", "menu", "point"].includes(v.tab) && tabOk(v.tab) ? v.tab : "home");
+    setTab(["card", "inv", "hope", "pay", "menu", "point", "plaza", "invite"].includes(v.tab) && tabOk(v.tab) ? v.tab : "home");
   }
   // the admin screen's tab (請求書 only for 運営) and months
   function adoptAdminView(v) {
@@ -4994,7 +5080,7 @@ window.addEventListener("error", function (e) {
   fillForms(true);
   // the clock ticks every second, but not while a pulldown is open or a sheet is up: an iPhone closes an open
   // pulldown (and the picker of a sheet) when the page under it is drawn again
-  setInterval(() => { if (document.activeElement?.tagName === "SELECT" || document.querySelector(".modal-bg:not([hidden]), .tp-fx, #busy")) return; render(); }, 1000);
+  setInterval(() => { if (document.activeElement?.tagName === "SELECT" || document.querySelector(".modal-bg:not([hidden]), .tp-fx, .snd-fx, #busy")) return; render(); }, 1000);
 
   // ---- sign-in ----
   // the session string is kept on this device; without one (or once it has expired) the login screen shows
@@ -5052,7 +5138,7 @@ window.addEventListener("error", function (e) {
   }
   function showPerson(me) {
     window.TC_NAME = me.name; window.TC_WORK = me.workType || "";
-    window.TC_ADMIN = !!me.admin; window.TC_OWNER = !!me.owner; window.TC_REP = !!me.rep; window.TC_CONTRACT = me.contractAsk !== false; window.TC_TEST = !!me.test;
+    window.TC_ADMIN = !!me.admin; window.TC_OWNER = !!me.owner; window.TC_REP = !!me.rep; window.TC_CONTRACT = me.contractAsk !== false; window.TC_TEST = !!me.test; window.TC_NEED_NAME = !!me.needName;
     $("logout").hidden = false; $("chpass").hidden = false;
     // admins use the normal site too; the header button switches to the admin screen and back
     $("adminbtn").hidden = !me.admin; $("m-admin").hidden = !me.admin;
@@ -6025,7 +6111,7 @@ window.addEventListener("error", function (e) {
     $("ad-body").innerHTML =
       // メンバーを追加 starts folded; a tap on its title opens it
       (owner ? `<form class="ad-add${adAddOpen ? " open" : ""}" id="ad-add" novalidate><button type="button" class="ad-add-h" id="ad-add-h" aria-expanded="${adAddOpen}"><b>メンバーを追加</b><span class="ad-chev" aria-hidden="true"></span></button>` +
-        `<label class="f ad-add-name">氏名<input id="ad-who" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done"></label>` +
+        `<label class="f ad-add-name">氏名（空欄なら、本人が最初に入力します）<input id="ad-who" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="空欄でもOK"></label>` +
         `<div class="f">勤務形態${workSel("", "ad-work", 'id="ad-work"')}</div>` +
         `<div class="f">役割${roleSel("", "ad-role", 'id="ad-role"')}</div>` +
         `<div class="f">業務委託契約書${askChk(true, 'id="ad-ask"')}</div>` +
@@ -6086,7 +6172,6 @@ window.addEventListener("error", function (e) {
       const name = $("ad-who").value.trim(), workType = picked($("ad-work")), role = picked($("ad-role")) || "", contractAsk = !$("ad-ask").checked;
       // shown in red right above 追加, where the eyes are when it is pressed
       const addErr = (t) => { $("ad-add-err").textContent = t; };
-      if (!name) { addErr("氏名を入れていません。"); $("ad-who").focus(); return; }
       // (no focus on a pill: its ring would look as if 常勤 had been chosen)
       if (!workType) { addErr("勤務形態を選択していません。"); return; }
       addErr("");
@@ -6096,8 +6181,8 @@ window.addEventListener("error", function (e) {
           const r = JSON.parse(await call("api_adminSaveMember", { name, workType, role, contractAsk }));
           const inviteShow = $("ad-ivshow").checked;
           if (!inviteShow) await call("api_inviteShow", r.id, false).catch(() => {});
-          adData.members.push({ id: r.id, name, loginId: r.loginId, role, admin: !!role, owner: role === "運営", fixed: false, active: true, contract: "", hasContract: false, workType, contractAsk, inviteShow }); adAddOpen = false;
-          adChanged(); adMsg(`${name}さんを追加しました。`); showCreds(name, r);
+          adData.members.push({ id: r.id, name: r.name || name, loginId: r.loginId, role, admin: !!role, owner: role === "運営", fixed: false, active: true, contract: "", hasContract: false, workType, contractAsk, inviteShow }); adAddOpen = false;
+          adChanged(); adMsg(`${r.name || name}さんを追加しました。`); showCreds(r.name || name, r);
         } catch (err) { adMsg(errText(err)); }
       });
     });
@@ -6780,7 +6865,7 @@ window.addEventListener("error", function (e) {
   // first the name, address and 勤務形態, then the contract; both block the app (admins too) until done
   function needsSetup() {
     // 生年月日 too: someone who signed up before it was asked fills it in once
-    if (!doc("billing").from || !doc("billing").addr || (!window.TC_WORK && !window.TC_REP) || !myProf?.birth) { openSetup(); return true; }
+    if (window.TC_NEED_NAME || !doc("billing").from || !doc("billing").addr || (!window.TC_WORK && !window.TC_REP) || !myProf?.birth) { openSetup(); return true; }
     if (contractDue()) { openContract(); return true; }
     return false;
   }
