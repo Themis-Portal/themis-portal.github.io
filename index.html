@@ -519,7 +519,7 @@ fieldset:disabled .f input, fieldset:disabled .f textarea, fieldset:disabled .f 
 .who-tp i { display: grid; font-style: normal; font-family: var(--f-num); font-size: 8.5px; font-weight: 800; line-height: 1; letter-spacing: 0; color: #9fb4d6;
   padding-right: 6px; border-right: 1px solid rgb(255 255 255 / .18); }
 .who-tp b { font-family: var(--f-num); font-size: 17px; font-weight: 800; letter-spacing: .02em; line-height: 1.2; text-shadow: 0 0 10px rgb(246 210 122 / .35); }
-#member-ui:not([data-tab="inv"]):not([data-tab="pay"]):not([data-tab="notice"]):not([data-tab="invite"]) > .sub-back { display: none; }
+#member-ui:not([data-tab="inv"]):not([data-tab="pay"]):not([data-tab="notice"]):not([data-tab="invite"]):not([data-tab="mypage"]) > .sub-back { display: none; }
 /* the bell, small at the top left of ホーム; its count in a red circle as on LINE */
 .bell-row { margin-bottom: -14px; }
 .bell { position: relative; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--rule); background: var(--card); color: var(--ink); padding: 0;
@@ -601,7 +601,7 @@ body:has(#member-ui:not([hidden])) .brand-btns { display: none; }
 .bnav button.has-new::after { content: ""; position: absolute; top: 2px; left: calc(50% + 10px); width: 10px; height: 10px; border-radius: 50%; background: #e5373d; border: 2px solid #1a2433; box-shadow: 0 0 8px rgb(229 55 61 / .7); }
 .bnav button:active { transform: translateY(0); }
 /* a message said off the ホーム screen shows for a moment just above the bar */
-.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(70px + env(safe-area-inset-bottom, 0px)); z-index: 16; width: max-content; max-width: min(92vw, 520px);
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(70px + env(safe-area-inset-bottom, 0px)); z-index: 9500; width: max-content; max-width: min(92vw, 520px);
   background: var(--ink); color: var(--card); font-size: 13.5px; line-height: 1.5; padding: 10px 14px; border-radius: 12px; box-shadow: 0 6px 18px rgb(0 0 0 / .25); }
 .same-last { font-weight: 700; }
 .set-sum { margin: 0; font-size: 13px; color: var(--ink-soft); background: var(--paper); border-radius: 8px; padding: 8px 10px; }
@@ -1933,15 +1933,9 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
 /* 年間ランキング 1〜3位: the name's pill (ランキング, 獲得ログ, the name at the top right) turns gold, silver or bronze */
-.nm-pill.yr1, .who-name.yr1 { color: #3a2a00 !important; border: 1px solid #fff1c2 !important; text-shadow: 0 1px 0 rgb(255 255 255 / .5);
-  background: linear-gradient(115deg, #c99a2e 0%, #f6d27a 30%, #fff6cf 45%, #f6d27a 60%, #c99a2e 100%) !important; background-size: 220% 100% !important;
-  box-shadow: 0 0 12px rgb(246 210 122 / .65), inset 0 1px 0 rgb(255 255 255 / .6) !important; animation: yr-shine 3.2s linear infinite; }
-.nm-pill.yr2, .who-name.yr2 { color: #1f2a3a !important; border: 1px solid #fff !important;
-  background: linear-gradient(115deg, #8a95a5 0%, #dfe5ee 35%, #ffffff 48%, #c9d1dc 62%, #8a95a5 100%) !important; background-size: 220% 100% !important;
-  box-shadow: 0 0 10px rgb(201 209 220 / .55), inset 0 1px 0 rgb(255 255 255 / .7) !important; animation: yr-shine 3.6s linear infinite; }
-.nm-pill.yr3, .who-name.yr3 { color: #2a1500 !important; border: 1px solid #ffe0c2 !important;
-  background: linear-gradient(115deg, #9c5f28 0%, #d99a5e 35%, #ffe0c2 48%, #d99a5e 62%, #9c5f28 100%) !important; background-size: 220% 100% !important;
-  box-shadow: 0 0 10px rgb(217 154 94 / .55), inset 0 1px 0 rgb(255 255 255 / .5) !important; animation: yr-shine 4s linear infinite; }
+.nm-pill.yr1, .who-name.yr1 { border: 1.5px solid #f6d27a !important; box-shadow: 0 0 8px rgb(246 210 122 / .6) !important; }
+.nm-pill.yr2, .who-name.yr2 { border: 1.5px solid #dfe5ee !important; box-shadow: 0 0 8px rgb(201 209 220 / .55) !important; }
+.nm-pill.yr3, .who-name.yr3 { border: 1.5px solid #d99a5e !important; box-shadow: 0 0 8px rgb(217 154 94 / .55) !important; }
 .nm-pill.yr1::before, .who-name.yr1::before { content: ""; display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -.2em; background: center / contain no-repeat; background-image: var(--ic-crown); margin-right: 4px; }
 @keyframes yr-shine { from { background-position: 100% 0; } to { background-position: -120% 0; } }
 @media (prefers-reduced-motion: reduce) { .nm-pill[class*="yr"], .who-name[class*="yr"] { animation: none; } }
@@ -2005,6 +1999,10 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
 .cel-sent { flex: none; font-size: 12px; font-weight: 700; color: #7fe0cf; }
 /* マイ記録 */
 #st-body { display: grid; gap: 14px; }
+.thx-form[hidden], .thx-none[hidden] { display: none !important; }
+.ad-addr-form { display: grid; gap: 6px; }
+.ad-addr-form .f { margin: 0; }
+.ad-addr-form .tool { justify-self: start; }
 .bd-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 6px; }
 .bd-row select { min-width: 0; }
 /* マイページ: one button; a tap opens it under the button */
@@ -2012,8 +2010,7 @@ input, textarea, [contenteditable], .iv-code b, .creds, .creds *, .ad-id { -webk
 .sx-open .sx-cap, .sx-open b, .sx-open small { grid-column: 1; }
 .sx-open b { color: #fff; font-size: 18px; }
 .sx-open small { font-size: 12px; color: var(--plate-soft); }
-.sx-chev { grid-column: 2; grid-row: 1 / 4; align-self: center; width: 10px; height: 10px; border-right: 2.5px solid #7fe0cf; border-bottom: 2.5px solid #7fe0cf; transform: rotate(45deg); transition: transform .2s; }
-.sx-open.on .sx-chev { transform: rotate(-135deg); }
+.sx-chev { grid-column: 2; grid-row: 1 / 4; align-self: center; width: 10px; height: 10px; border-right: 2.5px solid #7fe0cf; border-bottom: 2.5px solid #7fe0cf; transform: rotate(-45deg); }
 .sx-in { display: grid; gap: 14px; }
 .sx-hero { display: grid; gap: 10px; padding: 18px; border-radius: var(--r); color: var(--plate-ink);
   background: radial-gradient(120% 120% at 100% 0%, #17423d 0%, transparent 55%), var(--plate); border: 1px solid var(--plate-line); box-shadow: 0 8px 18px -12px rgb(10 20 35 / .6); }
@@ -2473,10 +2470,14 @@ html, body { touch-action: manipulation; }
 
   <!-- 広場: マイページ (this month and the totals) on top, then the ランキング, みんなの獲得ログ and ありがとうチケット -->
   <section class="panel" id="p-plaza" aria-label="広場" hidden>
-    <div id="st-body"></div>
+    <button type="button" class="sx-hero sx-open" id="sx-open"><span class="sx-cap">MY PAGE</span><b>マイページ</b><small>今月のふりかえりと、累計の記録</small><i class="sx-chev" aria-hidden="true"></i></button>
     <section class="tp-rank" id="tp-rank" aria-label="ランキング"></section>
     <section class="tp-feed-box" id="tp-feed" aria-label="みんなの獲得ログ"></section>
     <section id="tp-thx" aria-label="ありがとうチケット"></section>
+  </section>
+
+  <section class="panel" id="p-mypage" aria-label="マイページ" hidden>
+    <div id="st-body"></div>
   </section>
 
   <section class="panel" id="p-point" aria-label="ポイント" hidden>
@@ -2982,7 +2983,7 @@ window.addEventListener("error", function (e) {
   // the page opens on ホーム; the bar at the foot picks ホーム, シフト (シフト表 / シフト希望) or メニュー (請求書 / 給与明細 in it)
   let tab = "home", shiftTab = "card";
   // お知らせ belongs to wherever it was opened from: ホーム (the bell) or メニュー (お問い合わせ)
-  const GROUP = { home: "home", card: "shift", hope: "shift", point: "point", menu: "menu", inv: "menu", pay: "menu", notice: "home", invite: "menu", plaza: "plaza" };
+  const GROUP = { home: "home", card: "shift", hope: "shift", point: "point", menu: "menu", inv: "menu", pay: "menu", notice: "home", invite: "menu", plaza: "plaza", mypage: "plaza" };
   function setTab(t) {
     // each tab keeps its own month: the shift calendar opens on this month, invoices on last month
     // and its own place on the page: coming back to a screen lands where it was left
@@ -2994,12 +2995,13 @@ window.addEventListener("error", function (e) {
     $("m-hope").hidden = !(GROUP[t] === "shift" && tabOk("hope"));
     $("m-hope").textContent = t === "hope" ? "‹ シフト表に戻る" : "シフト希望を出す";
     for (const k of ["card", "hope"]) $("tab-" + k).setAttribute("aria-selected", t === k);
-    for (const k of ["card", "hope", "inv", "pay", "menu", "notice", "point", "invite", "plaza"]) $("p-" + k).hidden = t !== k;
+    for (const k of ["card", "hope", "inv", "pay", "menu", "notice", "point", "invite", "plaza", "mypage"]) $("p-" + k).hidden = t !== k;
     $("sub-act").replaceChildren();
     if (t === "notice") renderNotice();
     if (t === "point") { renderPoint(); loadTp(); }
     if (t === "invite") { renderInvite(); loadInvite(); }
-    if (t === "plaza") { renderStats(); if (myOpen) loadStats(); paintRank(); loadRank(); paintThanks(); loadThanks(); }
+    if (t === "mypage") { renderStats(); loadStats(); }
+    if (t === "plaza") { paintRank(); loadRank(); paintThanks(); loadThanks(); }
     for (const b of document.querySelectorAll(".bnav button")) {
       if (b.dataset.g === GROUP[t]) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
     }
@@ -3019,7 +3021,7 @@ window.addEventListener("error", function (e) {
   // 戻る: from 請求書 / 給与明細 to メニュー; inside お知らせ back to its list, then to where it was opened from
   $("back-menu").onclick = () => {
     if (tab === "notice" && nt.view !== "list" && nt.fromList) showNotice("list");
-    else pickTab(tab === "notice" ? nt.from : "menu");   // back where that screen was left
+    else pickTab(tab === "notice" ? nt.from : tab === "mypage" ? "plaza" : "menu");   // back where that screen was left
   };
 
   // ---- お知らせ・お問い合わせ ----
@@ -3371,37 +3373,42 @@ window.addEventListener("error", function (e) {
     try { localStorage.setItem("tc_thx", JSON.stringify({ tok: CRED.split(".")[0], v: thx })); } catch (e) {}
     if (tab === "plaza") paintThanks();
   }
+  // the card is built once; later calls only bring its parts up to date, so the pulldown and the message being written
+  // (and the phone's keyboard) are never replaced. A small pink ticket with a heart in the middle (grey once used)
+  const thxTicket = (on) => `<i class="thx-tk${on ? "" : " used"}" aria-hidden="true"><svg viewBox="0 0 36 22"><path d="M4 2h28a2 2 0 0 1 2 2v4a3 3 0 0 0 0 6v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a3 3 0 0 0 0-6V4a2 2 0 0 1 2-2z"/><path class="tk-cut" d="M25 4v14" /><path class="tk-heart" d="M15 16.5l-4.3-4.1a2.6 2.6 0 0 1 3.7-3.7l.6.6.6-.6a2.6 2.6 0 0 1 3.7 3.7z"/></svg></i>`;
   function paintThanks() {
     const box = $("tp-thx");
-    // not drawn over while a message is being written
-    if (!box || !thx || box.contains(document.activeElement)) return;
-    // a small pink ticket with a heart in the middle (grey once used)
-    const ticket = (on) => `<i class="thx-tk${on ? "" : " used"}" aria-hidden="true"><svg viewBox="0 0 36 22"><path d="M4 2h28a2 2 0 0 1 2 2v4a3 3 0 0 0 0 6v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a3 3 0 0 0 0-6V4a2 2 0 0 1 2-2z"/><path class="tk-cut" d="M25 4v14" /><path class="tk-heart" d="M15 16.5l-4.3-4.1a2.6 2.6 0 0 1 3.7-3.7l.6.6.6-.6a2.6 2.6 0 0 1 3.7 3.7z"/></svg></i>`;
-    const was = { to: $("thx-to")?.value || "", msg: $("thx-msg")?.value || "" };
-    box.innerHTML = `<div class="thx-card"><div class="thx-h"><b>ありがとうチケット</b><span class="thx-left">${Array.from({ length: thx.per }, (_, i) => ticket(i < thx.left)).join("")}<span>残り <b class="num">${thx.left}</b>/${thx.per}枚</span></span></div>` +
-      `<p class="thx-how">仲間に「ありがとう」を送れます。1枚で相手に <b>${thx.tp}TP</b>（あなたのTPは減りません）<br>毎月1日に${thx.per}枚にリセットされます（使わなかった分は持ち越せません）</p>` +
-      (thx.left > 0
-        ? `<form class="thx-form" id="thx-form"><select id="thx-to" aria-label="送る相手"><option value="">送る相手を選ぶ</option>${thx.people.map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("")}</select>` +
-          `<div class="thx-row"><input type="text" id="thx-msg" maxlength="100" autocomplete="off" placeholder="ひと言（例：昨日はヘルプありがとう！）" aria-label="ひと言メッセージ"><button type="submit" class="btn primary">送る</button></div></form>`
-        : `<p class="thx-none">今月のチケットは使い切りました。来月1日に${thx.per}枚にリセットされます。</p>`) +
-      (thx.got.length ? `<div class="thx-got"><span class="thx-sub">今月もらったありがとう（${thx.got.length}）</span>` + thx.got.map((x) =>
-        `<div class="thx-msg"><span class="nm-pill${yrCls(x.name)}">${esc(x.name)}</span><p>${esc(x.msg)}</p></div>`).join("") + `</div>` : "") + `</div>`;
-    if ($("thx-to")) { $("thx-to").value = was.to; $("thx-msg").value = was.msg; }
-    if ($("thx-form")) $("thx-form").onsubmit = async (e) => {
-      e.preventDefault();
-      const to = $("thx-to").value, msgText = $("thx-msg").value.trim(), who = thx.people.find((p) => p.id === to);
-      if (!to) { msg("送る相手を選んでください。"); return; }
-      if (!msgText) { $("thx-msg").focus(); msg("ひと言メッセージを入れてください。"); return; }
-      document.activeElement?.blur();
-      busyOn("ありがとうを送っています");
-      try {
-        thx = JSON.parse(await call("api_thanksSend", to, msgText));
-        try { localStorage.setItem("tc_thx", JSON.stringify({ tok: CRED.split(".")[0], v: thx })); } catch (e2) {}
-        $("thx-msg").value = ""; $("thx-to").value = "";
-        busyOff(); paintThanks(); rankAt = 0; loadRank();
-        sendFx("thx", "ありがとうを送りました", `${who ? who.name + "さんに " : ""}${thx.tp}TP`);
-      } catch (err) { busyOff(); msg(errText(err)); }
-    };
+    if (!box || !thx) return;
+    if (!$("thx-form")) {
+      box.innerHTML = `<div class="thx-card"><div class="thx-h"><b>ありがとうチケット</b><span class="thx-left" id="thx-left"></span></div><p class="thx-how" id="thx-how"></p>` +
+        `<form class="thx-form" id="thx-form"><select id="thx-to" aria-label="送る相手"></select>` +
+        `<div class="thx-row"><input type="text" id="thx-msg" maxlength="100" autocomplete="off" placeholder="ひと言（例：昨日はヘルプありがとう！）" aria-label="ひと言メッセージ"><button type="submit" class="btn primary">送る</button></div></form>` +
+        `<p class="thx-none" id="thx-none"></p><div id="thx-got"></div></div>`;
+      $("thx-form").onsubmit = sendThanks;
+    }
+    $("thx-left").innerHTML = Array.from({ length: thx.per }, (_, i) => thxTicket(i < thx.left)).join("") + `<span>残り <b class="num">${thx.left}</b>/${thx.per}枚</span>`;
+    $("thx-how").innerHTML = `仲間に「ありがとう」を送れます。1枚で相手に <b>${thx.tp}TP</b>（あなたのTPは減りません）<br>毎月1日に${thx.per}枚にリセットされます（使わなかった分は持ち越せません）`;
+    $("thx-form").hidden = !(thx.left > 0);
+    $("thx-none").hidden = thx.left > 0; $("thx-none").textContent = `今月のチケットは使い切りました。来月1日に${thx.per}枚にリセットされます。`;
+    const sel = $("thx-to"), opts = `<option value="">送る相手を選ぶ</option>` + thx.people.map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("");
+    if (sel.dataset.o !== opts && document.activeElement !== sel) { const v = sel.value; sel.innerHTML = opts; sel.dataset.o = opts; sel.value = v; }
+    $("thx-got").innerHTML = thx.got.length ? `<div class="thx-got"><span class="thx-sub">今月もらったありがとう（${thx.got.length}）</span>` + thx.got.map((x) =>
+      `<div class="thx-msg"><span class="nm-pill${yrCls(x.name)}">${esc(x.name)}</span><p>${esc(x.msg)}</p></div>`).join("") + `</div>` : "";
+  }
+  async function sendThanks(e) {
+    e.preventDefault();
+    const to = $("thx-to").value, msgText = $("thx-msg").value.trim(), who = thx.people.find((p) => p.id === to);
+    if (!to) { msg("送る相手を選んでください。"); return; }
+    if (!msgText) { $("thx-msg").focus(); msg("ひと言メッセージを入れてください。"); return; }
+    document.activeElement?.blur();
+    busyOn("ありがとうを送っています");
+    try {
+      thx = JSON.parse(await call("api_thanksSend", to, msgText));
+      try { localStorage.setItem("tc_thx", JSON.stringify({ tok: CRED.split(".")[0], v: thx })); } catch (e2) {}
+      $("thx-msg").value = ""; $("thx-to").value = "";
+      busyOff(); paintThanks(); rankAt = 0; loadRank();
+      sendFx("thx", "ありがとうを送りました", `${who ? who.name + "さんに " : ""}${thx.tp}TP`);
+    } catch (err) { busyOff(); msg(errText(err)); }
   }
   // 処理中: a screen over everything while something takes a while (TPを使う, 請求書の提出), then a short 完了
   function busyOn(title, sub) {
@@ -3459,7 +3466,7 @@ window.addEventListener("error", function (e) {
       return `<div class="cel-card${c.me ? " me" : ""}"><span class="cel-ic" aria-hidden="true">${icon}</span>` +
         (c.me
           ? `<div class="cel-t"><b>${c.kind === "birth" ? "お誕生日" : what}おめでとうございます！</b><small>みんなから「おめでとう」が <b class="num">${c.count}</b>件 届いています</small></div>`
-          : `<div class="cel-t"><b><span class="nm-pill${yrCls(c.name)}">${esc(c.name)}</span>さんの${what}</b><small>${c.count ? `今日です！ ${c.count}人がおめでとうを送りました` : `今日です！ おめでとうで${c.tp || 10}TPが届きます`}</small></div>` +
+          : `<div class="cel-t"><b><span class="nm-pill${yrCls(c.name)}">${esc(c.name)}</span>さんの${what}</b><small>${c.count ? `${c.count}人がおめでとうを送りました` : `おめでとうで${c.tp || 10}TPが届きます`}</small></div>` +
             (c.sent ? `<span class="cel-sent">✓ 送りました</span>` : `<button type="button" class="btn primary cel-go" data-congrats="${esc(c.id)}"><i class="ico ico-party" aria-hidden="true"></i>おめでとう</button>`)) + `</div>`;
     }).join("");
     for (const b of box.querySelectorAll("[data-congrats]")) b.onclick = async () => {
@@ -3471,7 +3478,7 @@ window.addEventListener("error", function (e) {
   }
 
   // ---- マイページ (top of 広場): this month, and the totals over every month on record (read once, when opened) ----
-  let myStats = null, myOpen = false;
+  let myStats = null;
   try { const c = JSON.parse(localStorage.getItem("tc_stats") || "null"); if (c && CRED && c.tok === CRED.split(".")[0]) myStats = c.v; } catch (e) {}
   async function loadStats() {
     try { myStats = JSON.parse(await call("api_myStats")); } catch (e) { return; }
@@ -3484,8 +3491,9 @@ window.addEventListener("error", function (e) {
       try { got = JSON.parse(await call("api_load", want)); } catch (e) { got = null; }
       if (got) for (const n of want) if (!docs[n]) docs[n] = got[n] || { days: {} };
     }
-    if (tab === "plaza") renderStats();
+    if (tab === "mypage") renderStats();
   }
+  $("sx-open").onclick = () => pickTab("mypage");
   function renderStats() {
     const now = new Date(), y = now.getFullYear(), cm = now.getMonth() + 1, today = dayKey(now), t = Date.now();
     const monthOf = (ym) => {
@@ -3507,9 +3515,7 @@ window.addEventListener("error", function (e) {
     }
     const diff = (a, b, unit) => (last.have ? `<span class="sx-diff${a - b < 0 ? " down" : ""}">先月より ${a - b >= 0 ? "+" : "−"}${Math.abs(a - b)}${unit}</span>` : "");
     $("st-body").innerHTML =
-      `<button type="button" class="sx-hero sx-open${myOpen ? " on" : ""}" id="sx-open" aria-expanded="${myOpen}"><span class="sx-cap">MY PAGE</span><b>マイページ</b>` +
-      `<small>${myOpen ? "タップで閉じる" : "今月のふりかえりと、累計の記録を見る"}</small><i class="sx-chev" aria-hidden="true"></i></button>` + (!myOpen ? "" :
-      `<div class="sx-in"><div class="sx-hero"><h2>${cm}月のふりかえり</h2>` +
+      `<div class="sx-hero"><span class="sx-cap">MY PAGE</span><h2>${cm}月のふりかえり</h2>` +
       `<div class="sx-big"><div><span>出勤</span><b class="num">${cur.days}<small>日</small></b>${diff(cur.days, last.days, "日")}</div>` +
       `<div><span>稼働</span><b class="num">${Math.floor(cur.min / 60)}<small>時間</small></b>${diff(Math.floor(cur.min / 60), Math.floor(last.min / 60), "時間")}</div>` +
       `<div><span><i class="ico ico-fire" aria-hidden="true"></i> 連続</span><b class="num">${streakDays()}<small>日</small></b></div></div></div>` +
@@ -3517,8 +3523,7 @@ window.addEventListener("error", function (e) {
       `<div class="sx-tiles">` + [["出勤日数", `${all.length}日`], ["獲得TP", myStats ? `${tpN(myStats.tp)}TP` : "—"],
         ["もらったありがとう", myStats ? `${myStats.thanks}回` : "—"], ["行った店舗", `${Object.keys(stores).length}店舗`], ["最高の連続", `${best}日`]]
         .map(([k, v]) => `<div><span>${k}</span><b class="num">${v}</b></div>`).join("") + `</div>` +
-      (top.length ? `<h4 class="bl-h">よく行った店舗</h4><ol class="sx-stores">` + top.map(([n, c], i) => `<li><i>${i + 1}</i><span>${esc(n)}</span><b class="num">${c}回</b></li>`).join("") + `</ol>` : "") + `</div>`);
-    $("sx-open").onclick = () => { myOpen = !myOpen; renderStats(); if (myOpen) loadStats(); };
+      (top.length ? `<h4 class="bl-h">よく行った店舗</h4><ol class="sx-stores">` + top.map(([n, c], i) => `<li><i>${i + 1}</i><span>${esc(n)}</span><b class="num">${c}回</b></li>`).join("") + `</ol>` : "");
   }
   // ---- 友達を招待: the person's code (to copy or share), the code of whoever invited them, the people they invited ----
   // the last one read is kept on this device, so the code and the time left show at once; read ahead after opening
@@ -3665,7 +3670,7 @@ window.addEventListener("error", function (e) {
   // 常勤 staff hand in no shift wishes, so they never see that tab; 社員 send no invoice and hand in no wishes:
   // they get their 給与明細 instead
   // 代表 has no 勤務形態 and sees every tab
-  const tabOk = (t) => t === "card" || t === "home" || t === "menu" || t === "notice" || t === "point" || t === "invite" || t === "plaza" || !!window.TC_REP || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
+  const tabOk = (t) => t === "card" || t === "home" || t === "menu" || t === "notice" || t === "point" || t === "invite" || t === "plaza" || t === "mypage" || !!window.TC_REP || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
   function applyWork() {
     $("tab-hope").hidden = !tabOk("hope"); $("tab-inv").hidden = !tabOk("inv"); $("tab-pay").hidden = !tabOk("pay");
     $("m-hope").hidden = !(GROUP[tab] === "shift" && tabOk("hope"));
@@ -3675,7 +3680,7 @@ window.addEventListener("error", function (e) {
   $("tab-pay").onclick = () => pickTab("pay");
 
   let view = new Date(); view = new Date(view.getFullYear(), view.getMonth(), 1);
-  const tabView = { home: view, menu: view, notice: view, point: view, invite: view, plaza: view, card: view, inv: new Date(view.getFullYear(), view.getMonth() - 1, 1), pay: new Date(view.getFullYear(), view.getMonth() - 1, 1), hope: new Date(view.getFullYear(), view.getMonth() + 1, 1) };
+  const tabView = { home: view, menu: view, notice: view, point: view, invite: view, plaza: view, mypage: view, card: view, inv: new Date(view.getFullYear(), view.getMonth() - 1, 1), pay: new Date(view.getFullYear(), view.getMonth() - 1, 1), hope: new Date(view.getFullYear(), view.getMonth() + 1, 1) };
   const viewYm = () => `${view.getFullYear()}-${pad(view.getMonth() + 1)}`;
   function watchView() {
     if (!backend) return;
@@ -5037,7 +5042,7 @@ window.addEventListener("error", function (e) {
     if (!v) return;
     for (const k of Object.keys(tabView)) if (/^\d{4}-\d{2}$/.test(v.months?.[k] || "")) { const [y, m] = v.months[k].split("-").map(Number); tabView[k] = new Date(y, m - 1, 1); }
     view = tabView[tab];
-    setTab(["card", "inv", "hope", "pay", "menu", "point", "plaza", "invite"].includes(v.tab) && tabOk(v.tab) ? v.tab : "home");
+    setTab(["card", "inv", "hope", "pay", "menu", "point", "plaza", "invite", "mypage"].includes(v.tab) && tabOk(v.tab) ? v.tab : "home");
   }
   // the admin screen's tab (請求書 only for 運営) and months
   function adoptAdminView(v) {
@@ -6146,7 +6151,8 @@ window.addEventListener("error", function (e) {
           (owner && !m.rep ? `<dt>テスト用</dt><dd><label class="check"><input type="checkbox" data-test${m.test ? " checked" : ""}> ランキングや集計に出さない</label></dd>` : "") +
           // 生年月日 (the person's own entry) and 入社日 (entered here, for the 在籍記念)
           (owner ? `<dt>生年月日</dt><dd>${m.birth ? esc(jDate(m.birth)) : `<span class="muted">未登録</span>`}</dd>` +
-            `<dt>入社日</dt><dd><input type="date" class="ad-join" data-join value="${esc(m.join || "")}" max="${dayKey(new Date())}" aria-label="${esc(m.name)}さんの入社日"></dd>` : "") +
+            `<dt>入社日</dt><dd><input type="date" class="ad-join" data-join value="${esc(m.join || "")}" max="${dayKey(new Date())}" aria-label="${esc(m.name)}さんの入社日"></dd>` +
+            `<dt>住所</dt><dd class="ad-addr"><button type="button" class="tool" data-addr>住所を確認・変更</button></dd>` : "") +
           `</dl>` +
           (touch ? `<div class="ad-acts"><button type="button" class="tool" data-temp>仮パスワードを発行</button><button type="button" class="tool danger" data-del>削除</button></div>` : "") +
           `</div></div>`;
@@ -6219,6 +6225,24 @@ window.addEventListener("error", function (e) {
       try { await call("api_adminSetTest", m.id, on); m.test = on; adChanged(); adMsg(on ? `${m.name}さんをテスト用にしました。ランキング・ありがとう・お祝い・人件費やTP経費に出なくなります。` : `${m.name}さんをテスト用から外しました。`); }
       catch (err) { el.checked = !on; adMsg(errText(err)); }
       el.disabled = false;
+    };
+    // 住所: read when opened; 保存 writes it into the person's 請求書 › 毎月共通の設定
+    for (const el of $("ad-body").querySelectorAll("[data-addr]")) el.onclick = async () => {
+      const m = person(card(el)), dd = el.parentElement;
+      el.disabled = true;
+      let a;
+      try { a = JSON.parse(await call("api_adminAddr", m.id)); } catch (err) { el.disabled = false; adMsg(errText(err)); return; }
+      const f = (k, label, ph, mode) => `<label class="f">${label}<input data-ak="${k}" value="${esc(a[k] || "")}" placeholder="${ph}"${mode ? ` inputmode="${mode}"` : ""} autocomplete="off"></label>`;
+      dd.innerHTML = `<div class="ad-addr-form">` + f("zip", "郵便番号", "160-0023", "numeric") + f("address", "住所", "東京都新宿区…") + f("building", "建物名・部屋番号", "") + f("tel", "電話番号", "090-1234-5678", "tel") +
+        `<button type="button" class="tool" data-addr-save>保存</button></div>`;
+      dd.querySelector("[data-addr-save]").onclick = async (ev) => {
+        const info = {};
+        for (const i of dd.querySelectorAll("[data-ak]")) info[i.dataset.ak] = i.value.trim();
+        ev.target.disabled = true;
+        try { await call("api_adminSetAddr", m.id, info); adMsg(`${m.name}さんの住所を保存しました。`); }
+        catch (err) { adMsg(errText(err)); }
+        ev.target.disabled = false;
+      };
     };
     for (const el of $("ad-body").querySelectorAll("[data-join]")) el.onchange = async () => {
       const m = person(card(el)), v = el.value;
