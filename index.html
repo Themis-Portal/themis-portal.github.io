@@ -3,8 +3,20 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" href="icons/favicon-32.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="favicon.ico?v=2" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=2">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=2">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Themis Portal">
+<meta property="og:title" content="Themis Portal">
+<meta property="og:description" content="Themisスタッフ専用アプリ（打刻・シフト・請求書・TP）">
+<meta property="og:url" content="https://themis-portal.github.io/">
+<meta property="og:image" content="https://themis-portal.github.io/icons/og.png?v=2">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://themis-portal.github.io/icons/og.png?v=2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Themis Portal">
@@ -6130,7 +6142,9 @@ window.addEventListener("error", function (e) {
         `<div class="f">勤務形態${workSel("", "ad-work", 'id="ad-work"')}</div>` +
         `<div class="f">役割${roleSel("", "ad-role", 'id="ad-role"')}</div>` +
         `<div class="f">業務委託契約書${askChk(true, 'id="ad-ask"')}</div>` +
-        `<div class="f">招待コード${ivChk(true, 'id="ad-ivshow"')}</div>` +
+        `<div class="f">招待コード${ivChk(false, 'id="ad-ivshow"')}</div>` +
+        // off: a テスト用 account (left out of the ランキング, the 獲得ログ, ありがとう, the お祝い and the costs)
+        `<div class="f">ランキング<label class="check"><input type="checkbox" id="ad-rank" checked> ランキングに反映する（外すとテスト用）</label></div>` +
         `<div class="ad-add-go"><p class="hint">ログインIDと仮パスワードは自動で作られます。追加したあとに出る画面からコピーして、本人に伝えてください。</p>` +
         `<span class="hint perr ad-add-err" id="ad-add-err" role="alert"></span>` +
         `<button type="submit" class="btn primary" id="ad-add-btn">追加</button></div></form>` : "") +
@@ -6183,7 +6197,7 @@ window.addEventListener("error", function (e) {
     if (owner) noAutofill($("ad-who"));
     // the red note goes away as soon as the missing part is filled in
     if (owner) for (const ev of ["input", "change"]) $("ad-add").addEventListener(ev, () => { $("ad-add-err").textContent = ""; });
-    if (owner) $("ad-add").addEventListener("submit", (e) => {
+    if (owner) $("ad-add").addEventListener("submit", async (e) => {
       e.preventDefault();
       const name = $("ad-who").value.trim(), workType = picked($("ad-work")), role = picked($("ad-role")) || "", contractAsk = !$("ad-ask").checked;
       // shown in red right above 追加, where the eyes are when it is pressed
@@ -6191,16 +6205,18 @@ window.addEventListener("error", function (e) {
       // (no focus on a pill: its ring would look as if 常勤 had been chosen)
       if (!workType) { addErr("勤務形態を選択していません。"); return; }
       addErr("");
-      busyBtn($("ad-add-btn"), async () => {
-        adMsg("追加しています…");
-        try {
-          const r = JSON.parse(await call("api_adminSaveMember", { name, workType, role, contractAsk }));
-          const inviteShow = $("ad-ivshow").checked;
-          if (!inviteShow) await call("api_inviteShow", r.id, false).catch(() => {});
-          adData.members.push({ id: r.id, name: r.name || name, loginId: r.loginId, role, admin: !!role, owner: role === "運営", fixed: false, active: true, contract: "", hasContract: false, workType, contractAsk, inviteShow }); adAddOpen = false;
-          adChanged(); adMsg(`${r.name || name}さんを追加しました。`); showCreds(r.name || name, r);
-        } catch (err) { adMsg(errText(err)); }
-      });
+      // the whole screen says it is adding, then 追加しました, then the ログインID and 仮パスワード
+      const inviteShow = $("ad-ivshow").checked, ranked = $("ad-rank").checked;
+      $("ad-add-btn").disabled = true;
+      busyOn("メンバーを追加しています", name ? `${name}さん` : "");
+      try {
+        const r = JSON.parse(await call("api_adminSaveMember", { name, workType, role, contractAsk }));
+        if (!inviteShow) await call("api_inviteShow", r.id, false).catch(() => {});
+        if (!ranked) await call("api_adminSetTest", r.id, true).catch(() => {});
+        adData.members.push({ id: r.id, name: r.name || name, loginId: r.loginId, role, admin: !!role, owner: role === "運営", fixed: false, active: true, contract: "", hasContract: false, workType, contractAsk, inviteShow, test: !ranked }); adAddOpen = false;
+        await busyDone("メンバーを追加しました", `${r.name || name}さん${ranked ? "" : "（テスト用）"}`);
+        adChanged(); adMsg(`${r.name || name}さんを追加しました。`); showCreds(r.name || name, r);
+      } catch (err) { busyOff(); adMsg(errText(err)); $("ad-add-btn").disabled = false; }
     });
     for (const b of $("ad-body").querySelectorAll("[data-copyid]")) b.onclick = async () => {
       const ok = await copyText(b.dataset.copyid);
