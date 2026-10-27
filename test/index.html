@@ -1472,14 +1472,28 @@ button.pcal-c { cursor: pointer; }
 #shift-seg { display: none !important; }
 .month-nav .m-hope { margin-left: auto; font-weight: 800; color: #fff; border-color: #7fe0cf; background: linear-gradient(180deg, #3fb6a5, #217066); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 3px 0 #0f3d37, 0 0 12px -2px rgb(63 182 165 / .55); white-space: nowrap; }
 .month-nav .m-hope[hidden] { display: none; }
-/* 研修予約: beside シフト希望 (a step to the side when both show); 週末 staff, whose bar is fuller, get it on a line of its own */
-.month-nav { flex-wrap: wrap; }
-.month-nav .m-hope:not([hidden]) + .m-train { margin-left: 0; }
-body:not(.no-trip) .month-nav .m-train { flex-basis: 100%; }
+/* シフト希望 and 研修予約 together at the right: side by side, under one another when the phone is too narrow
+   (週末 staff always under one another) */
+.month-nav .m-acts { margin-left: auto; display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px 6px; min-width: 0; }
+body:not(.no-trip) .month-nav .m-acts { flex-direction: column; align-items: flex-end; }
+.month-nav .m-acts .m-hope { margin-left: 0; }
 .month-nav .m-train { color: #fff; border-color: #f2c77a; background: linear-gradient(180deg, #d99a3a, #8a5a16); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 3px 0 #4a300a, 0 0 12px -2px rgb(217 154 58 / .5); }
 /* on the 研修 screen the month is not used: only the way back shows */
-#member-ui[data-tab="train"] .month-nav > :not(.m-train) { display: none; }
-#member-ui[data-tab="train"] .month-nav .m-train { flex-basis: auto; margin-left: 0; }
+#member-ui[data-tab="train"] .month-nav > :not(.m-acts), #member-ui[data-tab="train"] .m-acts > :not(.m-train) { display: none; }
+#member-ui[data-tab="train"] .month-nav .m-acts { margin-left: 0; }
+.trn-cal { margin-top: 4px; color: var(--ink); }
+.trn-cal-h { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.trn-cal-h b { font-size: 14px; }
+.trn-cal-g { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; text-align: center; }
+.trn-cal-g i { font-style: normal; font-size: 11px; color: var(--ink-soft); }
+.trn-day { font: inherit; font-size: 14px; font-variant-numeric: tabular-nums; height: 38px; border-radius: 8px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); padding: 0; }
+.trn-day.sun { color: #c8424a; }
+.trn-day.sat { color: #2f6fc0; }
+.trn-day:disabled { opacity: .3; }
+.trn-day.on, .trn-chip.on { background: #d99a3a; border-color: #8a5a16; color: #fff; font-weight: 800; }
+.trn-times { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.trn-chip { font: inherit; font-size: 13.5px; font-variant-numeric: tabular-nums; padding: 7px 10px; border-radius: 999px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); }
+.trn-hero .trn-cap { font-family: inherit; font-size: 13px; font-weight: 800; letter-spacing: .12em; }
 #p-train { display: grid; gap: 12px; }
 #p-train[hidden] { display: none; }
 .trn-card { background: var(--card); border: 1px solid var(--rule); border-radius: var(--r); padding: 16px; display: grid; gap: 10px; }
@@ -1959,7 +1973,9 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 .no-trip #k-wake, .no-trip #k-dep, .no-trip .today > div:nth-child(-n+2) { display: none; }
 .no-trip .keys { grid-template-columns: repeat(2, 1fr) !important; }
 .no-trip .today { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
-.k-noplan { margin: 10px 0 0; padding: 9px 12px; border-radius: 10px; font-size: 13px; line-height: 1.6; color: #7a4a00; background: color-mix(in srgb, var(--gold) 18%, var(--card)); border: 1px dashed #c99a2e; }
+/* it sits on the dark clock plate: light text on a gold-tinted ground */
+.k-noplan { margin: 10px 0 0; padding: 9px 12px; border-radius: 10px; font-size: 13.5px; font-weight: 600; line-height: 1.6; color: #ffe7b0; background: rgb(246 210 122 / .14); border: 1px dashed rgb(246 210 122 / .65); }
+.k-noplan b { color: #fff; }
 .today dd { overflow: hidden; text-overflow: clip; }
 /* 今日の予定・明日の予定: only the lit line on top, no coloured edge on the left; the times and 修正 centred on one line */
 .shifts .shift-today, .shifts #shift-next, .shifts .shift-today.absent { border-left-color: var(--plate-line); border-left-width: 1px; }
@@ -2412,9 +2428,11 @@ html, body { touch-action: manipulation; }
       <button type="button" id="m-next" aria-label="次の月">›</button>
       <button type="button" id="m-now">今月</button>
       <!-- 週末 staff: the way to シフト希望 (and back), beside the month -->
-      <button type="button" class="m-hope" id="m-hope" hidden>シフト希望を出す</button>
-      <!-- beside it (under it for 週末 staff, whose bar is fuller); everyone books 研修 -->
-      <button type="button" class="m-hope m-train" id="m-train" hidden>研修チケット</button>
+      <span class="m-acts">
+        <button type="button" class="m-hope" id="m-hope" hidden>シフト希望を出す</button>
+        <!-- beside it (under it for 週末 staff, whose bar is fuller); everyone books 研修 -->
+        <button type="button" class="m-hope m-train" id="m-train" hidden>研修予約</button>
+      </span>
     </div>
   </div>
 
@@ -2459,7 +2477,7 @@ html, body { touch-action: manipulation; }
 
   <!-- 社員: the month's payslip, once Themis has published it -->
   <!-- 研修予約: the tickets, the slots a 研修担当 puts out, and after each one the 内容 and 評価 -->
-  <section class="panel" id="p-train" aria-label="研修チケット" hidden>
+  <section class="panel" id="p-train" aria-label="研修予約" hidden>
     <div id="trn-body"></div>
   </section>
 
@@ -3110,7 +3128,7 @@ window.addEventListener("error", function (e) {
     $("m-hope").hidden = !(GROUP[t] === "shift" && tabOk("hope"));
     $("m-hope").textContent = t === "hope" ? "‹ シフト表に戻る" : "シフト希望を出す";
     $("m-train").hidden = GROUP[t] !== "shift";
-    $("m-train").textContent = t === "train" ? "‹ シフト表に戻る" : "研修チケット";
+    $("m-train").textContent = t === "train" ? "‹ シフト表に戻る" : "研修予約";
     for (const k of ["card", "hope"]) $("tab-" + k).setAttribute("aria-selected", t === k);
     for (const k of ["card", "hope", "train", "inv", "pay", "menu", "notice", "point", "invite", "plaza", "mypage"]) $("p-" + k).hidden = t !== k;
     if (t === "train") { renderTrain(); loadTrn(); }
@@ -3850,7 +3868,38 @@ window.addEventListener("error", function (e) {
   // write the 内容 and 評価 here, and each gets TP from the お知らせ. The call itself is on Google Meet (its link is on the slot)
   let trn = null;
   try { const c = JSON.parse(localStorage.getItem("tc_trn") || "null"); if (c && CRED && c.tok === CRED.split(".")[0]) trn = c.v; } catch (e) {}
-  const TRN_TIMES = Array.from({ length: 31 }, (_, i) => `${pad(7 + Math.floor(i / 2))}:${i % 2 ? "30" : "00"}`);   // 7:00 - 22:00
+  // the start times on the hour (a slot is an hour long), 7:00 - 21:00
+  const TRN_TIMES = Array.from({ length: 15 }, (_, i) => `${pad(7 + i)}:00`);
+  // what the 研修担当 has picked so far (kept while the screen is drawn again): dates, start times, the month shown
+  const trnPick = { dates: new Set(), times: new Set(), month: null };
+  function paintTrnCal() {
+    const box = $("trn-cal");
+    if (!box) return;
+    const now = new Date(), first = new Date(now.getFullYear(), now.getMonth(), 1), last = new Date(now.getFullYear(), now.getMonth() + 2, 1);
+    const mo = trnPick.month || first, y = mo.getFullYear(), m = mo.getMonth(), today = dayKey(now);
+    let cells = "";
+    for (let i = 0; i < new Date(y, m, 1).getDay(); i++) cells += `<span></span>`;
+    for (let d = 1, n = new Date(y, m + 1, 0).getDate(); d <= n; d++) {
+      const k = `${y}-${pad(m + 1)}-${pad(d)}`, wd = new Date(y, m, d).getDay(), on = trnPick.dates.has(k);
+      cells += `<button type="button" class="trn-day${on ? " on" : ""}${wd === 0 ? " sun" : wd === 6 ? " sat" : ""}" data-d="${k}" aria-pressed="${on}"${k < today ? " disabled" : ""}>${d}</button>`;
+    }
+    box.innerHTML = `<div class="trn-cal-h"><button type="button" class="tool" data-mv="-1"${mo <= first ? " disabled" : ""} aria-label="前の月">‹</button>` +
+      `<b>${y}年${m + 1}月</b><button type="button" class="tool" data-mv="1"${mo >= last ? " disabled" : ""} aria-label="次の月">›</button></div>` +
+      `<div class="trn-cal-g">${WD.map((w) => `<i>${w}</i>`).join("")}${cells}</div>`;
+    for (const b of box.querySelectorAll("[data-mv]")) b.onclick = () => { trnPick.month = new Date(y, m + Number(b.dataset.mv), 1); paintTrnCal(); };
+    for (const b of box.querySelectorAll("[data-d]")) b.onclick = () => {
+      const k = b.dataset.d, on = !trnPick.dates.has(k);
+      if (on) trnPick.dates.add(k); else trnPick.dates.delete(k);
+      b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); trnCount();
+    };
+    trnCount();
+  }
+  function trnCount() {
+    const el = $("trn-count");
+    if (!el) return;
+    const n = trnPick.dates.size * trnPick.times.size;
+    el.textContent = n ? `${trnPick.dates.size}日 × ${trnPick.times.size}時間 ＝ ${n}枠を出します（1枠${trn.min}分）。` : `日付と開始時刻を選んでください。1枠${trn.min}分で、出した枠はみんなの「予約できる研修」に出ます。`;
+  }
   const trnDay = (s) => { const [y, m, d] = s.date.split("-").map(Number); return `${m}月${d}日（${WD[new Date(y, m - 1, d).getDay()]}）`; };
   async function loadTrn() {
     try { setTrn(JSON.parse(await call("api_trn"))); }
@@ -3869,14 +3918,14 @@ window.addEventListener("error", function (e) {
     // the tickets are this month's only (a copy kept from before may still hold them by month)
     const d = new Date(), left = Math.max(0, typeof trn.left === "number" ? trn.left : trn.per);
     const mine = trn.slots.filter((s) => s.role || (s.reps && s.who)), open = trn.slots.filter((s) => !s.role && !s.who && !s.started);
-    let h = `<div class="trn-card trn-hero"><span class="tp-cap">TRAINING TICKET</span>` +
+    let h = `<div class="trn-card trn-hero"><span class="tp-cap trn-cap">研修チケット</span>` +
       `<div class="trn-left"><span><small>${d.getMonth() + 1}月の残り</small><b>${left}</b><small>/ ${trn.per}回</small></span></div>` +
       `<p class="hint">研修は1回${trn.min}分、Google Meet で行います。チケットは毎月${trn.per}回で、月が変わると戻ります。終わったら2人とも「内容と評価」を入れると、それぞれに${trn.tp}TPが届きます。</p></div>`;
     if (trn.trainer) h += `<form class="trn-card trn-post" id="trn-post" novalidate><b>研修の枠を出す（研修担当）</b>` +
-      `<div class="f2"><label class="f">日付<input type="date" id="trn-date" min="${dayKey(d)}"></label>` +
-      `<div class="f">開始時刻<select id="trn-start"><option value="">選ぶ</option>${TRN_TIMES.map((t) => `<option>${t}</option>`).join("")}</select></div></div>` +
+      `<div class="f">日付（タップでいくつでも選べます）<div class="trn-cal" id="trn-cal"></div></div>` +
+      `<div class="f">開始時刻（いくつでも選べます）<div class="trn-times" id="trn-times">${TRN_TIMES.map((t) => `<button type="button" class="trn-chip${trnPick.times.has(t) ? " on" : ""}" data-t="${t}" aria-pressed="${trnPick.times.has(t)}">${t}</button>`).join("")}</div></div>` +
       `<label class="f">Google Meet のリンク（あとからでも入れられます）<input type="url" id="trn-url" inputmode="url" placeholder="https://meet.google.com/..." autocomplete="off"></label>` +
-      `<p class="hint">1枠${trn.min}分です。出した枠は、みんなの「予約できる研修」に出ます。</p>` +
+      `<p class="hint" id="trn-count"></p>` +
       `<button type="submit" class="btn primary">枠を出す</button></form>`;
     h += `<h4 class="bl-h trn-h">予定と記録</h4>` + (mine.length ? mine.map(trnItem).join("") : `<p class="hint trn-none">予約した研修や、出した枠はまだありません。</p>`);
     h += `<h4 class="bl-h trn-h">予約できる研修</h4>` + (open.length ? open.map((s) => {
@@ -3916,12 +3965,25 @@ window.addEventListener("error", function (e) {
   function wireTrain() {
     const box = $("trn-body"), idOf = (el) => el.closest("[data-id]").dataset.id;
     const post = $("trn-post");
-    if (post) post.onsubmit = (e) => {
-      e.preventDefault();
-      const date = $("trn-date").value, start = $("trn-start").value;
-      if (!date || !start) { msg("日付と開始時刻を選んでください。"); return; }
-      trnAct("api_trnPost", [date, start, $("trn-url").value.trim()], "研修の枠を出しています", "研修の枠を出しました");
-    };
+    if (post) {
+      paintTrnCal();
+      for (const b of post.querySelectorAll("[data-t]")) b.onclick = () => {
+        const t = b.dataset.t, on = !trnPick.times.has(t);
+        if (on) trnPick.times.add(t); else trnPick.times.delete(t);
+        b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); trnCount();
+      };
+      post.onsubmit = async (e) => {
+        e.preventDefault();
+        if (!trnPick.dates.size || !trnPick.times.size) { msg("日付と開始時刻を選んでください。"); return; }
+        busyOn("研修の枠を出しています", `${trnPick.dates.size * trnPick.times.size}枠`);
+        try {
+          const v = JSON.parse(await call("api_trnPost", [...trnPick.dates].sort(), [...trnPick.times].sort(), $("trn-url").value.trim()));
+          trnPick.dates.clear(); trnPick.times.clear();
+          setTrn(v); renderTrain();
+          await busyDone(`${v.made}枠を出しました`, v.skipped ? `${v.skipped}枠は、過ぎた時間かもう出している時間なので出していません` : "");
+        } catch (err) { busyOff(); msg(errText(err)); }
+      };
+    }
     for (const b of box.querySelectorAll("[data-book]")) b.onclick = async () => {
       const s = trn.slots.find((x) => x.id === idOf(b));
       if (!await ask("この研修を予約しますか？", `${trnDay(s)} ${s.start}〜${s.end}（担当 ${s.by}さん）。研修チケットを1回使います。`, "予約する")) return;
@@ -6445,9 +6507,8 @@ window.addEventListener("error", function (e) {
           (owner && !m.rep ? `<dt>招待コード</dt><dd>${ivChk(m.inviteShow, "data-ivshow")}</dd>` : "") +
           (owner && !m.rep ? `<dt>テスト用</dt><dd><label class="check"><input type="checkbox" data-test${m.test ? " checked" : ""}> ランキングや集計に出さない</label></dd>` : "") +
           (owner ? `<dt>研修担当</dt><dd><label class="check"><input type="checkbox" data-trainer${m.trainer ? " checked" : ""}> 研修の枠を出せる</label></dd>` : "") +
-          // 生年月日 (the person's own entry) and 入社日 (entered here, for the 在籍記念)
+          // 生年月日 (the person's own entry); 入社日 is no longer asked
           (owner ? `<dt>生年月日</dt><dd>${m.birth ? esc(jDate(m.birth)) : `<span class="muted">未登録</span>`}</dd>` +
-            `<dt>入社日</dt><dd>${ymdSel(m.join, 2000, 'data-join')}</dd>` +
             `<dt>住所</dt><dd class="ad-addr"><button type="button" class="tool" data-addr>住所を見る</button></dd>` : "") +
           `</dl>` +
           (touch ? `<div class="ad-acts"><button type="button" class="tool" data-temp>仮パスワードを発行</button><button type="button" class="tool danger" data-del>削除</button></div>` : "") +
@@ -6527,7 +6588,7 @@ window.addEventListener("error", function (e) {
     for (const el of $("ad-body").querySelectorAll("[data-trainer]")) el.onchange = async () => {
       const m = person(card(el)), on = el.checked;
       el.disabled = true;
-      try { await call("api_adminSetTrainer", m.id, on); m.trainer = on; adChanged(); adMsg(on ? `${m.name}さんを研修担当にしました。「研修チケット」から研修の枠を出せるようになります。` : `${m.name}さんを研修担当から外しました。`); }
+      try { await call("api_adminSetTrainer", m.id, on); m.trainer = on; adChanged(); adMsg(on ? `${m.name}さんを研修担当にしました。「研修予約」から研修の枠を出せるようになります。` : `${m.name}さんを研修担当から外しました。`); }
       catch (err) { el.checked = !on; adMsg(errText(err)); }
       el.disabled = false;
     };
