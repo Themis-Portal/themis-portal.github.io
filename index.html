@@ -1487,10 +1487,22 @@ body:not(.no-trip) .month-nav .m-acts { flex-direction: column; align-items: fle
 .trn-day.has { position: relative; }
 .trn-day.has::after { content: ""; position: absolute; left: 50%; bottom: 4px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: #d99a3a; }
 .trn-day.on.has::after { background: #fff; }
+/* a time box: tapped, it opens the app's own time sheet */
+.trn-time { font: inherit; font-size: 16px; font-variant-numeric: tabular-nums; text-align: left; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--rule); background: var(--card); color: var(--ink); width: 100%; }
+.trn-time.empty { color: var(--ink-soft); }
+.tpk-bg { position: fixed; inset: 0; z-index: 9600; background: rgb(10 16 26 / .5); display: flex; align-items: flex-end; justify-content: center; touch-action: none; }
+.tpk { width: min(520px, 100%); max-height: 72vh; display: flex; flex-direction: column; background: var(--card); color: var(--ink); border-radius: 16px 16px 0 0; padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -10px 30px rgb(0 0 0 / .25); }
+.tpk-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.tpk-h b { font-size: 15px; }
+.tpk-g { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+.tpk-t { font: inherit; font-size: 15px; font-variant-numeric: tabular-nums; padding: 11px 4px; border-radius: 10px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); }
+.tpk-t.on { background: #d99a3a; border-color: #8a5a16; color: #fff; font-weight: 800; }
+.tpk-t:disabled { opacity: .3; }
+/* times that carry their end too (13:00〜14:00): two to a row */
+.tpk-g.wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .trn-days { display: grid; gap: 8px; margin-top: 4px; }
 .trn-dayset { display: grid; gap: 6px; padding: 10px; border-radius: 10px; border: 1px solid var(--rule); background: var(--paper); }
 .trn-dayset > b { font-size: 14px; color: var(--ink); }
-.trn-same { justify-self: start; font-weight: 700; }
 /* 担当 and 予約 written out on their own lines */
 .trn-names { display: grid; gap: 2px; font-size: 13.5px; color: var(--ink); }
 .trn-names b { font-weight: 800; }
@@ -3911,35 +3923,63 @@ window.addEventListener("error", function (e) {
     };
     paintTrnDays();
   }
-  // each picked date with its time ranges: drawn again only when a date or a range is added or taken off
+  // a time picked from a sheet of the app's own: the phone's pulldown closed itself when the page moved under it, and
+  // its long list (every 30 minutes) is easier to scroll here. items: [{v, label, off}]; gives back v, or null
+  function pickTime(title, items, cur) {
+    return new Promise((done) => {
+      const bg = document.createElement("div");
+      bg.className = "tpk-bg";
+      bg.innerHTML = `<div class="tpk" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="tpk-h"><b>${esc(title)}</b><button type="button" class="tool" data-x>閉じる</button></div>` +
+        `<div class="tpk-g${items.some((x) => x.label) ? " wide" : ""}">${items.map((x) => `<button type="button" class="tpk-t${x.v === cur ? " on" : ""}" data-v="${esc(x.v)}"${x.off ? " disabled" : ""}>${esc(x.label || x.v)}</button>`).join("")}</div></div>`;
+      const end = (v) => { bg.remove(); if (!document.querySelector(".modal-bg:not([hidden]), #nt-pop:not([hidden])")) document.body.classList.remove("pop-open"); done(v); };
+      bg.onclick = (e) => {
+        const b = e.target.closest("[data-v]");
+        if (b) { if (!b.disabled) end(b.dataset.v); return; }
+        if (e.target === bg || e.target.closest("[data-x]")) end(null);
+      };
+      document.body.appendChild(bg); document.body.classList.add("pop-open");
+      // opens on the time picked before, or around 9:00 (or the first one that can be picked, if later)
+      const first = bg.querySelector(".tpk-t:not(:disabled)"), nine = bg.querySelector('.tpk-t[data-v="09:00"]:not(:disabled)');
+      (bg.querySelector(".tpk-t.on") || (nine && first && trnMin(first.dataset.v) < 540 ? nine : first))?.scrollIntoView({ block: "center" });
+    });
+  }
+  // each picked date with its time ranges: drawn again only when a date, a range or a time changes
   function paintTrnDays() {
     const box = $("trn-days");
     if (!box) return;
     const ds = [...trnPick.days.keys()].sort();
-    const opts = (list, v) => `<option value="">選ぶ</option>` + list.map((t) => `<option${t === v ? " selected" : ""}>${t}</option>`).join("");
+    const tb = (k, v, ph) => `<button type="button" class="trn-time${v ? "" : " empty"}" ${k} aria-label="${ph}">${v || ph}</button>`;
     box.innerHTML = !ds.length ? `<p class="hint">カレンダーで日付を選ぶと、ここで日ごとに時間帯を決められます。</p>`
-      : (ds.length > 1 ? `<button type="button" class="tool trn-same" id="trn-same">ぜんぶの日を「${trnDay({ date: ds[0] })}」と同じ時間にする</button>` : "") +
-        ds.map((k) => `<div class="trn-dayset" data-date="${k}"><b>${trnDay({ date: k })}</b>` +
-          trnPick.days.get(k).map((r, i) => `<div class="trn-range" data-i="${i}"><select data-from aria-label="開始">${opts(TRN_FROM, r.from)}</select><span>〜</span>` +
-            `<select data-to aria-label="終了">${opts(TRN_TO, r.to)}</select>` +
+      : ds.map((k) => `<div class="trn-dayset" data-date="${k}"><b>${trnDay({ date: k })}</b>` +
+          trnPick.days.get(k).map((r, i) => `<div class="trn-range" data-i="${i}">${tb("data-from", r.from, "開始")}<span>〜</span>${tb("data-to", r.to, "終了")}` +
             (trnPick.days.get(k).length > 1 ? `<button type="button" class="tool" data-rm aria-label="この時間帯を消す">×</button>` : "") + `</div>`).join("") +
           `<button type="button" class="tool trn-add" data-add>＋ 時間帯を足す</button></div>`).join("");
     for (const set of box.querySelectorAll(".trn-dayset")) {
-      const rs = trnPick.days.get(set.dataset.date);
+      const rs = trnPick.days.get(set.dataset.date), day = trnDay({ date: set.dataset.date });
       for (const row of set.querySelectorAll(".trn-range")) {
         const r = rs[Number(row.dataset.i)];
-        row.querySelector("[data-from]").onchange = (e) => { r.from = e.target.value; e.target.blur(); trnPick.last = trnCopy(rs); trnCount(); };
-        row.querySelector("[data-to]").onchange = (e) => { r.to = e.target.value; e.target.blur(); trnPick.last = trnCopy(rs); trnCount(); };
+        row.querySelector("[data-from]").onclick = async () => {
+          const v = await pickTime(`${day} 開始`, TRN_FROM.map((t) => ({ v: t })), r.from);
+          if (v == null) return;
+          r.from = v;
+          if (r.to && trnMin(r.to) - trnMin(v) < trn.min) r.to = "";   // an end too early for it is picked again
+          trnPick.last = trnCopy(rs); paintTrnDays();
+        };
+        // the ends less than an hour after the start cannot be picked
+        row.querySelector("[data-to]").onclick = async () => {
+          const v = await pickTime(`${day} 終了`, TRN_TO.map((t) => ({ v: t, off: r.from && trnMin(t) - trnMin(r.from) < trn.min })), r.to);
+          if (v == null) return;
+          r.to = v; trnPick.last = trnCopy(rs); paintTrnDays();
+        };
         const rm = row.querySelector("[data-rm]");
         if (rm) rm.onclick = () => { rs.splice(Number(row.dataset.i), 1); trnPick.last = trnCopy(rs); paintTrnDays(); };
       }
       set.querySelector("[data-add]").onclick = () => { rs.push({ from: "", to: "" }); paintTrnDays(); };
     }
-    const same = $("trn-same");
-    if (same) same.onclick = () => { const top = trnPick.days.get(ds[0]); for (const k of ds) trnPick.days.set(k, trnCopy(top)); trnPick.last = trnCopy(top); paintTrnDays(); };
     trnCount();
   }
   const trnFilled = (rs) => rs.filter((r) => r.from && r.to);
+  const trnUrlLast = () => { try { return localStorage.getItem("tc_trn_url") || ""; } catch (e) { return ""; } };
   function trnCount() {
     const el = $("trn-count");
     if (!el) return;
@@ -3976,7 +4016,8 @@ window.addEventListener("error", function (e) {
       h += `<form class="trn-card trn-post" id="trn-post" novalidate><b>研修できる時間を出す（研修担当）</b>` +
         `<div class="f">日付（タップでいくつでも選べます）<div class="trn-cal" id="trn-cal"></div></div>` +
         `<div class="f">日ごとの時間帯（1日にいくつでも足せます）<div class="trn-days" id="trn-days"></div></div>` +
-        `<label class="f">Google Meet のリンク（あとからでも入れられます）<input type="url" id="trn-url" inputmode="url" placeholder="https://meet.google.com/..." autocomplete="off"></label>` +
+        // the link used last time comes back filled in (a fixed link of the 研修担当's own, used again and again)
+        `<label class="f">Google Meet のリンク（前回のリンクが入ります。あとからでも変えられます）<input type="url" id="trn-url" inputmode="url" placeholder="https://meet.google.com/..." autocomplete="off" value="${esc(trnUrlLast())}"></label>` +
         `<p class="hint" id="trn-count"></p>` +
         `<button type="submit" class="btn primary">この日付に出す</button></form>`;
       h += `<h4 class="bl-h trn-h">出している時間</h4>` + (myAvail.length ? myAvail.map((w) =>
@@ -3991,7 +4032,7 @@ window.addEventListener("error", function (e) {
     const out = left < 1 ? `<span class="hint">今月のチケットを使い切りました</span>` : "";
     h += avail.map((w) => `<div class="trn-item" data-aid="${esc(w.id)}"><div class="trn-top"><b>${trnDay(w)} ${esc(w.from)}〜${esc(w.to)}</b></div>` +
       `<div class="trn-names"><span>担当：<b>${esc(w.by)}</b>さん</span></div>` +
-      (out ? `<div class="trn-acts">${out}</div>` : `<div class="trn-book"><div class="f">開始時刻<select data-start><option value="">選ぶ</option>${w.starts.map((t) => `<option value="${t}">${t}〜${trnEnd(t)}</option>`).join("")}</select></div>` +
+      (out ? `<div class="trn-acts">${out}</div>` : `<div class="trn-book"><div class="f">開始時刻<button type="button" class="trn-time empty" data-start>開始時刻を選ぶ</button></div>` +
         `<button type="button" class="btn primary" data-bookat>予約する</button></div>`) + `</div>`).join("");
     h += open.map((s) => `<div class="trn-item" data-id="${esc(s.id)}"><div class="trn-top"><b>${trnDay(s)} ${esc(s.start)}〜${esc(s.end)}</b></div>` +
       `<div class="trn-names"><span>担当：<b>${esc(s.by)}</b>さん</span></div>` +
@@ -4062,6 +4103,7 @@ window.addEventListener("error", function (e) {
         try {
           const v = JSON.parse(await call("api_trnAvail", plan, $("trn-url").value.trim()));
           trnPick.days.clear();
+          try { localStorage.setItem("tc_trn_url", $("trn-url").value.trim()); } catch (e) {}
           setTrn(v); renderTrain();
           await busyDone("研修の時間を出しました", v.skipped ? `${v.skipped}件は、過ぎた時間かもう出している時間なので出していません` : "");
         } catch (err) { busyOff(); msg(errText(err)); }
@@ -4073,8 +4115,14 @@ window.addEventListener("error", function (e) {
       if (!await ask("この時間を取り消しますか？", `${trnDay(w)} ${w.from}〜${w.to}。まだ予約はありません。`, "取り消す")) return;
       trnAct("api_trnAvailDel", [w.id, ""], "取り消しています", "時間を取り消しました");
     };
+    for (const b of box.querySelectorAll("[data-start]")) b.onclick = async () => {
+      const w = trn.avail.find((x) => x.id === aidOf(b));
+      const v = await pickTime(`${trnDay(w)} 開始時刻`, w.starts.map((t) => ({ v: t, label: `${t}〜${trnEnd(t)}` })), b.dataset.v);
+      if (v == null) return;
+      b.dataset.v = v; b.textContent = `${v}〜${trnEnd(v)}`; b.classList.remove("empty");
+    };
     for (const b of box.querySelectorAll("[data-bookat]")) b.onclick = async () => {
-      const w = trn.avail.find((x) => x.id === aidOf(b)), start = item(b).querySelector("[data-start]").value;
+      const w = trn.avail.find((x) => x.id === aidOf(b)), start = item(b).querySelector("[data-start]").dataset.v;
       if (!start) { msg("開始時刻を選んでください。"); return; }
       if (!await ask("この研修を予約しますか？", `${trnDay(w)} ${start}〜${trnEnd(start)}（担当 ${w.by}さん）。研修チケットを1回使います。`, "予約する")) return;
       trnAct("api_trnBookAt", [w.id, start], "予約しています", "予約しました");
@@ -6597,7 +6645,8 @@ window.addEventListener("error", function (e) {
           (owner && (m.workType === "社員" || m.rep) ? `<dt>性別</dt><dd>${seg(`gd-${esc(m.id)}`, [["男性", "男性"], ["女性", "女性"]], m.gender || "", 'data-k="gender"')}</dd>` : "") +
           `<dt>契約</dt><dd>${m.hasContract
             ? `<span class="ad-signed">${esc(signed)} 締結</span><button type="button" class="tool" data-contract>見る</button><button type="button" class="tool" data-cdl>保存</button>`
-            : `<span class="st st-late">未締結</span>${askable ? askChk(m.contractAsk, 'data-k="contractAsk"') : ""}`}</dd>` +
+            // signed on paper (締結済 ticked) reads 締結済 too, not 未締結
+            : `${m.contractAsk === false ? `<span class="st st-done">締結済</span>` : `<span class="st st-late">未締結</span>`}${askable ? askChk(m.contractAsk, 'data-k="contractAsk"') : ""}`}</dd>` +
           (owner && !m.rep ? `<dt>招待コード</dt><dd>${ivChk(m.inviteShow, "data-ivshow")}</dd>` : "") +
           (owner && !m.rep ? `<dt>テスト用</dt><dd><label class="check"><input type="checkbox" data-test${m.test ? " checked" : ""}> ランキングや集計に出さない</label></dd>` : "") +
           (owner ? `<dt>研修担当</dt><dd><label class="check"><input type="checkbox" data-trainer${m.trainer ? " checked" : ""}> 研修の枠を出せる</label></dd>` : "") +
