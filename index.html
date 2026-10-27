@@ -1464,6 +1464,43 @@ button.pcal-c { cursor: pointer; }
 #shift-seg { display: none !important; }
 .month-nav .m-hope { margin-left: auto; font-weight: 800; color: #fff; border-color: #7fe0cf; background: linear-gradient(180deg, #3fb6a5, #217066); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 3px 0 #0f3d37, 0 0 12px -2px rgb(63 182 165 / .55); white-space: nowrap; }
 .month-nav .m-hope[hidden] { display: none; }
+/* 研修予約: beside シフト希望 (a step to the side when both show); 週末 staff, whose bar is fuller, get it on a line of its own */
+.month-nav { flex-wrap: wrap; }
+.month-nav .m-hope:not([hidden]) + .m-train { margin-left: 0; }
+body:not(.no-trip) .month-nav .m-train { flex-basis: 100%; }
+.month-nav .m-train { color: #fff; border-color: #f2c77a; background: linear-gradient(180deg, #d99a3a, #8a5a16); box-shadow: inset 0 1px 0 rgb(255 255 255 / .3), 0 3px 0 #4a300a, 0 0 12px -2px rgb(217 154 58 / .5); }
+/* on the 研修 screen the month is not used: only the way back shows */
+#member-ui[data-tab="train"] .month-nav > :not(.m-train) { display: none; }
+#member-ui[data-tab="train"] .month-nav .m-train { flex-basis: auto; margin-left: 0; }
+#p-train { display: grid; gap: 12px; }
+#p-train[hidden] { display: none; }
+.trn-card { background: var(--card); border: 1px solid var(--rule); border-radius: var(--r); padding: 16px; display: grid; gap: 10px; }
+.trn-card > b { font-size: 15px; }
+.trn-hero { background: radial-gradient(120% 140% at 85% 0%, #5c4a2f 0%, transparent 55%), linear-gradient(160deg, #2c3a4c, #141c28); border-color: #46536a; color: #dbe4f2; }
+.trn-hero .tp-cap { font-family: var(--f-num); font-size: 11px; letter-spacing: .3em; color: #d9c29a; }
+.trn-hero .hint { color: #b9c6da; line-height: 1.7; }
+.trn-left { display: flex; gap: 22px; }
+.trn-left span { display: flex; align-items: baseline; gap: 4px; }
+.trn-left b { font-family: var(--f-num); font-size: 38px; font-weight: 800; line-height: 1.1; color: #f6d27a; }
+.trn-left small { font-size: 12px; color: #b9c6da; }
+.trn-h { margin: 6px 0 -2px; }
+.trn-none { padding: 4px 2px; }
+.trn-item { background: var(--card); border: 1px solid var(--rule); border-radius: var(--r); padding: 12px 14px; display: grid; gap: 8px; }
+.trn-item.done { opacity: .85; }
+.trn-top { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.trn-top b { font-size: 15px; font-variant-numeric: tabular-nums; }
+.trn-by { font-size: 12.5px; color: var(--ink-soft); }
+.trn-tag { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: var(--rule); color: var(--ink); }
+.trn-tag.by { background: #f3e2c2; color: #6b4410; }
+.trn-tag.who { background: #cfeee8; color: #145a50; }
+.trn-acts { display: flex; justify-content: flex-end; gap: 8px; align-items: center; }
+.trn-meet { justify-self: start; text-decoration: none; font-weight: 700; }
+.trn-url { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.trn-url input, .trn-form :is(textarea, select, input) { font-size: 16px; }
+.trn-form { display: grid; gap: 8px; }
+.trn-state { margin: 0; font-size: 13px; font-weight: 700; color: var(--accent); }
+.trn-rep { margin: 0; font-size: 13.5px; line-height: 1.7; white-space: pre-wrap; padding: 8px 10px; border-radius: 8px; background: color-mix(in srgb, var(--rule) 35%, transparent); }
+.trn-rep small { display: block; font-size: 11.5px; color: var(--ink-soft); }
 .bar-month .month-nav { width: 100%; }
 /* a シフト希望 mark on a day of the シフト表 that has no shift yet */
 .day .hp { align-self: flex-start; font-size: 15px; font-weight: 800; line-height: 1.1; display: inline-flex; align-items: baseline; gap: 2px; }
@@ -1825,7 +1862,8 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 /* a name in a round pill (獲得ログ and ランキング) */
 .nm-pill { display: inline-block; max-width: 100%; overflow-wrap: anywhere; line-height: 1.35; vertical-align: middle; padding: 2px 10px; border-radius: 12px;
   color: #fff; font-weight: 700; font-size: 13px; background: rgb(255 255 255 / .09); border: 1px solid rgb(255 255 255 / .2); }
-.rk-list li > span { display: flex; min-width: 0; overflow: visible; }   /* the 1位 crown stands above the name */
+.rk-list li > span { display: flex; min-width: 0; overflow: visible; }
+.rk-list li.rk-blank { min-height: 44px; opacity: .55; }   /* the 1位 crown stands above the name */
 .rk-list li.me .nm-pill, .tp-feed li.me .nm-pill { background: rgb(63 182 165 / .35); border-color: rgb(127 224 207 / .6); }
 .tf-why { font-size: 10.5px; line-height: 1.3; color: #bfe9e1; padding: 1px 7px; border-radius: 10px; background: rgb(63 182 165 / .18); border: 1px solid rgb(127 224 207 / .3); white-space: nowrap; }
 .tf-tp { color: var(--gold); font-size: 13px; white-space: nowrap; text-align: right; min-width: 0; }
@@ -1837,6 +1875,7 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 
 /* 請求書の内容: short, shown as lines (nothing to type) */
 .inv-sum { gap: 12px; }
+.inv-locked { margin: 12px 0; padding: 16px; border-radius: var(--r); text-align: center; line-height: 1.8; font-size: 14px; background: var(--card); border: 1px dashed var(--rule); color: var(--ink-soft); }
 .inv-sum .is-wait { margin: 0; padding: 9px 12px; border-radius: 10px; font-size: 12.5px; background: color-mix(in srgb, var(--gold) 16%, var(--card)); border: 1px dashed #c99a2e; }
 .is-total { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: var(--plate); color: #fff; }
 .is-total span { font-weight: 700; display: grid; line-height: 1.3; }
@@ -1909,6 +1948,10 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 .sm-g dd { margin: 0; color: #fff; font-size: 13.5px; overflow-wrap: anywhere; }
 /* 打刻表 (起床・出発・出勤・退勤・稼働): five equal columns, each centred, so the times line up under their names */
 .today > div { text-align: center; min-width: 0; }
+.no-trip #k-wake, .no-trip #k-dep, .no-trip .today > div:nth-child(-n+2) { display: none; }
+.no-trip .keys { grid-template-columns: repeat(2, 1fr) !important; }
+.no-trip .today { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+.k-noplan { margin: 10px 0 0; padding: 9px 12px; border-radius: 10px; font-size: 13px; line-height: 1.6; color: #7a4a00; background: color-mix(in srgb, var(--gold) 18%, var(--card)); border: 1px dashed #c99a2e; }
 .today dd { overflow: hidden; text-overflow: clip; }
 /* 今日の予定・明日の予定: only the lit line on top, no coloured edge on the left; the times and 修正 centred on one line */
 .shifts .shift-today, .shifts #shift-next, .shifts .shift-today.absent { border-left-color: var(--plate-line); border-left-width: 1px; }
@@ -2338,6 +2381,7 @@ html, body { touch-action: manipulation; }
       <button class="key in" id="k-in" type="button">出勤<small>IN</small></button>
       <button class="key out" id="k-out" type="button" disabled>退勤<small>OUT</small></button>
     </div>
+    <p class="k-noplan" id="k-noplan" hidden>今日の予定が入っていません。上の「今日の予定」の<b>修正</b>から店舗と時間を入れると、出勤を押せるようになります。</p>
     <dl class="today">
       <div><dt>起床</dt><dd id="t-wake">--:--</dd></div>
       <div><dt>出発</dt><dd id="t-dep">--:--</dd></div>
@@ -2361,6 +2405,8 @@ html, body { touch-action: manipulation; }
       <button type="button" id="m-now">今月</button>
       <!-- 週末 staff: the way to シフト希望 (and back), beside the month -->
       <button type="button" class="m-hope" id="m-hope" hidden>シフト希望を出す</button>
+      <!-- beside it (under it for 週末 staff, whose bar is fuller); everyone books 研修 -->
+      <button type="button" class="m-hope m-train" id="m-train" hidden>研修チケット</button>
     </div>
   </div>
 
@@ -2404,6 +2450,11 @@ html, body { touch-action: manipulation; }
   </section>
 
   <!-- 社員: the month's payslip, once Themis has published it -->
+  <!-- 研修予約: the tickets, the slots a 研修担当 puts out, and after each one the 内容 and 評価 -->
+  <section class="panel" id="p-train" aria-label="研修チケット" hidden>
+    <div id="trn-body"></div>
+  </section>
+
   <section class="panel" id="p-pay" role="tabpanel" aria-label="給与明細" hidden>
     <div class="pay-view" id="pay-view"></div>
   </section>
@@ -2413,6 +2464,7 @@ html, body { touch-action: manipulation; }
       <h2 id="inv-title">—</h2>
       <span class="pill" id="inv-status" data-s="draft" hidden></span>
     </div>
+    <p class="inv-locked" id="inv-locked" hidden>この月の請求金額は、まだThemisが設定していません。<br>設定されると、ここで請求書を確認して提出できるようになります。</p>
 
     <div class="forms">
       <fieldset id="fs-set"><div class="fs-card">
@@ -2502,7 +2554,7 @@ html, body { touch-action: manipulation; }
 
   <!-- 広場: マイページ (this month and the totals) on top, then the ランキング, みんなの獲得ログ and ありがとうチケット -->
   <section class="panel" id="p-plaza" aria-label="広場" hidden>
-    <button type="button" class="sx-hero sx-open" id="sx-open"><span class="sx-cap">MY PAGE</span><b>マイページ</b><small>今月のふりかえりと、累計の記録</small><i class="sx-chev" aria-hidden="true"></i></button>
+    <button type="button" class="sx-hero sx-open" id="sx-open"><span class="sx-cap">MY PAGE</span><b id="sx-name">マイページ</b><small>今月のふりかえりと、累計の記録</small><i class="sx-chev" aria-hidden="true"></i></button>
     <section class="tp-rank" id="tp-rank" aria-label="ランキング"></section>
     <section class="tp-feed-box" id="tp-feed" aria-label="みんなの獲得ログ"></section>
     <section id="tp-thx" aria-label="ありがとうチケット"></section>
@@ -2998,7 +3050,7 @@ window.addEventListener("error", function (e) {
     if (kind === "in") {
       const key = dayKey(new Date(now)), m = month(ymOf(key)), r = m.days[key];
       if (r?.out) return;             // one clock-in per day
-      if (!r?.depart) { msg(r?.wake ? "先に「出発」を押してください。" : "先に「起床」を押してください。"); return; }
+      if (!hasPlan(r)) { msg("今日の予定（店舗と時間）が入っていません。「今日の予定」の修正から予定を入れると、出勤を押せます。"); return; }
       // keep a planned shift's store and route when clocking in on that day
       const base = { ...(r || {}) }; delete base.breakMin;
       m.days[key] = { ...base, in: now, out: null, breaks: [], memo: r?.memo || "", punchIn: now };   // punchIn / punchOut: the key presses, for TP
@@ -3018,6 +3070,10 @@ window.addEventListener("error", function (e) {
     if (kind === "out") openResult(key);
     await persist("m-" + ymOf(key), "state");
   }
+  // a day can be punched only once its plan (店舗 and the times) is in
+  const hasPlan = (r) => !!(r?.store && r?.planIn && r?.planOut);
+  // 起床・出発 are kept by 週末 staff only (on the keys, on the 打刻表 under them)
+  const trips = () => window.TC_WORK === "週末";
   $("k-wake").onclick = () => punch("wake");
   $("k-dep").onclick = () => punch("dep");
   // marking absent opens the absence form (with its reason); cancelling an absence is one press
@@ -3034,7 +3090,7 @@ window.addEventListener("error", function (e) {
   // the page opens on ホーム; the bar at the foot picks ホーム, シフト (シフト表 / シフト希望) or メニュー (請求書 / 給与明細 in it)
   let tab = "home", shiftTab = "card";
   // お知らせ belongs to wherever it was opened from: ホーム (the bell) or メニュー (お問い合わせ)
-  const GROUP = { home: "home", card: "shift", hope: "shift", point: "point", menu: "menu", inv: "menu", pay: "menu", notice: "home", invite: "menu", plaza: "plaza", mypage: "plaza" };
+  const GROUP = { home: "home", card: "shift", hope: "shift", train: "shift", point: "point", menu: "menu", inv: "menu", pay: "menu", notice: "home", invite: "menu", plaza: "plaza", mypage: "plaza" };
   function setTab(t) {
     // each tab keeps its own month: the shift calendar opens on this month, invoices on last month
     // and its own place on the page: coming back to a screen lands where it was left
@@ -3045,14 +3101,17 @@ window.addEventListener("error", function (e) {
     $("m-now").textContent = { inv: "先月分", pay: "先月分", hope: "来月" }[t] || "今月";
     $("m-hope").hidden = !(GROUP[t] === "shift" && tabOk("hope"));
     $("m-hope").textContent = t === "hope" ? "‹ シフト表に戻る" : "シフト希望を出す";
+    $("m-train").hidden = GROUP[t] !== "shift";
+    $("m-train").textContent = t === "train" ? "‹ シフト表に戻る" : "研修チケット";
     for (const k of ["card", "hope"]) $("tab-" + k).setAttribute("aria-selected", t === k);
-    for (const k of ["card", "hope", "inv", "pay", "menu", "notice", "point", "invite", "plaza", "mypage"]) $("p-" + k).hidden = t !== k;
+    for (const k of ["card", "hope", "train", "inv", "pay", "menu", "notice", "point", "invite", "plaza", "mypage"]) $("p-" + k).hidden = t !== k;
+    if (t === "train") { renderTrain(); loadTrn(); }
     $("sub-act").replaceChildren();
     if (t === "notice") renderNotice();
     if (t === "point") { renderPoint(); loadTp(); }
     if (t === "invite") { renderInvite(); loadInvite(); }
     if (t === "mypage") { renderStats(); loadStats(); showProf(false); }
-    if (t === "plaza") { paintRank(); loadRank(); paintThanks(); loadThanks(); }
+    if (t === "plaza") { $("sx-name").textContent = window.TC_NAME || "マイページ"; paintRank(); loadRank(); paintThanks(); loadThanks(); }
     for (const b of document.querySelectorAll(".bnav button")) {
       if (b.dataset.g === GROUP[t]) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
     }
@@ -3328,10 +3387,11 @@ window.addEventListener("error", function (e) {
     if (!tpRank) return `<p class="rk-wait">ランキングを読み込んでいます…</p>`;
     // th: the ありがとうランキング (how many ありがとう each person received this month)
     const panel = (b, title, th) => `<div class="rk-panel${th ? " rk-thx" : ""}"><div class="rk-h"><b>${title}</b><span>${th ? "もらった数" : "獲得TPの合計"}</span></div>` +
-      (b.top.length ? `<ol class="rk-list">` + b.top.map((x) => `<li class="rk-${x.rank <= 3 ? x.rank : "n"}${x.name === window.TC_NAME ? " me" : ""}"><i>${x.rank}</i><span><span class="nm-pill${yrCls(x.name)}">${esc(x.name)}</span></span>` +
-        (th ? `<b>${x.n}<small>回</small></b>` : `<b>${tpN(x.tp)}<small>TP</small></b>`) + `</li>`).join("") + `</ol>`
-        : `<p class="rk-none">${th ? "まだだれもありがとうをもらっていません。" : "まだだれもTPをもらっていません。"}</p>`) +
-      (b.me && b.me.rank > 5 ? `<p class="rk-me">あなたは ${b.me.rank}位（${th ? `${b.me.n}回` : `${tpN(b.me.tp)}TP`}）</p>` : !b.me ? `<p class="rk-me">あなたはまだランキングに入っていません</p>` : "") + `</div>`;
+      `<ol class="rk-list">` + b.top.map((x) => `<li class="rk-${x.rank <= 3 ? x.rank : "n"}${x.name === window.TC_NAME ? " me" : ""}"><i>${x.rank}</i><span><span class="nm-pill${yrCls(x.name)}">${esc(x.name)}</span></span>` +
+        (th ? `<b>${x.n}<small>回</small></b>` : `<b>${tpN(x.tp)}<small>TP</small></b>`) + `</li>`).join("") +
+        // the places nobody holds yet stay as blank rows, so the table keeps its shape
+        Array.from({ length: Math.max(0, 5 - b.top.length) }, (_, i) => `<li class="rk-${b.top.length + i + 1 <= 3 ? b.top.length + i + 1 : "n"} rk-blank"><i>${b.top.length + i + 1}</i><span></span><b></b></li>`).join("") + `</ol>` +
+      (b.me && b.me.rank > 5 ? `<p class="rk-me">あなたは ${b.me.rank}位（${th ? `${b.me.n}回` : `${tpN(b.me.tp)}TP`}）</p>` : "") + `</div>`;
     const [y, mo] = tpRank.ym.split("-").map(Number);
     // the ランキング in turn: TP this month, TP this year, then ありがとう this month and this year
     const panels = [panel(tpRank.month, `${mo}月の月間獲得TP`), panel(tpRank.yearly, `${y}年の年間獲得TP`)];
@@ -3389,13 +3449,15 @@ window.addEventListener("error", function (e) {
     // TP goes on last month's invoice only; once that one is submitted, it waits for the next month
     const now = new Date(), prev = ymOf(dayKey(new Date(now.getFullYear(), now.getMonth() - 1, 1))), pm = Number(prev.slice(5));
     const sent = !staff && ["submitted", "paid"].includes(doc("inv-" + prev).status);
+    const noAmt = !staff && !sent && doc("inv-" + prev).fixedAmount == null;
     $("tp-use-how").textContent = staff ? "申請すると、Themisが給与に加算します（1TP＝1円）" : `使用すると、${pm}月分の請求書に「TP報酬」として追加されます（1TP＝1円）`;
     $("tp-bal").innerHTML = `${tp.bal == null ? "—" : tpN(bal)}<small>TP</small>`;
-    $("tp-amt").max = bal; $("tp-amt").disabled = sent;
-    $("tp-go").disabled = bal < 1 || sent;
+    $("tp-amt").max = bal; $("tp-amt").disabled = sent || noAmt;
+    $("tp-go").disabled = bal < 1 || sent || noAmt;
     $("tp-range").textContent = sent ? `${pm}月分の請求書は提出済みのため、TPは使用できません。来月から使用できます。`
+      : noAmt ? `${pm}月分の請求金額がまだ設定されていないため、TPは使用できません。設定されると使用できます。`
       : bal < 1 ? "TPがたまると使えます。" : `1〜${tpN(bal)}TPの間で入れてください。`;
-    $("tp-range").classList.toggle("tp-locked", sent);
+    $("tp-range").classList.toggle("tp-locked", sent || noAmt);
     paintRank(); paintThanks();
   }
   async function useTp() {
@@ -3762,20 +3824,124 @@ window.addEventListener("error", function (e) {
   $("tab-card").onclick = () => pickTab("card");
   $("tab-hope").onclick = () => pickTab("hope");
   $("m-hope").onclick = () => pickTab(tab === "hope" ? "card" : "hope");
+  $("m-train").onclick = () => pickTab(tab === "train" ? "card" : "train");
   // 常勤 staff hand in no shift wishes, so they never see that tab; 社員 send no invoice and hand in no wishes:
   // they get their 給与明細 instead
   // 代表 has no 勤務形態 and sees every tab
-  const tabOk = (t) => t === "card" || t === "home" || t === "menu" || t === "notice" || t === "point" || t === "invite" || t === "plaza" || t === "mypage" || (window.TC_REP ? t !== "inv" : false) || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
+  const tabOk = (t) => t === "card" || t === "train" || t === "home" || t === "menu" || t === "notice" || t === "point" || t === "invite" || t === "plaza" || t === "mypage" || (window.TC_REP ? t !== "inv" : false) || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
   function applyWork() {
     $("tab-hope").hidden = !tabOk("hope"); $("tab-inv").hidden = !tabOk("inv"); $("tab-pay").hidden = !tabOk("pay");
     $("m-hope").hidden = !(GROUP[tab] === "shift" && tabOk("hope"));
+    $("m-train").hidden = GROUP[tab] !== "shift";
     if (!tabOk(tab)) setTab("card");
   }
   $("tab-inv").onclick = () => pickTab("inv");
   $("tab-pay").onclick = () => pickTab("pay");
 
+  // ---- 研修予約: 研修担当 put out one-hour slots; anyone else books one with a ticket (a few a month). After it both
+  // write the 内容 and 評価 here, and each gets TP from the お知らせ. The call itself is on Google Meet (its link is on the slot)
+  let trn = null;
+  try { const c = JSON.parse(localStorage.getItem("tc_trn") || "null"); if (c && CRED && c.tok === CRED.split(".")[0]) trn = c.v; } catch (e) {}
+  const TRN_TIMES = Array.from({ length: 31 }, (_, i) => `${pad(7 + Math.floor(i / 2))}:${i % 2 ? "30" : "00"}`);   // 7:00 - 22:00
+  const trnDay = (s) => { const [y, m, d] = s.date.split("-").map(Number); return `${m}月${d}日（${WD[new Date(y, m - 1, d).getDay()]}）`; };
+  async function loadTrn() {
+    try { setTrn(JSON.parse(await call("api_trn"))); }
+    catch (err) { if (!trn && tab === "train") $("trn-body").innerHTML = `<p class="hint">${esc(errText(err))}</p>`; }
+  }
+  function setTrn(v) {
+    trn = v;
+    try { localStorage.setItem("tc_trn", JSON.stringify({ tok: CRED.split(".")[0], v })); } catch (e) {}
+    // a box being typed in is not replaced under the person's fingers
+    const f = document.activeElement;
+    if (tab === "train" && !($("trn-body").contains(f) && f.matches("input, textarea, select"))) renderTrain();
+  }
+  function renderTrain() {
+    const box = $("trn-body");
+    if (!trn) { box.innerHTML = `<p class="hint trn-wait">読み込んでいます…</p>`; return; }
+    // the tickets are this month's only (a copy kept from before may still hold them by month)
+    const d = new Date(), left = Math.max(0, typeof trn.left === "number" ? trn.left : trn.per);
+    const mine = trn.slots.filter((s) => s.role || (s.reps && s.who)), open = trn.slots.filter((s) => !s.role && !s.who && !s.started);
+    let h = `<div class="trn-card trn-hero"><span class="tp-cap">TRAINING TICKET</span>` +
+      `<div class="trn-left"><span><small>${d.getMonth() + 1}月の残り</small><b>${left}</b><small>/ ${trn.per}回</small></span></div>` +
+      `<p class="hint">研修は1回${trn.min}分、Google Meet で行います。チケットは毎月${trn.per}回で、月が変わると戻ります。終わったら2人とも「内容と評価」を入れると、それぞれに${trn.tp}TPが届きます。</p></div>`;
+    if (trn.trainer) h += `<form class="trn-card trn-post" id="trn-post" novalidate><b>研修の枠を出す（研修担当）</b>` +
+      `<div class="f2"><label class="f">日付<input type="date" id="trn-date" min="${dayKey(d)}"></label>` +
+      `<div class="f">開始時刻<select id="trn-start"><option value="">選ぶ</option>${TRN_TIMES.map((t) => `<option>${t}</option>`).join("")}</select></div></div>` +
+      `<label class="f">Google Meet のリンク（あとからでも入れられます）<input type="url" id="trn-url" inputmode="url" placeholder="https://meet.google.com/..." autocomplete="off"></label>` +
+      `<p class="hint">1枠${trn.min}分です。出した枠は、みんなの「予約できる研修」に出ます。</p>` +
+      `<button type="submit" class="btn primary">枠を出す</button></form>`;
+    h += `<h4 class="bl-h trn-h">予定と記録</h4>` + (mine.length ? mine.map(trnItem).join("") : `<p class="hint trn-none">予約した研修や、出した枠はまだありません。</p>`);
+    h += `<h4 class="bl-h trn-h">予約できる研修</h4>` + (open.length ? open.map((s) => {
+      return `<div class="trn-item" data-id="${esc(s.id)}"><div class="trn-top"><b>${trnDay(s)} ${esc(s.start)}〜${esc(s.end)}</b><span class="trn-by">担当 ${esc(s.by)}さん</span></div>` +
+        `<div class="trn-acts">${left < 1 ? `<span class="hint">今月のチケットを使い切りました</span>` : `<button type="button" class="btn primary" data-book>予約する</button>`}</div></div>`;
+    }).join("") : `<p class="hint trn-none">今、予約できる研修はありません。研修担当が枠を出すと、ここに出ます。</p>`);
+    box.innerHTML = h;
+    wireTrain();
+  }
+  // one of the person's own slots: put out (担当) or booked (受講); for 運営 the others' with both reports
+  function trnItem(s) {
+    const tag = s.role === "by" ? `<span class="trn-tag by">担当</span>` : s.role === "who" ? `<span class="trn-tag who">受講</span>` : `<span class="trn-tag">記録</span>`;
+    const who = s.role === "by" ? (s.who ? `${esc(s.who)}さんが予約` : "まだ予約はありません") : s.role === "who" ? `担当 ${esc(s.by)}さん` : `${esc(s.by)}さん → ${esc(s.who)}さん`;
+    let h = `<div class="trn-item${s.done ? " done" : ""}" data-id="${esc(s.id)}"><div class="trn-top">${tag}<b>${trnDay(s)} ${esc(s.start)}〜${esc(s.end)}</b><span class="trn-by">${who}</span></div>`;
+    if (s.url && !s.started) h += `<a class="btn trn-meet" href="${esc(s.url)}" target="_blank" rel="noopener">Meet を開く</a>`;
+    if (s.role === "by" && !s.started) h += `<div class="trn-url"><input type="url" inputmode="url" data-url value="${esc(s.url)}" placeholder="Google Meet のリンク" autocomplete="off" aria-label="Google Meet のリンク"><button type="button" class="btn" data-saveurl>保存</button></div>`;
+    if (!s.started) {
+      if (s.role === "by") h += `<div class="trn-acts"><button type="button" class="btn" data-del>枠を取り消す</button></div>`;
+      if (s.role === "who") h += `<div class="trn-acts"><button type="button" class="btn" data-cancel>予約を取り消す</button></div>`;
+    } else if (s.role && s.who) {
+      if (s.mine) h += `<p class="trn-state">${s.done ? `記録がそろいました。お知らせから${trn.tp}TPを受け取ってください。` : "入力しました。相手の入力を待っています。"}</p>` +
+        `<p class="trn-rep"><small>あなたの記録（評価 ${"★".repeat(s.mine.score)}）</small>${esc(s.mine.text)}${s.mine.rec ? `<br><a href="${esc(s.mine.rec)}" target="_blank" rel="noopener">録画・議事録</a>` : ""}</p>`;
+      else h += `<form class="trn-form" novalidate><p class="trn-state">${s.otherIn ? "相手は入力ずみです。" : ""}研修の内容と評価を入れてください。</p>` +
+        `<label class="f">${s.role === "by" ? "教えた内容" : "学んだ内容"}<textarea data-text rows="3" maxlength="1000"></textarea></label>` +
+        `<div class="f">${s.role === "by" ? "受講した人の評価" : "研修の評価"}<select data-score><option value="">選ぶ</option>${[5, 4, 3, 2, 1].map((n) => `<option value="${n}">${"★".repeat(n)}（${n}）</option>`).join("")}</select></div>` +
+        (s.role === "by" ? `<label class="f">録画・議事録のリンク（tl;dv や NotebookLM など。なくてもよい）<input type="url" inputmode="url" data-rec placeholder="https://" autocomplete="off"></label>` : "") +
+        `<button type="submit" class="btn primary">記録を送る</button></form>`;
+    } else if (s.role === "by") h += `<p class="trn-state">予約がないまま終わりました。</p>`;
+    if (s.reps) for (const [k, r] of [["担当", s.reps.by], ["受講", s.reps.who]]) if (r) h += `<p class="trn-rep"><small>${k}の記録（評価 ${"★".repeat(r.score)}）</small>${esc(r.text)}${r.rec ? `<br><a href="${esc(r.rec)}" target="_blank" rel="noopener">録画・議事録</a>` : ""}</p>`;
+    return h + `</div>`;
+  }
+  async function trnAct(fn, args, wait, done) {
+    busyOn(wait);
+    try { setTrn(JSON.parse(await call(fn, ...args))); renderTrain(); await busyDone(done); }
+    catch (err) { busyOff(); msg(errText(err)); }
+  }
+  function wireTrain() {
+    const box = $("trn-body"), idOf = (el) => el.closest("[data-id]").dataset.id;
+    const post = $("trn-post");
+    if (post) post.onsubmit = (e) => {
+      e.preventDefault();
+      const date = $("trn-date").value, start = $("trn-start").value;
+      if (!date || !start) { msg("日付と開始時刻を選んでください。"); return; }
+      trnAct("api_trnPost", [date, start, $("trn-url").value.trim()], "研修の枠を出しています", "研修の枠を出しました");
+    };
+    for (const b of box.querySelectorAll("[data-book]")) b.onclick = async () => {
+      const s = trn.slots.find((x) => x.id === idOf(b));
+      if (!await ask("この研修を予約しますか？", `${trnDay(s)} ${s.start}〜${s.end}（担当 ${s.by}さん）。研修チケットを1回使います。`, "予約する")) return;
+      trnAct("api_trnBook", [s.id], "予約しています", "予約しました");
+    };
+    for (const b of box.querySelectorAll("[data-cancel]")) b.onclick = async () => {
+      if (!await ask("予約を取り消しますか？", "研修チケットは戻ります。", "取り消す")) return;
+      trnAct("api_trnCancel", [idOf(b)], "取り消しています", "予約を取り消しました");
+    };
+    for (const b of box.querySelectorAll("[data-del]")) b.onclick = async () => {
+      const s = trn.slots.find((x) => x.id === idOf(b));
+      if (!await ask("この枠を取り消しますか？", s.who ? `${s.who}さんが予約しています。取り消すと、${s.who}さんにお知らせが届きます。` : "まだ予約はありません。", "取り消す")) return;
+      trnAct("api_trnDelete", [s.id], "取り消しています", "枠を取り消しました");
+    };
+    for (const b of box.querySelectorAll("[data-saveurl]")) b.onclick = () => {
+      trnAct("api_trnUrl", [idOf(b), b.previousElementSibling.value.trim()], "保存しています", "リンクを保存しました");
+    };
+    for (const f of box.querySelectorAll(".trn-form")) f.onsubmit = (e) => {
+      e.preventDefault();
+      const text = f.querySelector("[data-text]").value.trim(), score = Number(f.querySelector("[data-score]").value), rec = f.querySelector("[data-rec]")?.value.trim() || "";
+      if (!text) { msg("研修の内容を入力してください。"); return; }
+      if (!score) { msg("評価を選んでください。"); return; }
+      trnAct("api_trnReport", [idOf(f), text, score, rec], "記録を送っています", "記録を送りました");
+    };
+  }
+
   let view = new Date(); view = new Date(view.getFullYear(), view.getMonth(), 1);
-  const tabView = { home: view, menu: view, notice: view, point: view, invite: view, plaza: view, mypage: view, card: view, inv: new Date(view.getFullYear(), view.getMonth() - 1, 1), pay: new Date(view.getFullYear(), view.getMonth() - 1, 1), hope: new Date(view.getFullYear(), view.getMonth() + 1, 1) };
+  const tabView = { home: view, train: view, menu: view, notice: view, point: view, invite: view, plaza: view, mypage: view, card: view, inv: new Date(view.getFullYear(), view.getMonth() - 1, 1), pay: new Date(view.getFullYear(), view.getMonth() - 1, 1), hope: new Date(view.getFullYear(), view.getMonth() + 1, 1) };
   const viewYm = () => `${view.getFullYear()}-${pad(view.getMonth() + 1)}`;
   function watchView() {
     if (!backend) return;
@@ -4095,6 +4261,10 @@ window.addEventListener("error", function (e) {
     const pill = $("inv-status"); pill.dataset.s = st;
     pill.textContent = st === "paid" ? (inv.confirmedOn ? "入金確認済み" : `入金されました（${jDate(inv.paidOn)}）`) : st === "submitted" ? `提出済み（${jDate(inv.submittedOn)}）` : "";
     pill.hidden = st === "draft";   // a draft needs no label; only 提出済み / 入金済み are shown
+    // nothing to see until Themis has set the amount
+    const noAmt = st === "draft" && inv.fixedAmount == null;
+    $("inv-locked").hidden = !noAmt;
+    for (const el of $("p-inv").children) if (!el.matches(".inv-head, #inv-locked")) el.style.display = noAmt ? "none" : "";
     const locked = st !== "draft";
     $("fs-set").disabled = locked;
     // Themis marks the payment; the member then confirms the money arrived. A paid invoice can no longer be withdrawn
@@ -4343,10 +4513,14 @@ window.addEventListener("error", function (e) {
     const st = $("status");
     st.dataset.s = s;
     st.textContent = { off: "勤務外", awake: "起床済み", moving: "移動中", work: "勤務中", absent: "欠勤" }[s];
-    $("k-wake").disabled = s === "work" || absent || !!todayRec?.wake;
-    // the day is punched in order: 起床 → 出発 → 出勤; each key opens once the one before it is pressed
-    $("k-dep").disabled = s === "work" || absent || !!todayRec?.depart || !todayRec?.wake;
-    $("k-in").disabled = s === "work" || absent || !!todayRec?.out || !todayRec?.depart;
+    // nothing is punched on a day with no plan: the note under the keys says to put one in first
+    const planned = !!open || hasPlan(todayRec);
+    $("k-noplan").hidden = planned || absent || !!todayRec?.out;
+    document.body.classList.toggle("no-trip", !trips());
+    $("k-wake").disabled = s === "work" || absent || !!todayRec?.wake || !planned;
+    // 起床 → 出発 for 週末 staff; 出勤 does not wait for them
+    $("k-dep").disabled = s === "work" || absent || !!todayRec?.depart || !todayRec?.wake || !planned;
+    $("k-in").disabled = s === "work" || absent || !!todayRec?.out || !planned;
     $("k-abs").disabled = s === "work" || !!todayRec?.in;
     $("k-abs").textContent = absent ? "欠勤を取り消す" : "欠勤にする";
     $("k-out").disabled = s !== "work";
@@ -4621,6 +4795,8 @@ window.addEventListener("error", function (e) {
     $("f-absnote").hidden = !r?.absent;
     $("f-absnote").textContent = r?.absent ? `この日は欠勤です${r.absentReason ? "\n理由：" + r.absentReason : ""}` : "";
     $("f-result").value = r?.result || "";
+    const ahead = key > dayKey(new Date());
+    $("f-resedit").closest(".sec").style.display = ahead ? "none" : ""; $("f-result").closest(".res").style.display = ahead ? "none" : "";
     $("f-early").checked = !!r?.early;
     $("f-early-reason").value = r?.earlyReason || "";
     // 早退 and 実働 belong to a day that is over: clocked out, a past day, or a plan whose time has passed
@@ -4896,7 +5072,7 @@ window.addEventListener("error", function (e) {
     for (const k of ADDR) $("s-" + k).value = b[k] || "";
     for (const r of document.getElementsByName("s-work")) r.checked = r.value === window.TC_WORK;
     birthPick(myProf?.birth);
-    $("s-work-box").hidden = !!window.TC_REP;   // 代表 has no 勤務形態
+    $("s-work-box").hidden = true;   // chosen by 運営 when the member is added (運営画面 › メンバー)
     $("s-err").textContent = "";
     $("setup-sheet").hidden = false;
     focusIfMouse($("s-from"));
@@ -4952,7 +5128,7 @@ window.addEventListener("error", function (e) {
       catch (err) { $("s-err").textContent = errText(err); return; }
     }
     const work = [...document.getElementsByName("s-work")].find((r) => r.checked)?.value;
-    if (!work && !window.TC_REP) { $("s-err").textContent = "勤務形態（常勤・週末・社員）を選んでください。"; return; }
+
     if (work && !window.TC_REP && work !== window.TC_WORK) {
       const btn = e.submitter || $("setup-form").querySelector("[type=submit]");
       btn.disabled = true; $("s-err").textContent = "保存しています…";
@@ -6243,7 +6419,7 @@ window.addEventListener("error", function (e) {
         // (name and ログインID on top, then one line each for 勤務形態 · 役割 · 契約, and the account buttons last)
         const open = adOpenCards.has(m.id);
         const sum = [m.loginId ? `<span class="num">${esc(m.loginId)}</span>` : "", esc(m.rep ? "勤務形態なし" : m.workType || "未回答"), esc(m.rep ? "代表" : m.role || "メンバー"),
-          m.hasContract ? `<span class="sum-ok">締結済</span>` : `<span class="sum-ng">未締結</span>`].filter(Boolean).join(`<i>・</i>`);
+          m.hasContract || m.contractAsk === false ? `<span class="sum-ok">締結済</span>` : `<span class="sum-ng">未締結</span>`].filter(Boolean).join(`<i>・</i>`);
         return `<div class="ad-card ad-fold${open ? " open" : ""}" data-id="${esc(m.id)}" data-name="${esc(m.name)}">` +
           `<div class="ad-sum" role="button" tabindex="0" aria-expanded="${open}">` +
           `<div class="ad-card-h"><span>${numName(i, m.name)}</span><span class="ad-sum-r">${badge(m)}<span class="ad-chev" aria-hidden="true"></span></span></div>` +
@@ -6260,6 +6436,7 @@ window.addEventListener("error", function (e) {
             : `<span class="st st-late">未締結</span>${askable ? askChk(m.contractAsk, 'data-k="contractAsk"') : ""}`}</dd>` +
           (owner && !m.rep ? `<dt>招待コード</dt><dd>${ivChk(m.inviteShow, "data-ivshow")}</dd>` : "") +
           (owner && !m.rep ? `<dt>テスト用</dt><dd><label class="check"><input type="checkbox" data-test${m.test ? " checked" : ""}> ランキングや集計に出さない</label></dd>` : "") +
+          (owner ? `<dt>研修担当</dt><dd><label class="check"><input type="checkbox" data-trainer${m.trainer ? " checked" : ""}> 研修の枠を出せる</label></dd>` : "") +
           // 生年月日 (the person's own entry) and 入社日 (entered here, for the 在籍記念)
           (owner ? `<dt>生年月日</dt><dd>${m.birth ? esc(jDate(m.birth)) : `<span class="muted">未登録</span>`}</dd>` +
             `<dt>入社日</dt><dd>${ymdSel(m.join, 2000, 'data-join')}</dd>` +
@@ -6336,6 +6513,13 @@ window.addEventListener("error", function (e) {
       const m = person(card(el)), on = el.checked;
       el.disabled = true;
       try { await call("api_adminSetTest", m.id, on); m.test = on; adChanged(); adMsg(on ? `${m.name}さんをテスト用にしました。ランキング・ありがとう・お祝い・人件費やTP経費に出なくなります。` : `${m.name}さんをテスト用から外しました。`); }
+      catch (err) { el.checked = !on; adMsg(errText(err)); }
+      el.disabled = false;
+    };
+    for (const el of $("ad-body").querySelectorAll("[data-trainer]")) el.onchange = async () => {
+      const m = person(card(el)), on = el.checked;
+      el.disabled = true;
+      try { await call("api_adminSetTrainer", m.id, on); m.trainer = on; adChanged(); adMsg(on ? `${m.name}さんを研修担当にしました。「研修チケット」から研修の枠を出せるようになります。` : `${m.name}さんを研修担当から外しました。`); }
       catch (err) { el.checked = !on; adMsg(errText(err)); }
       el.disabled = false;
     };
@@ -6994,8 +7178,8 @@ window.addEventListener("error", function (e) {
   }
   // first the name, address and 勤務形態, then the contract; both block the app (admins too) until done
   function needsSetup() {
-    // 生年月日 too: someone who signed up before it was asked fills it in once
-    if (window.TC_NEED_NAME || !doc("billing").from || !doc("billing").addr || (!window.TC_WORK && !window.TC_REP) || !myProf?.birth) { openSetup(); return true; }
+    // only someone not yet registered; a registered person missing the 生年月日 adds it from マイページ instead
+    if (window.TC_NEED_NAME || !doc("billing").from || !doc("billing").addr) { openSetup(); return true; }
     if (contractDue()) { openContract(); return true; }
     return false;
   }
