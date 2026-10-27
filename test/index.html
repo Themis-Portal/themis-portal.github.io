@@ -2414,7 +2414,7 @@ html, body { touch-action: manipulation; }
       <!-- 週末 staff: the way to シフト希望 (and back), beside the month -->
       <button type="button" class="m-hope" id="m-hope" hidden>シフト希望を出す</button>
       <!-- beside it (under it for 週末 staff, whose bar is fuller); everyone books 研修 -->
-      <button type="button" class="m-hope m-train" id="m-train" hidden>研修予約</button>
+      <button type="button" class="m-hope m-train" id="m-train" hidden>研修チケット</button>
     </div>
   </div>
 
@@ -2459,7 +2459,7 @@ html, body { touch-action: manipulation; }
 
   <!-- 社員: the month's payslip, once Themis has published it -->
   <!-- 研修予約: the tickets, the slots a 研修担当 puts out, and after each one the 内容 and 評価 -->
-  <section class="panel" id="p-train" aria-label="研修予約" hidden>
+  <section class="panel" id="p-train" aria-label="研修チケット" hidden>
     <div id="trn-body"></div>
   </section>
 
@@ -3110,7 +3110,7 @@ window.addEventListener("error", function (e) {
     $("m-hope").hidden = !(GROUP[t] === "shift" && tabOk("hope"));
     $("m-hope").textContent = t === "hope" ? "‹ シフト表に戻る" : "シフト希望を出す";
     $("m-train").hidden = GROUP[t] !== "shift";
-    $("m-train").textContent = t === "train" ? "‹ シフト表に戻る" : "研修予約";
+    $("m-train").textContent = t === "train" ? "‹ シフト表に戻る" : "研修チケット";
     for (const k of ["card", "hope"]) $("tab-" + k).setAttribute("aria-selected", t === k);
     for (const k of ["card", "hope", "train", "inv", "pay", "menu", "notice", "point", "invite", "plaza", "mypage"]) $("p-" + k).hidden = t !== k;
     if (t === "train") { renderTrain(); loadTrn(); }
@@ -3866,13 +3866,12 @@ window.addEventListener("error", function (e) {
   function renderTrain() {
     const box = $("trn-body");
     if (!trn) { box.innerHTML = `<p class="hint trn-wait">読み込んでいます…</p>`; return; }
-    const d = new Date(), ym = ymOf(dayKey(d)), nx = ymOf(dayKey(new Date(d.getFullYear(), d.getMonth() + 1, 1)));
-    const left = (k) => Math.max(0, trn.left?.[k] ?? trn.per);
+    // the tickets are this month's only (a copy kept from before may still hold them by month)
+    const d = new Date(), left = Math.max(0, typeof trn.left === "number" ? trn.left : trn.per);
     const mine = trn.slots.filter((s) => s.role || (s.reps && s.who)), open = trn.slots.filter((s) => !s.role && !s.who && !s.started);
     let h = `<div class="trn-card trn-hero"><span class="tp-cap">TRAINING TICKET</span>` +
-      `<div class="trn-left"><span><small>${Number(ym.slice(5))}月</small><b>${left(ym)}</b><small>/ ${trn.per}回</small></span>` +
-      `<span><small>${Number(nx.slice(5))}月</small><b>${left(nx)}</b><small>/ ${trn.per}回</small></span></div>` +
-      `<p class="hint">研修は1回${trn.min}分、Google Meet で行います。終わったら2人とも「内容と評価」を入れると、それぞれに${trn.tp}TPが届きます。</p></div>`;
+      `<div class="trn-left"><span><small>${d.getMonth() + 1}月の残り</small><b>${left}</b><small>/ ${trn.per}回</small></span></div>` +
+      `<p class="hint">研修は1回${trn.min}分、Google Meet で行います。チケットは毎月${trn.per}回で、月が変わると戻ります。終わったら2人とも「内容と評価」を入れると、それぞれに${trn.tp}TPが届きます。</p></div>`;
     if (trn.trainer) h += `<form class="trn-card trn-post" id="trn-post" novalidate><b>研修の枠を出す（研修担当）</b>` +
       `<div class="f2"><label class="f">日付<input type="date" id="trn-date" min="${dayKey(d)}"></label>` +
       `<div class="f">開始時刻<select id="trn-start"><option value="">選ぶ</option>${TRN_TIMES.map((t) => `<option>${t}</option>`).join("")}</select></div></div>` +
@@ -3881,9 +3880,8 @@ window.addEventListener("error", function (e) {
       `<button type="submit" class="btn primary">枠を出す</button></form>`;
     h += `<h4 class="bl-h trn-h">予定と記録</h4>` + (mine.length ? mine.map(trnItem).join("") : `<p class="hint trn-none">予約した研修や、出した枠はまだありません。</p>`);
     h += `<h4 class="bl-h trn-h">予約できる研修</h4>` + (open.length ? open.map((s) => {
-      const k = s.date.slice(0, 7), none = left(k) < 1;
       return `<div class="trn-item" data-id="${esc(s.id)}"><div class="trn-top"><b>${trnDay(s)} ${esc(s.start)}〜${esc(s.end)}</b><span class="trn-by">担当 ${esc(s.by)}さん</span></div>` +
-        `<div class="trn-acts">${none ? `<span class="hint">${Number(k.slice(5))}月のチケットを使い切りました</span>` : `<button type="button" class="btn primary" data-book>予約する</button>`}</div></div>`;
+        `<div class="trn-acts">${left < 1 ? `<span class="hint">今月のチケットを使い切りました</span>` : `<button type="button" class="btn primary" data-book>予約する</button>`}</div></div>`;
     }).join("") : `<p class="hint trn-none">今、予約できる研修はありません。研修担当が枠を出すと、ここに出ます。</p>`);
     box.innerHTML = h;
     wireTrain();
@@ -6529,7 +6527,7 @@ window.addEventListener("error", function (e) {
     for (const el of $("ad-body").querySelectorAll("[data-trainer]")) el.onchange = async () => {
       const m = person(card(el)), on = el.checked;
       el.disabled = true;
-      try { await call("api_adminSetTrainer", m.id, on); m.trainer = on; adChanged(); adMsg(on ? `${m.name}さんを研修担当にしました。「研修予約」から研修の枠を出せるようになります。` : `${m.name}さんを研修担当から外しました。`); }
+      try { await call("api_adminSetTrainer", m.id, on); m.trainer = on; adChanged(); adMsg(on ? `${m.name}さんを研修担当にしました。「研修チケット」から研修の枠を出せるようになります。` : `${m.name}さんを研修担当から外しました。`); }
       catch (err) { el.checked = !on; adMsg(errText(err)); }
       el.disabled = false;
     };
