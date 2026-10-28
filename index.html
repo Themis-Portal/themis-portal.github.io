@@ -2388,6 +2388,25 @@ body { background: radial-gradient(420px 340px at 85% -60px, rgb(155 107 255 / .
 .ptr { transition: transform .2s, opacity .2s; }
 .ptr:not(.drag):not(.busy) { opacity: 0; }
 
+/* the line under the clock and the toast: glass, a small ring turning while something is waited for */
+.clock .msg:not(:empty) { display: inline-flex; align-items: center; gap: 8px; align-self: start; justify-self: start; width: fit-content; max-width: 100%; margin-top: 6px; padding: 7px 14px; border-radius: 999px;
+  font-size: 12.5px; font-weight: 600; color: #d9ccff; background: rgb(255 255 255 / .05); border: 1px solid rgb(196 168 255 / .22); box-shadow: 0 0 16px -6px rgb(139 92 255 / .6); }
+.toast { background: rgb(20 17 32 / .88) !important; color: #efe8ff !important; border: 1px solid rgb(196 168 255 / .28); border-radius: 16px; font-weight: 600;
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: 0 12px 30px -10px rgb(0 0 0 / .8), 0 0 20px -6px rgb(139 92 255 / .55);
+  bottom: calc(90px + env(safe-area-inset-bottom, 0px) - var(--ios-gap)); display: flex; align-items: center; gap: 9px; }
+.toast[hidden] { display: none; }
+:is(.clock .msg, .toast).wait::before { content: ""; flex: none; width: 13px; height: 13px; border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 25%, #8b5cff 60%, #5ff0d0); -webkit-mask: radial-gradient(circle, transparent 4px, #000 4.5px); mask: radial-gradient(circle, transparent 4px, #000 4.5px);
+  animation: ptr-spin .9s linear infinite; }
+
+/* iPhone home-screen app: stretched down by the part of the screen the page did not get (--ios-gap, set by the script) */
+html:root:root { --ios-gap: 0px; }
+#scroller { bottom: calc(-1 * var(--ios-gap)); }
+.bnav { bottom: calc(10px + env(safe-area-inset-bottom, 0px) - var(--ios-gap)); }
+html:not([style*="--ios-gap: 0px"]) body { background: transparent; }
+html:not([style*="--ios-gap: 0px"]) body::after { content: ""; position: fixed; left: 0; right: 0; top: 0; bottom: calc(-1 * var(--ios-gap)); z-index: -1; pointer-events: none;
+  background: radial-gradient(420px 340px at 85% -60px, rgb(155 107 255 / .38), transparent 70%), radial-gradient(360px 300px at -40px 55%, rgb(95 240 208 / .09), transparent 70%), radial-gradient(520px 300px at 50% 100%, rgb(139 92 255 / .22), transparent 72%), #0b0916; }
+
 /* シフト希望: this month can be sent too; its days already past are shown faint and cannot be tapped */
 .hc:disabled { opacity: .3; }
 
@@ -3260,6 +3279,9 @@ window.addEventListener("error", function (e) {
     $("msg").textContent = home || !t ? t : "";
     clearTimeout(toastTimer);
     $("toast").textContent = t; $("toast").hidden = !t || home;
+    // "…しています…" is a wait: it gets a small spinning ring
+    const wait = !!t && t.endsWith("…");
+    $("msg").classList.toggle("wait", wait); $("toast").classList.toggle("wait", wait);
     if (t) toastTimer = setTimeout(() => { $("toast").hidden = true; }, 5000);
   };
   async function punch(kind) {
@@ -5879,6 +5901,17 @@ window.addEventListener("error", function (e) {
     }
   })();
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  // iPhone, opened from the home screen with the page under the status bar: the page can come out shorter than the
+  // screen (by about the status bar), leaving a dark band at the foot and the dock raised. The missing part is
+  // measured and the page, its glow and the dock are stretched down by it (--ios-gap)
+  if (isIOS && standalone()) {
+    const fitGap = () => {
+      const full = matchMedia("(orientation: portrait)").matches ? Math.max(screen.height, screen.width) : Math.min(screen.height, screen.width);
+      const gap = Math.round(full - Math.max(innerHeight, document.documentElement.clientHeight));
+      document.documentElement.style.setProperty("--ios-gap", (gap > 0 && gap < 120 ? gap : 0) + "px");
+    };
+    fitGap(); addEventListener("resize", fitGap); addEventListener("orientationchange", () => setTimeout(fitGap, 300));
+  }
   // on a phone the app opens only from the home screen: in the browser only the steps to add it are shown
   const mustInstall = () => isPhone && !standalone();
   async function installGate() {
