@@ -5913,6 +5913,22 @@ window.addEventListener("error", function (e) {
     };
     document.documentElement.classList.add("ios-app");
     fitH(); addEventListener("resize", fitH); addEventListener("orientationchange", () => setTimeout(fitH, 300));
+    // TEMP (2026-10-28): the sizes the phone reports, and lines at the foot (red: the screen, green: the page), to find
+    // where the dark band at the foot comes from; tap it to hide. Remove once found
+    const dbg = document.createElement("div");
+    dbg.style.cssText = "position:fixed;left:8px;right:8px;top:calc(env(safe-area-inset-top,0px) + 4px);z-index:99999;font:600 11px/1.4 monospace;color:#fff;background:rgb(200 0 80 / .85);padding:6px 8px;border-radius:8px;white-space:pre-wrap";
+    const line = (c, top) => { const l = document.createElement("div"); l.style.cssText = `position:fixed;left:0;right:0;height:6px;z-index:99999;background:${c};top:${top}`; document.body.append(l); };
+    const safe = document.createElement("div"); safe.style.cssText = "position:fixed;top:0;height:env(safe-area-inset-top,0px);width:env(safe-area-inset-bottom,0px);visibility:hidden";
+    const showDbg = () => {
+      document.body.append(safe);
+      const r = safe.getBoundingClientRect(), vv = window.visualViewport;
+      dbg.textContent = `screen ${screen.width}x${screen.height} / inner ${innerWidth}x${innerHeight} / client ${document.documentElement.clientHeight}\n` +
+        `vv ${vv ? Math.round(vv.height) + " top" + Math.round(vv.offsetTop) : "-"} / safe top ${Math.round(r.height)} bottom ${Math.round(r.width)} / dpr ${devicePixelRatio}\n` +
+        `standalone ${navigator.standalone} / app-h ${getComputedStyle(document.documentElement).getPropertyValue("--app-h")}`;
+    };
+    line("#ff2d55", "calc(var(--app-h) - 6px)"); line("#30d158", "calc(100% - 6px)");
+    dbg.onclick = () => dbg.remove();
+    document.body.append(dbg); showDbg(); addEventListener("resize", showDbg); setTimeout(showDbg, 1500);
   }
   // on a phone the app opens only from the home screen: in the browser only the steps to add it are shown
   const mustInstall = () => isPhone && !standalone();
