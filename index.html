@@ -273,8 +273,6 @@ button.day.wd-0:hover, button.day.wd-6:hover, button.day.hol:hover { background:
 .hope-head { background: var(--card); border: 1px solid var(--rule); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 10px; }
 .hope-stat { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 14px; color: var(--ink-soft); }
 .hope-stat b { color: var(--ink); font-size: 16px; }
-.hope-due { background: var(--hol-bg); color: var(--stamp-red); font-weight: 700; border-radius: 999px; padding: 3px 12px; font-family: var(--f-num); }
-.hope-due.closed { background: var(--paper); color: var(--ink-soft); }
 .hope-sent { color: var(--ok); font-weight: 600; }
 .hope-sent.dirty { color: var(--break); }
 .hope-how { margin: 0; font-size: 13px; color: var(--ink-soft); line-height: 1.7; }
@@ -1560,8 +1558,6 @@ body:not(.no-trip) .month-nav .m-acts { flex-direction: column; align-items: fle
 .hope-stat { color: var(--plate-soft); }
 .hope-stat b { color: var(--gold); }
 .hope-far-note { color: var(--plate-soft); }
-.hope-due { background: rgb(229 55 61 / .18); color: #ff9a8a; }
-.hope-due.closed { background: rgb(255 255 255 / .06); color: var(--plate-soft); }
 .hope-sent { color: #7fe0cf; }
 .hope-cal { background: #1a2536; border-color: var(--plate-line); }
 .hope-cal .cal-wd div { color: var(--plate-soft); }
@@ -2223,12 +2219,14 @@ html:root:root {
   --sink: inset 0 2px 6px rgb(0 0 0 / .5);
   --gloss: linear-gradient(180deg, rgb(255 255 255 / .05), rgb(255 255 255 / 0) 55%);
   --lit: linear-gradient(135deg, #8b5cff, #5ff0d0);
+  /* the page: violet from the top right, a little mint on the left, violet again at the foot under the dock */
+  --night-bg: radial-gradient(420px 340px at 85% -60px, rgb(155 107 255 / .38), transparent 70%), radial-gradient(360px 300px at -40px 55%, rgb(95 240 208 / .09), transparent 70%), radial-gradient(520px 300px at 50% 100%, rgb(139 92 255 / .22), transparent 72%), #0b0916;
   color-scheme: dark;
 }
 html:root:root .logo:not(.brand .logo, .sp-logo) { filter: invert(1); }
 html:root:root .brand-name { --bn1: #e0d4ff; --bn2: #8ff0dc; }
-html, body { background: #08070d; }
-body { background: radial-gradient(420px 340px at 85% -60px, rgb(155 107 255 / .38), transparent 70%), radial-gradient(360px 300px at -40px 55%, rgb(95 240 208 / .09), transparent 70%), #08070d; background-attachment: fixed; }
+html, body { background: #0b0916; }
+body { background: var(--night-bg); }
 /* plates: frosted, a thin violet edge */
 .clock, .shifts .shift-today, .hope-head, .hope-cal, .cal, .steps, .fs-card, .login-card, .ad-stat, .ad-add, .menu-list, .shift-today.big {
   background: linear-gradient(160deg, rgb(255 255 255 / .075), rgb(255 255 255 / .02)) !important; border-color: rgb(196 168 255 / .16) !important; border-radius: 22px;
@@ -2261,7 +2259,6 @@ body { background: radial-gradient(420px 340px at 85% -60px, rgb(155 107 255 / .
 .who-name { background: rgb(255 255 255 / .06); border-color: rgb(196 168 255 / .25); }
 /* inputs sit dark */
 input:not([type="checkbox"]):not([type="radio"]), select, textarea { background-color: rgb(255 255 255 / .05); color: var(--ink); border-color: rgb(196 168 255 / .2); }
-.toast { background: #ecebf5; color: #0b0814; }
 
 /* colours: the gold figures become a soft champagne-lilac; the big ones carry the violet-to-mint of the icon */
 html:root:root { --gold: #e4d6ff; }
@@ -2321,8 +2318,10 @@ html:root:root {
 .tp-fx-card { border-color: #b39bff !important; box-shadow: 0 0 44px rgb(155 107 255 / .5), 0 30px 60px -20px rgb(0 0 0 / .7) !important; }
 .busy-ring { border-top-color: #8ff0dc !important; }
 
-/* full screen on the phone: the page runs under the status bar, its content starts below it */
+/* full screen on the phone: the page runs under the status bar, its content starts below it, and ends well above the
+   floating dock (the last card was hidden under it) */
 #scroller { padding-top: calc(24px + env(safe-area-inset-top, 0px)); }
+body:has(#member-ui:not([hidden])) #scroller { padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
 
 /* お知らせ on ホーム: the same glass */
 .nt-home { background: linear-gradient(160deg, rgb(255 255 255 / .075), rgb(255 255 255 / .02)) !important; border-color: rgb(196 168 255 / .16) !important; border-radius: 22px;
@@ -2342,10 +2341,10 @@ html:root:root {
 #admin .ad-space button[aria-selected="true"][data-s="unei"] { color: #0b0814 !important; border-color: transparent !important; background: linear-gradient(135deg, #ff8fc8, #a98bff) border-box !important; box-shadow: 0 0 16px rgb(255 95 174 / .45) !important; }
 .ad-space button small { background: rgb(0 0 0 / .18); }
 
-/* 研修予約, シフト表に戻る, シフト希望 and the other side keys: glass with a violet edge */
-.month-nav .m-train, .month-nav .m-hope, .sub-back > button, .sub-back .btn { color: #efe8ff !important; border: 1px solid rgb(196 168 255 / .35) !important;
+/* シフト表に戻る and the other back keys: glass with a violet edge; シフト希望 lit, 研修予約 pink (like its tickets) */
+.sub-back > button, .sub-back .btn { color: #efe8ff !important; border: 1px solid rgb(196 168 255 / .35) !important;
   background: linear-gradient(135deg, rgb(139 92 255 / .35), rgb(95 240 208 / .12)) !important; box-shadow: 0 0 14px -4px rgb(139 92 255 / .6) !important; }
-.month-nav button { border-color: rgb(196 168 255 / .18); background: rgb(255 255 255 / .05); }
+.month-nav button { border-color: rgb(196 168 255 / .18); background: rgb(255 255 255 / .05); box-shadow: none !important; }
 .month-nav .m-hope, .month-nav .m-train { color: #0b0814 !important; border-color: transparent !important; font-weight: 800; }
 .month-nav .m-hope { background: var(--lit) border-box !important; box-shadow: 0 6px 18px -6px rgb(139 92 255 / .7) !important; }
 .month-nav .m-train { background: linear-gradient(135deg, #ff8fc8, #a98bff) border-box !important; box-shadow: 0 6px 18px -6px rgb(255 95 174 / .6) !important; }
@@ -2354,7 +2353,6 @@ html:root:root {
 .cal { background: rgb(255 255 255 / .03) !important; border-color: rgb(196 168 255 / .14) !important; border-radius: 18px; }
 .cal-grid { background: transparent !important; gap: 3px !important; }
 .cal-wd div:last-child { color: #9fb6ff; }
-.month-nav button { box-shadow: none !important; }
 .day { background: rgb(255 255 255 / .035) !important; }
 .day.blank { background: transparent !important; }
 .day.wd-0, .day.wd-6, .day.hol { background: rgb(255 120 170 / .07) !important; }
@@ -2375,17 +2373,13 @@ html:root:root {
 .tp-in input { background: transparent !important; border: 0 !important; }
 .tp-in:focus-within { border-color: #b39bff !important; }
 
-/* the foot of the screen: a soft violet glow too, so it is not plain black under the dock */
-html, body { background: #0b0916; }
-body { background: radial-gradient(420px 340px at 85% -60px, rgb(155 107 255 / .38), transparent 70%), radial-gradient(360px 300px at -40px 55%, rgb(95 240 208 / .09), transparent 70%), radial-gradient(520px 300px at 50% 100%, rgb(139 92 255 / .22), transparent 72%), #0b0916; background-attachment: scroll; }
 
 /* pull to refresh: a dark glass circle, its ring violet to mint */
-.ptr { background: rgb(20 17 32 / .8); border: 1px solid rgb(196 168 255 / .3); box-shadow: 0 6px 20px rgb(0 0 0 / .5), 0 0 18px -4px rgb(139 92 255 / .6); }
+.ptr { transition: transform .2s, opacity .2s; background: rgb(20 17 32 / .8); border: 1px solid rgb(196 168 255 / .3); box-shadow: 0 6px 20px rgb(0 0 0 / .5), 0 0 18px -4px rgb(139 92 255 / .6); }
 .ptr-track { stroke: rgb(255 255 255 / .1); }
 .ptr-ring { stroke: #b39bff; }
 .ptr.ready .ptr-ring, .ptr.busy .ptr-ring { stroke: url(#ptr-g); }
 /* at rest it waits above the page, which now reaches under the status bar: unseen until pulled */
-.ptr { transition: transform .2s, opacity .2s; }
 .ptr:not(.drag):not(.busy) { opacity: 0; }
 
 /* the version at the foot of メニュー */
@@ -2394,7 +2388,7 @@ body { background: radial-gradient(420px 340px at 85% -60px, rgb(155 107 255 / .
 /* the line under the clock and the toast: glass, a small ring turning while something is waited for */
 .clock .msg:not(:empty) { display: inline-flex; align-items: center; gap: 8px; align-self: start; justify-self: start; width: fit-content; max-width: 100%; margin-top: 6px; padding: 7px 14px; border-radius: 999px;
   font-size: 12.5px; font-weight: 600; color: #d9ccff; background: rgb(255 255 255 / .05); border: 1px solid rgb(196 168 255 / .22); box-shadow: 0 0 16px -6px rgb(139 92 255 / .6); }
-.toast { background: rgb(20 17 32 / .88) !important; color: #efe8ff !important; border: 1px solid rgb(196 168 255 / .28); border-radius: 16px; font-weight: 600;
+.toast { background: rgb(20 17 32 / .88); color: #efe8ff; border: 1px solid rgb(196 168 255 / .28); border-radius: 16px; font-weight: 600;
   -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: 0 12px 30px -10px rgb(0 0 0 / .8), 0 0 20px -6px rgb(139 92 255 / .55);
   bottom: calc(90px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 9px; }
 .toast[hidden] { display: none; }
@@ -2411,13 +2405,11 @@ html.ios-app .bnav { top: calc(var(--app-h) - 10px - env(safe-area-inset-bottom,
 html.ios-app .toast { top: calc(var(--app-h) - 90px - env(safe-area-inset-bottom, 0px)); bottom: auto; transform: translate(-50%, -100%); }
 html.ios-app body { background: transparent; }
 html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top: 0; height: var(--app-h); z-index: -1; pointer-events: none;
-  background: radial-gradient(420px 340px at 85% -60px, rgb(155 107 255 / .38), transparent 70%), radial-gradient(360px 300px at -40px 55%, rgb(95 240 208 / .09), transparent 70%), radial-gradient(520px 300px at 50% 100%, rgb(139 92 255 / .22), transparent 72%), #0b0916; }
+  background: var(--night-bg); }
 
 /* シフト希望: this month can be sent too; its days already past are shown faint and cannot be tapped */
 .hc:disabled { opacity: .3; }
 
-/* the dock floats above the foot, so the page ends well above it (the last card was hidden under it) */
-body:has(#member-ui:not([hidden])) #scroller { padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
 </style>
 <!-- the opening screen only when the app is newly opened: decided before anything is drawn, so a reload shows nothing of it -->
 <script>(function () {
@@ -4617,7 +4609,7 @@ window.addEventListener("error", function (e) {
   const brushValue = () => hopeBrush;
 
   function renderHope() {
-    const ym = viewYm(), h = hopeDoc(ym), closed = false, today = dayKey(new Date());
+    const ym = viewYm(), h = hopeDoc(ym), today = dayKey(new Date());
     const [y, mo] = ym.split("-").map(Number), n = new Date(y, mo, 0).getDate();
     const vals = Object.keys(h.days).filter((k) => k.startsWith(ym)).map((k) => h.days[k]);
     $("h-count").textContent = vals.filter((v) => v === "○").length;
@@ -4626,9 +4618,8 @@ window.addEventListener("error", function (e) {
     const sent = $("h-sent");
     sent.classList.toggle("dirty", !!hopeDirty[ym]);
     sent.textContent = hopeDirty[ym] ? "まだ提出していない変更があります" : h.submittedAt ? `提出済み（${h.submittedAt}）` : "";
-    for (const b of $("h-brush").querySelectorAll("button")) { b.setAttribute("aria-checked", b.dataset.b === hopeBrush); b.disabled = closed; }
-    $("h-submit").disabled = closed;
-    $("h-submit").textContent = closed ? "締切を過ぎました" : h.submittedAt ? "この内容で出し直す" : "この内容で提出する";
+    for (const b of $("h-brush").querySelectorAll("button")) { b.setAttribute("aria-checked", b.dataset.b === hopeBrush); }
+    $("h-submit").textContent = h.submittedAt ? "この内容で出し直す" : "この内容で提出する";
 
     const sig = ym + today + JSON.stringify(h.days);
     if (sig === lastHopeSig) return;
@@ -5909,7 +5900,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.0.0", APP_DATE = "2026-10-28";
+  const APP_VER = "2.0.1", APP_DATE = "2026-10-28";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
