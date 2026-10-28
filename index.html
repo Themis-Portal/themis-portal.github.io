@@ -2237,16 +2237,16 @@ body { background: radial-gradient(420px 340px at 85% -60px, rgb(155 107 255 / .
 .shift-today.big .st-label, .shift-today .st-label { color: #b9a4ff; }
 .shift-today.big .st-store { text-shadow: 0 0 22px rgb(155 107 255 / .35); }
 /* lit things: violet to mint */
-.tabs button[aria-selected="true"] { background: var(--lit) !important; color: #0b0814 !important; box-shadow: 0 0 16px rgb(139 92 255 / .45) !important; }
-.bl-h::before, .ad-grp::before { background: var(--lit); box-shadow: 0 0 8px rgb(139 92 255 / .6); }
-.btn.primary, .btn.okay { background: var(--lit) !important; border-color: transparent !important; color: #0b0814 !important;
+.tabs button[aria-selected="true"] { background: var(--lit) border-box !important; color: #0b0814 !important; box-shadow: 0 0 16px rgb(139 92 255 / .45) !important; }
+.bl-h::before, .ad-grp::before { background: var(--lit) border-box; box-shadow: 0 0 8px rgb(139 92 255 / .6); }
+.btn.primary, .btn.okay { background: var(--lit) border-box !important; border-color: transparent !important; color: #0b0814 !important;
   box-shadow: 0 8px 22px -8px rgb(139 92 255 / .65) !important; }
 .menu-item::after { color: #b9a4ff; }
 /* the time: thin and large, the seconds soft */
 .time { font-weight: 300; letter-spacing: -.02em; }
 /* the punch keys: 出勤 lit, the others glass */
 .key { border-radius: 16px; border-color: rgb(255 255 255 / .16); background: rgb(255 255 255 / .04); }
-.key.in:not(:disabled) { background: var(--lit); color: #0b0814; border-color: transparent; box-shadow: 0 10px 26px -8px rgb(139 92 255 / .6); }
+.key.in:not(:disabled) { background: var(--lit) border-box; color: #0b0814; border-color: transparent; box-shadow: 0 10px 26px -8px rgb(139 92 255 / .6); }
 /* the bar at the foot: a glass dock floating over the page */
 .bnav { left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); border-radius: 24px; padding: 6px 6px;
   background: rgb(20 17 32 / .78); border: 1px solid rgb(255 255 255 / .09); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
@@ -2338,14 +2338,17 @@ html:root:root {
 /* 管理者画面 / 運営画面: glass keys, the one on show lit (管理 violet to mint, 運営 pink to violet) */
 .ad-space { background: rgb(255 255 255 / .04) !important; border-color: rgb(196 168 255 / .16) !important; box-shadow: none !important; border-radius: 16px; }
 .ad-space button { border: 1px solid rgb(196 168 255 / .2) !important; color: #b9a4ff !important; background: transparent !important; border-radius: 12px; }
-#admin .ad-space button[aria-selected="true"][data-s="kanri"] { color: #0b0814 !important; border-color: transparent !important; background: var(--lit) !important; box-shadow: 0 0 16px rgb(139 92 255 / .5) !important; }
-#admin .ad-space button[aria-selected="true"][data-s="unei"] { color: #0b0814 !important; border-color: transparent !important; background: linear-gradient(135deg, #ff8fc8, #a98bff) !important; box-shadow: 0 0 16px rgb(255 95 174 / .45) !important; }
+#admin .ad-space button[aria-selected="true"][data-s="kanri"] { color: #0b0814 !important; border-color: transparent !important; background: var(--lit) border-box !important; box-shadow: 0 0 16px rgb(139 92 255 / .5) !important; }
+#admin .ad-space button[aria-selected="true"][data-s="unei"] { color: #0b0814 !important; border-color: transparent !important; background: linear-gradient(135deg, #ff8fc8, #a98bff) border-box !important; box-shadow: 0 0 16px rgb(255 95 174 / .45) !important; }
 .ad-space button small { background: rgb(0 0 0 / .18); }
 
 /* 研修予約, シフト表に戻る, シフト希望 and the other side keys: glass with a violet edge */
 .month-nav .m-train, .month-nav .m-hope, .sub-back > button, .sub-back .btn { color: #efe8ff !important; border: 1px solid rgb(196 168 255 / .35) !important;
   background: linear-gradient(135deg, rgb(139 92 255 / .35), rgb(95 240 208 / .12)) !important; box-shadow: 0 0 14px -4px rgb(139 92 255 / .6) !important; }
 .month-nav button { border-color: rgb(196 168 255 / .18); background: rgb(255 255 255 / .05); }
+.month-nav .m-hope, .month-nav .m-train { color: #0b0814 !important; border-color: transparent !important; font-weight: 800; }
+.month-nav .m-hope { background: var(--lit) border-box !important; box-shadow: 0 6px 18px -6px rgb(139 92 255 / .7) !important; }
+.month-nav .m-train { background: linear-gradient(135deg, #ff8fc8, #a98bff) border-box !important; box-shadow: 0 6px 18px -6px rgb(255 95 174 / .6) !important; }
 
 /* シフト表: glass cells; weekends a faint rose, worked days violet, planned days mint */
 .cal { background: rgb(255 255 255 / .03) !important; border-color: rgb(196 168 255 / .14) !important; border-radius: 18px; }
@@ -2358,7 +2361,7 @@ html:root:root {
 .day.worked { background: rgb(155 107 255 / .16) !important; }
 .day.planned, .day.planned:hover { background: rgb(95 240 208 / .07) !important; }
 .day.is-today { box-shadow: inset 0 0 0 1.5px #b39bff; }
-.day.is-today .dn { background: var(--lit) !important; color: #0b0814 !important; }
+.day.is-today .dn { background: var(--lit) border-box !important; color: #0b0814 !important; }
 .totals, .hope-head, .hope-cal { border-color: rgb(196 168 255 / .16) !important; }
 
 /* 研修チケット: one ticket per time, the ones left lit */
@@ -2371,6 +2374,19 @@ html:root:root {
 .tp-in { background: rgb(255 255 255 / .05) !important; border-color: rgb(196 168 255 / .22) !important; }
 .tp-in input { background: transparent !important; border: 0 !important; }
 .tp-in:focus-within { border-color: #b39bff !important; }
+
+/* the foot of the screen: a soft violet glow too, so it is not plain black under the dock */
+html, body { background: #0b0916; }
+body { background: radial-gradient(420px 340px at 85% -60px, rgb(155 107 255 / .38), transparent 70%), radial-gradient(360px 300px at -40px 55%, rgb(95 240 208 / .09), transparent 70%), radial-gradient(520px 300px at 50% 100%, rgb(139 92 255 / .22), transparent 72%), #0b0916; background-attachment: scroll; }
+
+/* pull to refresh: a dark glass circle, its ring violet to mint */
+.ptr { background: rgb(20 17 32 / .8); border: 1px solid rgb(196 168 255 / .3); box-shadow: 0 6px 20px rgb(0 0 0 / .5), 0 0 18px -4px rgb(139 92 255 / .6); }
+.ptr-track { stroke: rgb(255 255 255 / .1); }
+.ptr-ring { stroke: #b39bff; }
+.ptr.ready .ptr-ring, .ptr.busy .ptr-ring { stroke: url(#ptr-g); }
+
+/* シフト希望: this month can be sent too; its days already past are shown faint and cannot be tapped */
+.hc:disabled { opacity: .3; }
 </style>
 <!-- the opening screen only when the app is newly opened: decided before anything is drawn, so a reload shows nothing of it -->
 <script>(function () {
@@ -2641,7 +2657,6 @@ html:root:root {
   <section class="panel" id="p-hope" role="tabpanel" aria-label="シフト希望" hidden>
     <div class="hope-head">
       <div class="hope-stat">
-        <span class="hope-due" id="h-due">締切 —</span>
         <span><i class="hm-far"><i class="ico ico-train" aria-hidden="true"></i></i> <b class="num" id="h-far-n">0</b>日</span>
         <span><i class="hm-ok">○</i> <b class="num" id="h-count">0</b>日</span>
         <span><i class="hm-maybe">△</i> <b class="num" id="h-maybe">0</b>日</span>
@@ -3920,7 +3935,8 @@ window.addEventListener("error", function (e) {
   function renderInvite() {
     const typed = $("iv-in")?.value || "", typing = document.activeElement?.id === "iv-in";
     const v = invite, bonus = tpN(v?.bonus || 5000), welcome = tpN(v?.welcome || 5000), days = v?.days || 20;
-    const url = window.TC_API ? location.origin + location.pathname : "";
+    // ?v= makes LINE fetch the share image again (it keeps the old one per URL)
+    const url = window.TC_API ? location.origin + location.pathname + "?v=3" : "";
     $("iv-body").innerHTML =
       `<div class="iv-hero"><span class="iv-cap">INVITE FRIENDS</span><h2>友達を招待して<br>毎月 <em>${bonus}TP</em> もらおう</h2>` +
       `<p>あなたの招待コードで友達がメンバーになると、友達とあなたに <b>${welcome}TP</b> ずつ。さらに、その友達が月${days}日以上出勤した月は、あなたに毎月 <b>${bonus}TP</b>（${bonus}円分）のボーナスが届きます。何人でも招待できます。</p>` +
@@ -4336,7 +4352,7 @@ window.addEventListener("error", function (e) {
   // invoices are for finished months only: the invoice tab never goes past last month
   const lastBillable = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() - 1, 1); };
   // wishes are for months still ahead: the wish tab never goes before next month
-  const firstHope = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth() + 1, 1); };
+  const firstHope = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); };
   const clampView = () => {
     if ((tab === "inv" || tab === "pay") && view > lastBillable()) view = lastBillable();
     if (tab === "hope" && view < firstHope()) view = firstHope();
@@ -4344,7 +4360,7 @@ window.addEventListener("error", function (e) {
   function shiftMonth(n) { view = new Date(view.getFullYear(), view.getMonth() + n, 1); clampView(); watchView(); fillForms(true); render(); }
   $("m-prev").onclick = () => { shiftMonth(-1); saveView(); };
   $("m-next").onclick = () => { shiftMonth(1); saveView(); };
-  $("m-now").onclick = () => { const d = new Date(); view = new Date(d.getFullYear(), d.getMonth() + ({ inv: -1, pay: -1, hope: 1 }[tab] || 0), 1); watchView(); fillForms(true); render(); saveView(); };
+  $("m-now").onclick = () => { const d = new Date(); view = new Date(d.getFullYear(), d.getMonth() + ({ inv: -1, pay: -1 }[tab] || 0), 1); watchView(); fillForms(true); render(); saveView(); };
 
   function monthRows(ym = viewYm()) {
     const [y, mo] = ym.split("-").map(Number);
@@ -4556,22 +4572,19 @@ window.addEventListener("error", function (e) {
   // ---- shift wishes ----
   // one doc per month: hope-YYYY-MM = {days: {"YYYY-MM-DD": "○"|"○遠"|"△"}, submittedAt}; a day left blank is 稼働不可
   // the person picks a mark (○, 🚄 for ○ with 遠方, or △) and taps days on the calendar to put it on;
-  // choices stay on this device until 「この内容で提出する」, and the server refuses changes after the deadline
+  // choices stay on this device until 「この内容で提出する」; there is no deadline, and this month can be sent too
+  // (only its days already past are closed)
   const HOPES = ["○", "○遠", "△"];
-  const HOPE_DUE_DAY = 25;   // wishes for a month close on the 25th of the month before, end of day
   const hopeDoc = (ym) => { const h = doc("hope-" + ym); if (!h.days) h.days = {}; return h; };
-  const hopeDue = (ym) => { const [y, mo] = ym.split("-").map(Number); return new Date(y, mo - 2, HOPE_DUE_DAY, 23, 59, 59); };
   const hopeDirty = {};
   let lastHopeSig = "", hopeBrush = "○";
   const hopeMsg = (t) => { $("h-msg").textContent = t || ""; };
   const brushValue = () => hopeBrush;
 
   function renderHope() {
-    const ym = viewYm(), h = hopeDoc(ym), due = hopeDue(ym), closed = Date.now() > due.getTime();
+    const ym = viewYm(), h = hopeDoc(ym), closed = false, today = dayKey(new Date());
     const [y, mo] = ym.split("-").map(Number), n = new Date(y, mo, 0).getDate();
     const vals = Object.keys(h.days).filter((k) => k.startsWith(ym)).map((k) => h.days[k]);
-    $("h-due").textContent = closed ? "締切済み" : `締切 ${due.getMonth() + 1}/${due.getDate()}`;
-    $("h-due").classList.toggle("closed", closed);
     $("h-count").textContent = vals.filter((v) => v === "○").length;
     $("h-far-n").textContent = vals.filter((v) => v === "○遠").length;
     $("h-maybe").textContent = vals.filter((v) => v === "△").length;
@@ -4582,7 +4595,7 @@ window.addEventListener("error", function (e) {
     $("h-submit").disabled = closed;
     $("h-submit").textContent = closed ? "締切を過ぎました" : h.submittedAt ? "この内容で出し直す" : "この内容で提出する";
 
-    const sig = ym + closed + JSON.stringify(h.days);
+    const sig = ym + today + JSON.stringify(h.days);
     if (sig === lastHopeSig) return;
     lastHopeSig = sig;
     const frag = document.createDocumentFragment();
@@ -4591,7 +4604,7 @@ window.addEventListener("error", function (e) {
     for (let d = 1; d <= n; d++) {
       const date = new Date(y, mo - 1, d), key = dayKey(date), hol = holidayName(key), v = h.days[key];
       const cell = document.createElement("button");
-      cell.type = "button"; cell.dataset.k = key; cell.disabled = closed;
+      cell.type = "button"; cell.dataset.k = key; cell.disabled = key < today;
       cell.className = `hc wd-${date.getDay()}` + (hol ? " hol" : "") + (v === "△" ? " v-maybe" : v === "○遠" ? " v-far" : v ? " v-ok" : "");
       cell.innerHTML = `<span class="dn">${d}</span>` + (hol ? `<span class="hn">${esc(hol)}</span>` : "") +
         (v ? `<span class="mk">${{ "△": "△", "○遠": `<i class="ico ico-train" aria-hidden="true"></i>` }[v] || "○"}</span>` : "");
@@ -4619,7 +4632,6 @@ window.addEventListener("error", function (e) {
   $("h-submit").onclick = async () => {
     const ym = viewYm(), h = hopeDoc(ym), [, mo] = ym.split("-").map(Number);
     for (const k of Object.keys(h.days)) if (!k.startsWith(ym) || !HOPES.includes(h.days[k])) delete h.days[k];
-    if (Date.now() > hopeDue(ym).getTime()) { hopeMsg("締切を過ぎたため提出できません。変更はThemisの担当者に連絡してください。"); render(); return; }
     const btn = $("h-submit"), was = h.submittedAt;
     btn.disabled = true; hopeMsg("提出しています…");
     const t = new Date();
@@ -4627,11 +4639,11 @@ window.addEventListener("error", function (e) {
     try {
       await call("api_save", "hope-" + ym, JSON.stringify(h));
       hopeDirty[ym] = false;
-      hopeMsg(`${mo}月のシフト希望を提出しました。締切までは何度でも出し直せます。`);
+      hopeMsg(`${mo}月のシフト希望を提出しました。何度でも出し直せます。`);
     } catch (e) {
       h.submittedAt = was;
       const why = String(e?.message || "").replace(/^\w*Error:\s*/, "");
-      hopeMsg(why.includes("締切") || why.includes("URL") ? why
+      hopeMsg(why.includes("過ぎた月") || why.includes("URL") ? why
         : `提出できませんでした。通信状況を確認して、もう一度押してください。${why ? `（詳細：${why}）` : ""}`);
     }
     btn.disabled = false; render();
@@ -5885,7 +5897,7 @@ window.addEventListener("error", function (e) {
     if (isPhone && isIOS && !inAppBrowser && (iosSafari || iosChrome)) {
       const p = $("install-pointer");
       p.className = "install-pointer " + (iosChrome ? "at-tr" : safari26 ? "at-br" : "at-b");
-      p.innerHTML = iosChrome ? `↑ ここ（右上）の${ICON.share}` : safari26 ? `下のバーの右端の ⋯ を押す` : `${ICON.share}ここ（画面の下）の共有ボタン ↓`;
+      p.innerHTML = iosChrome ? `↑ ここ（右上）の${ICON.share}` : safari26 ? `下のバーの右端の ${ICON.dotsC} を押す` : `${ICON.share}ここ（画面の下）の共有ボタン ↓`;
       p.hidden = false;
     }
     $("install").hidden = false;
@@ -5911,6 +5923,8 @@ window.addEventListener("error", function (e) {
     share: svg(`<path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>`),
     plus: svg(`<rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/>`),
     dots: svg(`<circle cx="6" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="18" cy="12" r="1.3" fill="currentColor"/>`),
+    // Safari 26 draws its ⋯ inside a round button
+    dotsC: svg(`<circle cx="12" cy="12" r="9.5"/><circle cx="8" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="1.1" fill="currentColor" stroke="none"/>`),
     dots3: svg(`<circle cx="12" cy="6" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="18" r="1.3" fill="currentColor"/>`),
     back: svg(`<path d="M15 5l-7 7 7 7"/>`), fwd: svg(`<path d="M9 5l7 7-7 7"/>`),
     book: svg(`<path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/>`),
@@ -5949,7 +5963,7 @@ window.addEventListener("error", function (e) {
         step(2, "「ホーム画面に追加」を押す", more, chip(ICON.plus, "ホーム画面に追加", true)) +
         step(3, "右上の「追加」を押す", "", chip("", "追加", true))
       : safari26
-      ? step(1, "右下の ⋯ →「共有」を押す", "⋯ がなければ、画面の下の共有ボタン", chip(ICON.dots, "", true) + arrow + chip(ICON.share, "共有", true)) +
+      ? step(1, `右下の ${ICON.dotsC} →「共有」を押す`, "丸い ⋯ がなければ、画面の下の共有ボタン", chip(ICON.dotsC, "", true) + arrow + chip(ICON.share, "共有", true)) +
         step(2, "「ホーム画面に追加」を押す", more, chip(ICON.plus, "ホーム画面に追加", true)) +
         step(3, "右上の「追加」を押す", "「Webアプリとして開く」はオンのまま", chip("", "追加", true))
       : iosChrome
@@ -6000,7 +6014,7 @@ window.addEventListener("error", function (e) {
     // a small circle whose ring is drawn as the finger pulls; a full ring means "let go to refresh", then it spins
     const PULL = 80, R = 10, LEN = 2 * Math.PI * R, bar = document.createElement("div");
     bar.className = "ptr"; bar.setAttribute("aria-hidden", "true");
-    bar.innerHTML = `<svg viewBox="0 0 24 24"><circle class="ptr-track" cx="12" cy="12" r="${R}"/><circle class="ptr-ring" cx="12" cy="12" r="${R}" stroke-dasharray="${LEN}" stroke-dashoffset="${LEN}"/></svg>`;
+    bar.innerHTML = `<svg viewBox="0 0 24 24"><defs><linearGradient id="ptr-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cff"/><stop offset="1" stop-color="#5ff0d0"/></linearGradient></defs><circle class="ptr-track" cx="12" cy="12" r="${R}"/><circle class="ptr-ring" cx="12" cy="12" r="${R}" stroke-dasharray="${LEN}" stroke-dashoffset="${LEN}"/></svg>`;
     document.body.prepend(bar);
     const ring = bar.querySelector(".ptr-ring");
     const draw = (p) => ring.setAttribute("stroke-dashoffset", String(LEN * (1 - Math.min(1, p))));
