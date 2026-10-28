@@ -2384,9 +2384,15 @@ body { background: radial-gradient(420px 340px at 85% -60px, rgb(155 107 255 / .
 .ptr-track { stroke: rgb(255 255 255 / .1); }
 .ptr-ring { stroke: #b39bff; }
 .ptr.ready .ptr-ring, .ptr.busy .ptr-ring { stroke: url(#ptr-g); }
+/* at rest it waits above the page, which now reaches under the status bar: unseen until pulled */
+.ptr { transition: transform .2s, opacity .2s; }
+.ptr:not(.drag):not(.busy) { opacity: 0; }
 
 /* シフト希望: this month can be sent too; its days already past are shown faint and cannot be tapped */
 .hc:disabled { opacity: .3; }
+
+/* the dock floats above the foot, so the page ends well above it (the last card was hidden under it) */
+body:has(#member-ui:not([hidden])) #scroller { padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
 </style>
 <!-- the opening screen only when the app is newly opened: decided before anything is drawn, so a reload shows nothing of it -->
 <script>(function () {
