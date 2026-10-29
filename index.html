@@ -2003,6 +2003,14 @@ body.pop-open #scroller { overflow: hidden; touch-action: none; }
 /* 今日の予定・明日の予定: only the lit line on top, no coloured edge on the left; the times and 修正 centred on one line */
 .shifts .shift-today, .shifts #shift-next, .shifts .shift-today.absent { border-left-color: var(--plate-line); border-left-width: 1px; }
 .st-foot { align-items: center; }
+/* the day's 研修 under the shift, in the 研修予約 colours (pink to purple); each one opens 研修予約 */
+.st-trn { flex: 1 1 100%; display: grid; gap: 6px; margin-top: 6px; }
+.st-trn-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; width: 100%; text-align: left; padding: 8px 12px; border-radius: 10px; color: inherit;
+  border: 1px solid rgb(255 143 200 / .45); background: linear-gradient(135deg, rgb(255 143 200 / .16), rgb(169 139 255 / .16)); font-size: 14px; }
+.st-trn-k { padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 800; color: #0b0814; background: linear-gradient(135deg, #ff8fc8, #a98bff); }
+.st-trn-row b { font-family: var(--f-num); font-size: 16px; font-weight: 600; color: #fff; }
+.st-trn-who { white-space: nowrap; color: var(--plate-soft); font-size: 13px; }
+.st-trn-row::after { content: "›"; margin-left: auto; font-size: 18px; line-height: 1; color: #ff8fc8; }
 /* ホームのお知らせ: slim rows (still easy to tap), the text on one line */
 .nt-board .nt-item { padding: 8px 10px 8px 4px; min-height: 44px; gap: 1px 8px; }
 .nt-board .nt-item b { font-size: 13.5px; line-height: 1.35; }
@@ -2633,11 +2641,13 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
       <span class="st-store">—</span>
       <span class="st-done" id="st-done" hidden>稼働終了、本日もお疲れさまでした。</span>
       <div class="st-foot"><span class="st-time"></span><button type="button" class="tool st-fix" id="st-fix">修正</button></div>
+      <div class="st-trn" hidden></div>
     </div>
     <div class="shift-today small" id="shift-next">
       <span class="st-label">明日の予定<span class="num" id="st-next-date"></span></span>
       <span class="st-store">—</span>
       <div class="st-foot"><span class="st-time"></span><button type="button" class="tool st-fix" id="st-fix-next">修正</button></div>
+      <div class="st-trn" hidden></div>
     </div>
   </section>
   <section class="clock" aria-label="打刻">
@@ -4153,6 +4163,13 @@ window.addEventListener("error", function (e) {
   // お知らせ. The call itself is on Google Meet (its link is on the booking)
   let trn = null;
   try { const c = JSON.parse(localStorage.getItem("tc_trn") || "null"); if (c && CRED && c.tok === CRED.split(".")[0]) trn = c.v; } catch (e) {}
+  // this person's booked 研修 (as 担当 or 受講), for ホームの予定: from the opening call, then from each 研修予約 read
+  let trnSoon = trnMineOf(trn);
+  function trnMineOf(v) {
+    return ((v && v.slots) || []).filter((s) => s.role && s.who && s.by).map((s) => ({ date: s.date, start: s.start, end: s.end, role: s.role, by: s.by, who: s.who }));
+  }
+  const trnDayList = (k) => (trnSoon || []).filter((s) => s.date === k).sort((a, b) => a.start.localeCompare(b.start));
+  document.addEventListener("click", (e) => { if (e.target.closest("[data-go-trn]")) pickTab("train"); });
   // the ends of a time range, every 30 minutes round the clock (fixed lists: never rebuilt while one is open)
   const TRN_FROM = Array.from({ length: 48 }, (_, i) => `${pad(Math.floor(i / 2))}:${i % 2 ? "30" : "00"}`);
   const TRN_TO = TRN_FROM.slice(1).concat(["24:00"]);
@@ -4256,7 +4273,7 @@ window.addEventListener("error", function (e) {
     catch (err) { if (!trn && tab === "train") $("trn-body").innerHTML = `<p class="hint">${esc(errText(err))}</p>`; }
   }
   function setTrn(v) {
-    trn = v;
+    trn = v; trnSoon = trnMineOf(v);
     try { localStorage.setItem("tc_trn", JSON.stringify({ tok: CRED.split(".")[0], v })); } catch (e) {}
     // a box being typed in is not replaced under the person's fingers
     const f = document.activeElement;
@@ -5105,13 +5122,23 @@ window.addEventListener("error", function (e) {
         : r?.store ? "時間はまだ入っていません" : "";
       if (time.dataset.h !== th) { time.dataset.h = th; time.innerHTML = th; }
     };
+    // the 研修 of that day under the shift (each opens 研修予約)
+    const trnCard = (id, k) => {
+      const box = $(id).querySelector(".st-trn"), list = trnDayList(k);
+      const th = list.map((s) => `<button type="button" class="st-trn-row" data-go-trn><span class="st-trn-k">研修</span>` +
+        `<span class="seg"><b>${esc(s.start)}〜${esc(s.end)}</b></span><span class="st-trn-who">${s.role === "by" ? "受講" : "担当"}：${esc((s.role === "by" ? s.who : s.by) || "—")}さん</span></button>`).join("");
+      box.hidden = !th;
+      if (box.dataset.h !== th) { box.dataset.h = th; box.innerHTML = th; }
+    };
     const tmr = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate() + 1);
     const done = !open && !!todayRec?.out;
     $("shift-today").closest(".shifts").classList.toggle("done", done);
-    shiftCard("shift-today", open || todayRec, "今日の予定はありません", !done);
+    // a day with only a 研修 says there is no shift (the 研修 shows under it)
+    shiftCard("shift-today", open || todayRec, trnDayList(dayKey(nd)).length ? "シフトはありません" : "今日の予定はありません", !done);
     $("st-done").hidden = !done;
     $("st-next-date").textContent = `${tmr.getMonth() + 1}月${tmr.getDate()}日（${WD[tmr.getDay()]}）`;
-    shiftCard("shift-next", rec(dayKey(tmr)), "明日の予定はありません", done);
+    shiftCard("shift-next", rec(dayKey(tmr)), trnDayList(dayKey(tmr)).length ? "シフトはありません" : "明日の予定はありません", done);
+    trnCard("shift-today", dayKey(nd)); trnCard("shift-next", dayKey(tmr));
 
     const tr = open || asWorked(dayKey(nd), todayRec, now);
     $("t-wake").textContent = tr?.wake ? hm(tr.wake) : "--:--";
@@ -6044,7 +6071,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.1.1", APP_DATE = "2026-10-30";
+  const APP_VER = "2.2.0", APP_DATE = "2026-10-30";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -7732,6 +7759,7 @@ window.addEventListener("error", function (e) {
       if (Array.isArray(r.celebs)) { celebs = r.celebs; setTimeout(paintCelebs, 0); }
       if (r.profile) myProf = r.profile;
       if (r.mc && typeof r.mc === "object") mc = r.mc;
+      if (Array.isArray(r.trnSoon)) trnSoon = r.trnSoon;
       return [r.me, r.docs && { docs: r.docs, names }];
     } catch (e) {
       if (!/使えない操作/.test(String(e?.message || e))) throw e;
