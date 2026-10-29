@@ -2410,6 +2410,29 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
 /* シフト希望: this month can be sent too; its days already past are shown faint and cannot be tapped */
 .hc:disabled { opacity: .3; }
 
+/* 勤務の確認 at the month's end: a line on ホーム while it waits, and the sheet with the month's days */
+.bell-row + .bell-row { margin-top: 6px; }
+.mc-go { font: inherit; font-size: 14px; font-weight: 800; color: #0b0814; background: var(--lit) border-box; border: 1px solid transparent; border-radius: 999px; padding: 7px 16px; cursor: pointer;
+  box-shadow: 0 6px 18px -6px rgb(139 92 255 / .7); }
+#mc-1:not([hidden]), #mc-2:not([hidden]) { display: grid; gap: 12px; min-width: 0; }
+#mc-1 .hint, #mc-2 .hint { margin: 0; white-space: pre-line; }
+.mc-sum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.mc-sum div { border: 1px solid rgb(196 168 255 / .18); border-radius: 14px; padding: 8px 10px; background: rgb(255 255 255 / .04); display: grid; gap: 2px; }
+.mc-sum span { font-size: 11px; color: var(--ink-soft); }
+.mc-sum b { font-family: var(--f-num); font-size: 18px; font-variant-numeric: tabular-nums; }
+.mc-list { display: grid; gap: 6px; max-height: 46vh; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.mc-day { font: inherit; color: var(--ink); text-align: left; cursor: pointer; display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; align-items: center; gap: 2px 10px;
+  padding: 9px 12px; border-radius: 14px; border: 1px solid rgb(196 168 255 / .16); background: rgb(255 255 255 / .04); }
+.mc-day.warn { border-color: rgb(240 142 118 / .55); }
+.mc-d { font-family: var(--f-num); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.mc-d small { font-size: 11px; color: var(--ink-soft); font-weight: 500; }
+.mc-s { min-width: 0; display: grid; gap: 1px; }
+.mc-s b { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mc-s span { font-family: var(--f-num); font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.mc-tags { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+.mc-go-in { color: #b9a4ff; font-size: 16px; }
+.mc-empty { margin: 0; padding: 14px; border-radius: 14px; border: 1px dashed rgb(196 168 255 / .25); font-size: 13px; color: var(--ink-soft); }
+
 </style>
 <!-- the opening screen only when the app is newly opened: decided before anything is drawn, so a reload shows nothing of it -->
 <script>(function () {
@@ -2600,6 +2623,8 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
   <div class="sub-back" id="sub-back"><button type="button" class="tool" id="back-menu">‹ 戻る</button><span id="sub-act"></span></div>
   <!-- ホーム: a line at the top only while some お知らせ are not yet read -->
   <div class="bell-row" id="nt-unread-row" hidden><button type="button" class="nt-unread" id="nt-unread">未読のお知らせが<b id="nt-unread-n">0</b>件あります　›</button></div>
+  <!-- ホーム: the month's 勤務の確認 not yet sent (from 21:00 on the last day of the month) -->
+  <div class="bell-row" id="mc-row" hidden><button type="button" class="mc-go" id="mc-go"><span id="mc-go-t">今月の勤務の確認がまだです</span>　›</button></div>
   <!-- 誕生日・在籍記念 of the day, for everyone, with おめでとう to send -->
   <section class="celebs" id="celebs" hidden aria-label="今日のお祝い"></section>
   <section class="shifts" aria-label="予定">
@@ -2860,6 +2885,31 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
 <!-- one お知らせ opened large over the screen; a tap anywhere but on its buttons closes it -->
 <div class="modal-bg nt-pop-bg" id="nt-pop" hidden>
   <div class="modal nt-pop" id="nt-pop-in" role="dialog" aria-modal="true"></div>
+</div>
+<!-- 勤務の確認 at the month's end: the month's days to look over and 提出する, then a nudge to next month's shifts
+     (before the day sheet and ask in the page, so those open over it) -->
+<div class="modal-bg" id="mc-sheet" hidden>
+  <div class="modal mc" role="dialog" aria-modal="true" aria-labelledby="mc-h">
+    <div id="mc-1">
+      <h3 id="mc-h">今月の勤務の確認</h3>
+      <p class="hint" id="mc-lead"></p>
+      <div class="mc-sum" id="mc-sum"></div>
+      <div class="mc-list" id="mc-list"></div>
+      <p class="hint mc-note" id="mc-note" hidden>「打刻なし」の日は、予定の時間で数えています。ちがうときは、その日を押して直してください。</p>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="mc-later">あとで</button>
+        <div><button type="button" class="btn primary" id="mc-send">提出する</button></div>
+      </div>
+    </div>
+    <div id="mc-2" hidden>
+      <h3 id="mc-h2">提出しました</h3>
+      <p class="hint" id="mc-lead2"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="mc-close">あとで</button>
+        <div><button type="button" class="btn primary" id="mc-next"></button></div>
+      </div>
+    </div>
+  </div>
 </div>
 <!-- a second look before ログアウト / パスワード変更 / 管理画面 -->
 <div class="modal-bg" id="ask-sheet" hidden>
@@ -4918,13 +4968,107 @@ window.addEventListener("error", function (e) {
     msg(a ? "退勤の時刻を実際の時刻に直して、稼働実績を保存してください。TPも付きます。" : "退勤の時刻を、実際に退勤した時刻に直して保存してください。");
   }
 
+  // 勤務の確認: from 21:00 on the last day of the month (a テスト用 account: at any time, to try it out) everyone but
+  // 代表 is shown the month's days to look over. A day is corrected by tapping it (the day sheet opens over the list),
+  // and 提出する sends it. Until then it opens again at every start of the app (あとで only puts it off) and a line
+  // on ホーム leads back to it; last month's is asked for too if it was never sent. After it comes a nudge to next
+  // month's シフト希望 (常勤・社員: next month's shifts on the シフト表). mc: what the server said ({ym: when sent, "" not yet})
+  const MC_FROM = "2026-10", MC_HOUR = 21;
+  let mc = null, mcShown = false, mcYm = "";
+  function mcDue() {
+    if (!mc || window.TC_REP || mode !== "member") return "";
+    const now = new Date(), cur = ymOf(dayKey(now)), prev = ymOf(dayKey(new Date(now.getFullYear(), now.getMonth() - 1, 1)));
+    const open = window.TC_TEST || (now.getDate() === new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() && now.getHours() >= MC_HOUR);
+    return (open ? [cur] : []).concat(window.TC_TEST ? [] : [prev]).find((ym) => ym >= MC_FROM && ym in mc && !mc[ym]) || "";
+  }
+  const mcMonth = (ym) => `${Number(ym.slice(5))}月`;
+  // called with every render: the line on ホーム, the list kept up to date while open (after a day is corrected),
+  // and the sheet opened by itself once a session, when nothing else is on screen
+  function paintMc() {
+    const ym = mcDue();
+    $("mc-row").hidden = !ym;
+    if (ym) $("mc-go-t").textContent = `${mcMonth(ym)}の勤務の確認がまだです`;
+    if (!$("mc-sheet").hidden) { if (!$("mc-1").hidden) paintMcList(); return; }
+    if (!ym || mcShown || !backend || autoAsking || autoOutDay() || document.querySelector(".modal-bg:not([hidden]), #busy")) return;
+    openMc(ym);
+  }
+  function openMc(ym) {
+    mcYm = ym; mcShown = true;
+    $("mc-1").hidden = false; $("mc-2").hidden = true;
+    $("mc-h").textContent = `${mcMonth(ym)}の勤務の確認`;
+    $("mc-lead").textContent = `${mcMonth(ym)}に働いた日を確かめてください。\nまちがいがあれば、その日を押して直してください。合っていたら「提出する」を押してください。`;
+    paintMcList();
+    $("mc-sheet").hidden = false;
+    $("mc-list").scrollTop = 0;
+  }
+  function paintMcList() {
+    const ym = mcYm, now = Date.now(), today = dayKey(new Date());
+    const rows = monthRows(ym).filter((x) => x.r && (x.r.in || x.r.absent || x.r.store || x.r.planIn));
+    const worked = rows.filter((x) => x.r.in && !x.r.absent);
+    const total = worked.reduce((s, x) => s + (x.r.out ? workMin(x.r, now) : 0), 0), abs = rows.filter((x) => x.r.absent).length;
+    $("mc-sum").innerHTML = [["出勤", `${worked.length}日`], ["稼働", dur(total)], ["欠勤", `${abs}日`]].map(([t, v]) => `<div><span>${t}</span><b>${v}</b></div>`).join("");
+    const tag = (cls, t) => `<span class="st st-${cls}">${t}</span>`;
+    let noPunch = false;
+    const sig = ym + JSON.stringify(rows.map((x) => [x.key, x.r]));
+    if ($("mc-list").dataset.sig === sig) return;   // drawn only when something changed (the list keeps its scroll)
+    $("mc-list").dataset.sig = sig;
+    $("mc-list").innerHTML = rows.length ? rows.map(({ key, date, r }) => {
+      const tags = [], warn = r.fromPlan || (r.in && !r.out && key < today) || r.autoOut;
+      if (r.absent) tags.push(tag("abs", "欠勤"));
+      else if (r.fromPlan) { tags.push(tag("late", "打刻なし")); noPunch = true; }
+      else if (r.in && !r.out && key < today) tags.push(tag("late", "退勤なし"));
+      if (r.autoOut) tags.push(tag("late", "自動退勤"));
+      if (r.early && !r.absent) tags.push(tag("abs", "早退"));
+      if (!r.in && !r.absent && key >= today) tags.push(tag("plan", "予定"));
+      const times = r.absent ? "" : r.in ? `${hm(r.in)}〜${r.out ? hm(r.out) : "--:--"}${r.out ? `　実働 ${dur(workMin(r, now))}` : ""}` : r.planIn ? `予定 ${r.planIn}〜${r.planOut || ""}` : "";
+      return `<button type="button" class="mc-day${warn ? " warn" : ""}" data-mc="${key}">` +
+        `<span class="mc-d">${date.getMonth() + 1}/${date.getDate()}<small>（${WD[date.getDay()]}）</small></span>` +
+        `<span class="mc-s"><b>${esc(r.store || "店舗なし")}</b>${times ? `<span>${esc(times)}</span>` : ""}</span>` +
+        `<span class="mc-tags">${tags.join("")}<span class="mc-go-in" aria-hidden="true">›</span></span></button>`;
+    }).join("") : `<p class="mc-empty">${mcMonth(ym)}の勤務の記録はありません。働いた日があれば「あとで」を押して、シフト表でその日を押して入れてください。</p>`;
+    $("mc-note").hidden = !noPunch;
+    for (const b of $("mc-list").querySelectorAll("[data-mc]")) b.onclick = () => openSheet(b.dataset.mc);
+  }
+  // put off: asked again at the next start of the app (the line on ホーム opens it before then)
+  $("mc-later").onclick = () => { $("mc-sheet").hidden = true; render(); };
+  $("mc-go").onclick = () => { const ym = mcDue(); if (ym) openMc(ym); };
+  $("mc-send").onclick = async () => {
+    const ym = mcYm;
+    if (!await ask(`${mcMonth(ym)}の勤務を提出しますか？`, "一覧の日がすべて合っているか、もう一度確かめてください。", "提出する")) return;
+    busyOn("提出しています");
+    try {
+      // the month as it is on this phone goes first, so what is sent is what was looked at
+      if (!await persist("m-" + ym)) { busyOff(); return; }
+      const at = await call("api_monthCheck", ym);
+      mc[ym] = at || "済";
+      await busyDone("提出しました", `${mcMonth(ym)}の勤務`);
+      mcNextStep(ym);
+    } catch (e) { busyOff(); msg(errText(e)); }
+  };
+  // after it: next month's シフト希望 (or, for 常勤・社員, next month on the シフト表)
+  function mcNextStep(ym) {
+    const [y, m] = ym.split("-").map(Number), next = mcMonth(ymOf(dayKey(new Date(y, m, 1)))), hope = tabOk("hope");
+    $("mc-1").hidden = true; $("mc-2").hidden = false; $("mc-row").hidden = !mcDue();
+    $("mc-lead2").textContent = `ありがとうございました。\nつぎは、${next}のシフト${hope ? "希望" : ""}を入れてください。` +
+      (hope ? "\n働ける日に ○・○遠方可・△ を付けて送ります。何度でも出し直せます。" : "\n決まったシフト（店舗と時間）を、シフト表で日付を押して入れてください。");
+    $("mc-next").textContent = hope ? `${next}のシフト希望を入れる` : `${next}のシフト表を開く`;
+    $("mc-sheet").hidden = false;
+  }
+  $("mc-close").onclick = () => { $("mc-sheet").hidden = true; render(); };
+  $("mc-next").onclick = () => {
+    const [y, m] = mcYm.split("-").map(Number), t = tabOk("hope") ? "hope" : "card";
+    $("mc-sheet").hidden = true;
+    tabView[t] = new Date(y, m, 1);
+    pickTab(t);
+  };
+
   // ---- render ----
   let lastCalSig = "";
   function render() {
     if (mode !== "member") return;   // the login and admin screens have nothing on the clock
     const now = Date.now(), nd = new Date(now);
     $("date").textContent = `${nd.getFullYear()}年${nd.getMonth() + 1}月${nd.getDate()}日（${WD[nd.getDay()]}）`;
-    autoOut(); paintStreak();
+    autoOut(); paintStreak(); paintMc();
     $("time").innerHTML = `${pad(nd.getHours())}:${pad(nd.getMinutes())}<span class="sec">:${pad(nd.getSeconds())}</span>`;
 
     const open = openRec(), todayRec = rec(dayKey(nd));
@@ -5900,7 +6044,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.0.1", APP_DATE = "2026-10-28";
+  const APP_VER = "2.1.0", APP_DATE = "2026-10-29";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -6350,11 +6494,17 @@ window.addEventListener("error", function (e) {
   function adWork() {
     const ym = adMonth.work, live = adData.members.filter((m) => !m.rep && (m.active || adData.days.some((r) => r[DH.name] === m.name && r[DH.date].slice(0, 7) === ym)));
     const rows = adRows((r) => r[DH.date].slice(0, 7) === ym);
-    $("ad-body").innerHTML = byWork(live).map(([t, g]) =>
+    // the month's 勤務の確認 (sent from 21:00 on its last day): who has sent it, テスト用 not counted
+    const ck = adData.checks, due = ck ? live.filter((m) => !m.test && m.active) : [], sent = due.filter((m) => ck[m.id]).length;
+    const ckTag = (m) => (!ck || m.test || !m.active ? "" : ck[m.id] ? `<span class="st st-done">確認 提出済み</span>` : `<span class="st st-late">確認 未提出</span>`);
+    $("ad-body").innerHTML = (ck ? `<div class="ad-stats"><div class="ad-stat"><span>勤務の確認 提出済み</span><b class="num">${sent} / ${due.length}</b></div>` +
+      `<div class="ad-stat${due.length - sent ? " warn" : ""}"><span>未提出</span><b class="num">${due.length - sent}</b></div></div>` +
+      `<p class="hint">勤務の確認は、月の最後の日の21時からメンバーのアプリに出ます。</p>` : "") +
+      byWork(live).map(([t, g]) =>
       `<h3 class="ad-grp">${esc(groupName(t))}（${g.length}人）</h3><div class="ad-cards">` + g.map((m, i) => {
         const s = workSum(rows.filter((r) => r[DH.name] === m.name));
         return personCard(m, i, `<span>出勤 <b class="num">${s.days}</b>日</span><span>稼働 <b class="num">${dur(s.total)}</b></span>` +
-          `<span>欠勤 <b class="num">${s.abs}</b></span><span>早退 <b class="num">${s.early}</b></span><span>距離 <b class="num">${s.km}</b>km</span>`, !s.days && !s.abs);
+          `<span>欠勤 <b class="num">${s.abs}</b></span><span>早退 <b class="num">${s.early}</b></span><span>距離 <b class="num">${s.km}</b>km</span>` + ckTag(m), !s.days && !s.abs);
       }).join("") + `</div>`).join("");
     bindPeople();
   }
@@ -6439,6 +6589,7 @@ window.addEventListener("error", function (e) {
       $("ad-body").innerHTML = head +
         `<div class="ad-stats row5">` + [["出勤", `${s.days}日`], ["稼働", dur(s.total)], ["欠勤", s.abs], ["早退", s.early], ["距離", `${s.km}km`]]
           .map(([t, v]) => `<div class="ad-stat"><span>${t}</span><b class="num">${v}</b></div>`).join("") + `</div>` +
+        (adData.checks && !m.test ? `<p class="hint">勤務の確認：${adData.checks[m.id] ? `提出済み（${esc(adData.checks[m.id])}）` : "まだ提出していません"}</p>` : "") +
         `<h3 class="pcal-ym">${esc(ymLabel(ym))}</h3>` +
         monthCal(ym, (key) => {
           const r = rows[key];
@@ -7580,6 +7731,7 @@ window.addEventListener("error", function (e) {
       if (Array.isArray(r.tpReqs)) tp.reqs = r.tpReqs;
       if (Array.isArray(r.celebs)) { celebs = r.celebs; setTimeout(paintCelebs, 0); }
       if (r.profile) myProf = r.profile;
+      if (r.mc && typeof r.mc === "object") mc = r.mc;
       return [r.me, r.docs && { docs: r.docs, names }];
     } catch (e) {
       if (!/使えない操作/.test(String(e?.message || e))) throw e;
