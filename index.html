@@ -453,7 +453,7 @@ fieldset:disabled .f input, fieldset:disabled .f textarea, fieldset:disabled .f 
    メニュー: its list, and 請求書 / 給与明細 under a way back to it; the month bar wherever there is a month */
 #member-ui:not([data-tab="home"]) > :is(.shifts, .clock, .bell-row, .nt-home, .celebs) { display: none; }
 #member-ui:not([data-tab="card"]):not([data-tab="hope"]) > #shift-seg, #shift-seg:not(:has(#tab-hope:not([hidden]))) { display: none; }
-#member-ui:is([data-tab="home"], [data-tab="menu"], [data-tab="notice"], [data-tab="point"], [data-tab="invite"], [data-tab="plaza"]) > .bar-month { display: none; }
+#member-ui:is([data-tab="home"], [data-tab="menu"], [data-tab="notice"], [data-tab="point"], [data-tab="invite"], [data-tab="plaza"], [data-tab="tei"]) > .bar-month { display: none; }
 /* シフト表 and シフト希望 move by ‹ › only (no 今月 / 来月 button) */
 #member-ui:is([data-tab="card"], [data-tab="hope"]) #m-now { display: none; }
 /* ホーム: 未読のお知らせが〇件あります, and the newest お知らせ under the clock */
@@ -531,7 +531,7 @@ fieldset:disabled .f input, fieldset:disabled .f textarea, fieldset:disabled .f 
 .who-tp i { display: grid; font-style: normal; font-family: var(--f-num); font-size: 8.5px; font-weight: 800; line-height: 1; letter-spacing: 0; color: #9fb4d6;
   padding-right: 6px; border-right: 1px solid rgb(255 255 255 / .18); }
 .who-tp b { font-family: var(--f-num); font-size: 17px; font-weight: 800; letter-spacing: .02em; line-height: 1.2; text-shadow: 0 0 10px rgb(246 210 122 / .35); }
-#member-ui:not([data-tab="inv"]):not([data-tab="pay"]):not([data-tab="notice"]):not([data-tab="invite"]):not([data-tab="mypage"]) > .sub-back { display: none; }
+#member-ui:not([data-tab="inv"]):not([data-tab="pay"]):not([data-tab="notice"]):not([data-tab="invite"]):not([data-tab="mypage"]):not([data-tab="tei"]) > .sub-back { display: none; }
 /* the bell, small at the top left of ホーム; its count in a red circle as on LINE */
 .bell-row { margin-bottom: -14px; }
 .bell { position: relative; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--rule); background: var(--card); color: var(--ink); padding: 0;
@@ -2441,6 +2441,63 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
 .mc-go-in { color: #b9a4ff; font-size: 16px; }
 .mc-empty { margin: 0; padding: 14px; border-radius: 14px; border: 1px dashed rgb(196 168 255 / .25); font-size: 13px; color: var(--ink-soft); }
 
+/* 提案: the questions as rows of chips, then the result (カンペ or お客さま用) */
+#p-tei:not([hidden]) { display: grid; gap: 14px; }
+#tei-body { display: grid; gap: 14px; }
+.tei-h { font-size: 17px; }
+.tei-q { display: grid; gap: 6px; }
+.tei-q > span { font-size: 13px; color: var(--ink-soft); }
+.tei-q .chip { padding: 7px 14px; font-size: 14px; }
+.tei-go { justify-self: stretch; padding: 13px; font-size: 16px; }
+#tei-out { display: grid; gap: 12px; scroll-margin-top: 72px; }
+.tei-card p, .tei-guest p, .tei-card ul, .tei-guest ul { margin: 0; }
+#tei-out:empty { display: none; }
+.tei-face { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 12px; background: var(--card); border: 1px solid var(--rule); }
+.tei-face button { border: 0; border-radius: 9px; padding: 9px; background: transparent; color: var(--ink-soft); font-weight: 700; font-size: 14px; }
+.tei-face button[aria-selected="true"] { background: var(--lit) border-box; color: #fff; }
+.tei-card { background: var(--plate); border: 1px solid var(--plate-line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 6px; color: var(--plate-ink); }
+.tei-card .tc-k { font-size: 12px; font-weight: 700; color: #5ff0d0; letter-spacing: .04em; }
+.tei-card .tc-name { font-size: 18px; font-weight: 800; line-height: 1.35; }
+.tei-card .tc-name small { font-size: 13px; font-weight: 500; color: var(--plate-soft); margin-left: 8px; white-space: nowrap; }
+.tei-card .tc-why { margin: 0; padding-left: 1.1em; font-size: 14px; display: grid; gap: 2px; }
+.tei-card .tc-dl { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin: 4px 0 0; font-size: 14px; }
+.tei-card .tc-dl dt { color: var(--plate-soft); }
+.tei-card .tc-dl dd { margin: 0; text-align: right; font-weight: 700; }
+.tei-card .tc-dl dd.ok { color: var(--ok); } .tei-card .tc-dl dd.ng { color: var(--stamp-red); }
+.tei-card .tc-val { font-size: 15px; font-weight: 700; color: #f6d27a; }
+.tei-card .tc-talk { font-size: 14px; line-height: 1.6; }
+.tei-card .tc-memo { font-size: 13px; color: var(--plate-soft); line-height: 1.55; }
+.tei-plan { border-color: rgb(155 107 255 / .55); box-shadow: 0 0 18px -6px rgb(155 107 255 / .5); }
+.tei-subc .tc-k { color: #b3a2ff; }
+.tei-ng .tc-k { color: var(--stamp-red); }
+.tei-ng ul { margin: 0; padding-left: 1.1em; font-size: 14px; display: grid; gap: 2px; }
+/* お客さま用: large and plain, to turn the phone round and show */
+.tei-guest { background: #fff; color: #1d1830; border-radius: 18px; padding: 22px 20px; display: grid; gap: 10px; text-align: center; }
+.tei-guest .tg-c { font-size: 14px; font-weight: 700; color: #6b4de6; }
+.tei-guest .tg-plan { font-size: 22px; font-weight: 800; line-height: 1.3; }
+.tei-guest .tg-plan small { display: block; font-size: 14px; font-weight: 500; color: #5a5470; }
+.tei-guest .tg-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 10px 14px; border-radius: 12px; background: #f3f0fa; }
+.tei-guest .tg-row span { font-size: 14px; color: #5a5470; white-space: nowrap; }
+.tei-guest .tg-row b { font-size: 24px; font-weight: 800; white-space: nowrap; }
+.tei-guest .tg-new { background: #ffe3ec; } .tei-guest .tg-new b { color: #d6336c; font-size: 30px; }
+.tei-guest .tg-arrow { justify-self: center; width: 0; height: 0; border: 10px solid transparent; border-top: 12px solid #c9bdf0; border-bottom: 0; }
+.tei-guest .tg-save { font-size: 17px; font-weight: 700; } .tei-guest .tg-save b { font-size: 26px; color: #d6336c; margin: 0 4px; }
+.tei-guest .tg-pt { font-size: 15px; font-weight: 700; color: #1f8a6a; }
+.tei-guest .tg-ex { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; text-align: left; }
+.tei-guest .tg-ex li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border: 1px solid #ece7f6; border-radius: 10px; font-size: 14px; }
+.tei-guest .tg-ex li span { white-space: nowrap; color: #5a5470; }
+.tei-guest .tg-sub { font-size: 13px; color: #5a5470; }
+.tei-guest .tg-note { font-size: 12px; color: #7a7490; line-height: 1.6; text-align: left; }
+/* 運営画面 › 提案 */
+.tei-ad { display: grid; gap: 12px; }
+.tei-ad .f > span { font-size: 13px; color: var(--ink-soft); }
+.tei-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px 12px; }
+.tei-plans { display: grid; gap: 8px; }
+.tei-pl { border: 1px solid var(--rule); border-radius: 12px; background: var(--card); display: grid; gap: 10px; padding: 0 0 0; }
+.tei-pl.open { padding-bottom: 12px; } .tei-pl.open > :not(.tei-plh) { margin: 0 12px; }
+.tei-plh { display: grid; gap: 2px; text-align: left; border: 0; background: transparent; color: var(--ink); padding: 10px 12px; }
+.tei-plh span { font-size: 12px; color: var(--ink-soft); }
+.tei-pl > .tool.danger { justify-self: start; }
 </style>
 <!-- the opening screen only when the app is newly opened: decided before anything is drawn, so a reload shows nothing of it -->
 <script>(function () {
@@ -2518,6 +2575,7 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
         <button type="button" role="tab" data-t="members" aria-selected="false">メンバー</button>
         <button type="button" role="tab" data-t="points" aria-selected="false" aria-label="ポイント（TP）">ポイント</button>
         <button type="button" role="tab" data-t="notices" aria-selected="false">お知らせ</button>
+        <button type="button" role="tab" data-t="tei" aria-selected="false" hidden>提案</button>
         <button type="button" role="tab" data-t="sales" aria-selected="false" aria-label="売上・利益">売上</button>
       </div>
       <div class="month-nav">
@@ -2818,6 +2876,7 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
     <div class="menu-list">
       <button type="button" class="menu-item" id="tab-pay" hidden><b>給与明細</b><small>毎月の給与明細を見る</small></button>
       <button type="button" class="menu-item" id="tab-inv"><b>請求書</b><small>毎月の請求書を作って提出</small></button>
+      <button type="button" class="menu-item" id="m-tei" hidden><b>提案</b><small>お客さまに合うプランと副商材を出す</small></button>
       <button type="button" class="menu-item" id="m-ask"><b>お問い合わせ</b><small>Themisに質問・連絡する</small></button>
     </div>
     <div class="menu-list">
@@ -2840,6 +2899,11 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
   <!-- 友達を招待: this person's code to pass on, the code of whoever invited them, and the people they invited -->
   <section class="panel" id="p-invite" aria-label="友達を招待" hidden>
     <div id="iv-body"></div>
+  </section>
+
+  <!-- 提案: the customer's answers, then the plan and extras that fit (カンペ / お客さま用) -->
+  <section class="panel" id="p-tei" aria-label="提案" hidden>
+    <div id="tei-body"></div>
   </section>
 
   <!-- 広場: マイページ (this month and the totals) on top, then the ランキング, みんなの獲得ログ and ありがとうチケット -->
@@ -3408,7 +3472,7 @@ window.addEventListener("error", function (e) {
   // the page opens on ホーム; the bar at the foot picks ホーム, シフト (シフト表 / シフト希望) or メニュー (請求書 / 給与明細 in it)
   let tab = "home", shiftTab = "card";
   // お知らせ belongs to wherever it was opened from: ホーム (the bell) or メニュー (お問い合わせ)
-  const GROUP = { home: "home", card: "shift", hope: "shift", train: "shift", point: "point", menu: "menu", inv: "menu", pay: "menu", notice: "home", invite: "menu", plaza: "plaza", mypage: "plaza" };
+  const GROUP = { home: "home", card: "shift", hope: "shift", train: "shift", point: "point", menu: "menu", inv: "menu", pay: "menu", notice: "home", invite: "menu", tei: "menu", plaza: "plaza", mypage: "plaza" };
   function setTab(t) {
     // each tab keeps its own month: the shift calendar opens on this month, invoices on last month
     // and its own place on the page: coming back to a screen lands where it was left
@@ -3422,7 +3486,8 @@ window.addEventListener("error", function (e) {
     $("m-train").hidden = GROUP[t] !== "shift";
     $("m-train").textContent = t === "train" ? "‹ シフト表に戻る" : "研修予約";
     for (const k of ["card", "hope"]) $("tab-" + k).setAttribute("aria-selected", t === k);
-    for (const k of ["card", "hope", "train", "inv", "pay", "menu", "notice", "point", "invite", "plaza", "mypage"]) $("p-" + k).hidden = t !== k;
+    for (const k of ["card", "hope", "train", "inv", "pay", "menu", "notice", "point", "invite", "tei", "plaza", "mypage"]) $("p-" + k).hidden = t !== k;
+    if (t === "tei") { renderTei(); loadTei(); }
     if (t === "train") { renderTrain(); loadTrn(); }
     $("sub-act").replaceChildren();
     if (t === "notice") renderNotice();
@@ -3621,6 +3686,7 @@ window.addEventListener("error", function (e) {
   $("m-ask").onclick = () => showNotice("new", null, "menu");
   $("nt-home-post").onclick = () => showNotice("post", null, "home");
   $("m-invite").onclick = () => pickTab("invite");
+  $("m-tei").onclick = () => pickTab("tei");
   // ---- ポイント（TP）: 1TP = 1円; 50TP for each day's 稼働実績 after 退勤; exchanged for えらべるPay on request ----
   let tp = { bal: null, item: "えらべるPay", amounts: [500, 1000, 3000, 5000], reqs: [] };
   // the last balance and requests are kept on this device, so the TP shows beside the name at once on opening
@@ -4147,7 +4213,7 @@ window.addEventListener("error", function (e) {
   // 常勤 staff hand in no shift wishes, so they never see that tab; 社員 send no invoice and hand in no wishes:
   // they get their 給与明細 instead
   // 代表 has no 勤務形態 and sees every tab
-  const tabOk = (t) => t === "card" || t === "train" || t === "home" || t === "menu" || t === "notice" || t === "point" || t === "invite" || t === "plaza" || t === "mypage" || (window.TC_REP ? t !== "inv" : false) || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
+  const tabOk = (t) => (t === "tei" && !!window.TC_TEI) || t === "card" || t === "train" || t === "home" || t === "menu" || t === "notice" || t === "point" || t === "invite" || t === "plaza" || t === "mypage" || (window.TC_REP ? t !== "inv" : false) || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
   function applyWork() {
     $("tab-hope").hidden = !tabOk("hope"); $("tab-inv").hidden = !tabOk("inv"); $("tab-pay").hidden = !tabOk("pay");
     $("m-hope").hidden = !(GROUP[tab] === "shift" && tabOk("hope"));
@@ -4156,6 +4222,150 @@ window.addEventListener("error", function (e) {
   }
   $("tab-inv").onclick = () => pickTab("inv");
   $("tab-pay").onclick = () => pickTab("pay");
+
+  // ---- 提案: a few taps about the customer, then the plan and the extras (card, 光, でんき) that fit, picked by fixed
+  // rules from the prices 運営 keep on the 運営画面 (api_tei). Two faces: カンペ (for staff: why, the words to say, what
+  // not to do) and お客さま用 (the big numbers only). The carrier comes from today's store; it can be changed by hand
+  let teiData = null, teiOut = null, teiFace = "kanpe";
+  try { const c = JSON.parse(localStorage.getItem("tc_tei") || "null"); if (c && c.plans) teiData = c; } catch (e) {}
+  const TEI_C = { docomo: "ドコモ", au: "au", sb: "ソフトバンク" };
+  const TEI_USE = { a: "〜5GB", b: "〜10GB", c: "〜30GB", d: "もっと" };
+  const TEI_VIDEO = ["Netflix", "Amazonプライム", "DAZN"];
+  const teiIn = { c: "", proc: "機種変更", from: "", n: 1, use: "c", age: "", call: "none", video: [], pay: "none", bill: "", hikari: "none", denki: "other", card: "cash" };
+  // the carrier of a store's name (ドコモショップ〇〇, auショップ, ソフトバンク, ワイモバイル, UQ …)
+  const teiCarrierOf = (s) => /ドコモ|docomo|ahamo/i.test(s || "") ? "docomo" : /ソフトバンク|softbank|ワイモバイル|y!?mobile/i.test(s || "") ? "sb"
+    : /(^|[^a-z])au([^a-z]|$)|ａｕ|uq/i.test(s || "") ? "au" : "";
+  const teiCardBase = (c) => c.card.replace(/ ?GOLD$/, "").replace(/ゴールドカード$/, "カード").replace(/ ?ゴールド$/, "");
+  const en = (n) => Math.round(n).toLocaleString("ja-JP") + "円";
+  async function loadTei() {
+    try {
+      teiData = JSON.parse(await call("api_tei"));
+      try { localStorage.setItem("tc_tei", JSON.stringify(teiData)); } catch (e) {}
+      if (tab === "tei" && !$("tei-body").querySelector("input:focus")) renderTei();
+    } catch (err) { if (!teiData && tab === "tei") $("tei-body").innerHTML = `<p class="hint">${esc(errText(err))}</p>`; }
+  }
+  // one plan's price a line, with the discounts that apply: family, 光 (with or instead of family when `alt`), card, でんき
+  function teiNet(p, n, o) {
+    const fam = n >= 3 ? p.fam3 : n === 2 ? p.fam2 : 0, h = o.h ? p.hikari : 0;
+    const card = o.card === "gold" ? p.cardG : o.card === "base" ? p.cardN : 0;
+    return Math.max(0, p.price - (p.alt ? Math.max(fam, h) : fam + h) - card - (o.d ? p.denki : 0));
+  }
+  function teiCalc(D, I) {
+    const today = dayKey(new Date()), c = D.carriers[I.c], n = I.n, levels = "abcd";
+    const live = (p) => p.c === I.c && (!p.from || p.from <= today) && (!p.to || today <= p.to);
+    const ageOk = (p) => !p.age || p.age === I.age || (p.age === "u18" && I.age === "u12");
+    const now = { h: I.hikari === "set", d: I.denki === "set", card: I.card === "gold" ? "gold" : I.card === "base" ? "base" : "" };
+    const all = { h: true, d: true, card: "gold" };
+    const calls = I.call === "short" ? c.call5 : I.call === "long" ? c.callAll : 0;
+    // the plan whose data fits (or the next bigger), the cheapest once every extra is in; a plan for the age, for
+    // paying with the carrier's own payment, or with the video they watch comes first
+    function pick(sub) {
+      for (let i = levels.indexOf(I.use); i < 4; i++) {
+        const ok = D.plans.filter((p) => live(p) && !!p.sub === sub && p.use.includes(levels[i]) && ageOk(p) &&
+          (p.tag !== "poi" || I.pay === "own") && (!p.video || I.video.includes(p.video)));
+        if (!ok.length) continue;
+        const score = (p) => teiNet(p, n, all) - (p.age ? 5000 : 0) - (p.tag === "poi" ? 5000 : 0) - (p.video ? 5000 : 0);
+        return ok.sort((a, b) => score(a) - score(b))[0];
+      }
+      return null;
+    }
+    const plan = pick(false), sub = pick(true);
+    if (!plan) return { c, none: true };
+    const total = (p, o) => teiNet(p, n, o) * n + calls;
+    // the extras not had yet, the one worth most a year first
+    const extras = [];
+    if (!now.h) extras.push({ k: "hikari", name: c.hikari, save: total(plan, now) - total(plan, { ...now, h: true }), talk: c.talkHikari, note: D.hikariNote });
+    if (!now.d) extras.push({ k: "denki", name: c.denki, save: total(plan, now) - total(plan, { ...now, d: true }), talk: c.talkDenki, note: D.hikariNote });
+    if (now.card !== "gold") {
+      const pt = Math.round(total(plan, all) * c.cardRate / 100);
+      extras.push({ k: "card", name: c.card, save: total(plan, now) - total(plan, { ...now, card: "gold" }), pt, fee: c.cardFee, talk: c.talkCard, note: D.cardNote });
+    }
+    for (const x of extras) x.year = x.save * 12 + (x.pt || 0) * 12 - (x.fee || 0);
+    extras.sort((a, b) => b.year - a.year);
+    const bill = Number(String(I.bill).replace(/[^\d]/g, "")) || 0;
+    return { c, plan, sub, n, calls, extras, bill, base: total(plan, now), full: total(plan, all), subFull: sub ? total(sub, all) : 0,
+      pt: extras.find((x) => x.k === "card")?.pt || 0, at: D.at };
+  }
+  // the reasons the plan was picked, in words
+  function teiWhy(r, I) {
+    const p = r.plan, w = [`${I.n >= 3 ? "3人以上" : I.n + "人"}で使う・データ${TEI_USE[I.use]}`];
+    if (p.age) w.push({ u12: "12歳以下", u18: "18歳以下", 60: "60歳以上" }[p.age] + "の人向けのプラン");
+    if (p.tag === "poi") w.push(`${r.c.pay}をよく使う → 買い物でポイントが多くもどる`);
+    if (p.video) w.push(`${p.video}を見る → セットのプランのほうがおトク`);
+    return w;
+  }
+  const TEI_PROC = { 機種変更: "今の機種の残りの支払いと、データのうつし方を先に確かめる。", 乗りかえ: "今の会社の解約金・残りの支払いを確かめる。番号はそのまま使える（MNP）。",
+    新規: "本人確認の書類と、支払いのカード・口座がいる。", プラン変更だけ: "変わるのは来月の料金から。今月の分は前のまま。" };
+  function renderTei() {
+    const D = teiData, body = $("tei-body");
+    if (!D) { body.innerHTML = `<p class="hint">読み込んでいます…</p>`; return; }
+    if (!teiIn.c) teiIn.c = teiCarrierOf(rec(dayKey(new Date()))?.store) || (() => { try { return localStorage.getItem("tc_tei_c"); } catch (e) { return ""; } })() || "docomo";
+    const c = D.carriers[teiIn.c], I = teiIn;
+    const row = (label, k, opts, multi) => `<div class="tei-q"><span>${label}</span><div class="chips" data-q="${k}"${multi ? ` data-multi="1"` : ""}>` +
+      opts.map(([v, t]) => `<button type="button" class="chip" data-v="${esc(v)}" aria-pressed="${multi ? I[k].includes(v) : String(I[k]) === String(v)}">${esc(t)}</button>`).join("") + `</div></div>`;
+    body.innerHTML = `<h3 class="tei-h">お客さまに合うプランを出す</h3>` +
+      row("会社", "c", Object.entries(TEI_C)) +
+      row("手続き", "proc", Object.keys(TEI_PROC).map((x) => [x, x])) +
+      (I.proc === "乗りかえ" ? row("今の会社", "from", [["docomo", "ドコモ"], ["au", "au"], ["sb", "ソフトバンク"], ["rakuten", "楽天"], ["mvno", "格安SIM・サブブランド"]].filter(([v]) => v !== I.c)) : "") +
+      row("何人で使う？", "n", [[1, "1人"], [2, "2人"], [3, "3人以上"]]) +
+      row("データ量（1人の1か月）", "use", Object.entries(TEI_USE)) +
+      row("年齢", "age", [["", "それ以外"], ["u12", "12歳以下"], ["u18", "18歳以下"], ["60", "60歳以上"]]) +
+      row("電話", "call", [["none", "ほぼしない"], ["short", "短い電話が多い"], ["long", "長電話が多い"]]) +
+      row("見ている動画（いくつでも）", "video", TEI_VIDEO.map((x) => [x, x]), true) +
+      row("よく使う支払い", "pay", [["own", c.pay], ["other", "ほかの支払い"], ["none", "あまり使わない"]]) +
+      `<label class="f tei-q">今の月の料金（家族の合計・円）<input id="tei-bill" type="text" inputmode="numeric" maxlength="7" placeholder="例：15000" value="${esc(I.bill)}"></label>` +
+      row("家の光回線", "hikari", [["none", "なし"], ["other", "他社"], ["set", c.hikari + "（もう入っている）"]]) +
+      row("でんき", "denki", [["other", "他社"], ["set", c.denki + "（もう入っている）"]]) +
+      row("今の支払い", "card", [["cash", "現金・口座"], ["other", "ほかのカード"], ["base", teiCardBase(c)], ["gold", c.card]]) +
+      `<button type="button" class="btn primary tei-go" id="tei-go">おすすめを出す</button><div id="tei-out"></div>`;
+    for (const g of body.querySelectorAll("[data-q]")) for (const b of g.children) b.onclick = () => {
+      const k = g.dataset.q, v = k === "n" ? Number(b.dataset.v) : b.dataset.v;
+      if (g.dataset.multi) I[k] = I[k].includes(v) ? I[k].filter((x) => x !== v) : [...I[k], v];
+      else I[k] = v;
+      if (k === "c") { try { localStorage.setItem("tc_tei_c", v); } catch (e) {} if (I.from === v) I.from = ""; }
+      teiOut = null; renderTei();
+    };
+    $("tei-bill").oninput = (e) => { I.bill = e.target.value.replace(/[^\d]/g, ""); };
+    $("tei-go").onclick = () => { teiOut = teiCalc(D, I); paintTeiOut(); $("tei-out").scrollIntoView({ behavior: "smooth", block: "start" }); };
+    if (teiOut) paintTeiOut();
+  }
+  function paintTeiOut() {
+    const r = teiOut, I = teiIn, box = $("tei-out");
+    if (r.none) { box.innerHTML = `<p class="hint">${esc(r.c.name)}で合うプランが見つかりませんでした。運営画面の「提案」で、プランを確かめてください。</p>`; return; }
+    const p = r.plan, diff = r.bill ? r.bill - r.full : 0;
+    const face = `<div class="tei-face" role="tablist"><button type="button" role="tab" data-face="kanpe" aria-selected="${teiFace === "kanpe"}">カンペ</button>` +
+      `<button type="button" role="tab" data-face="guest" aria-selected="${teiFace === "guest"}">お客さま用</button></div>`;
+    let h;
+    if (teiFace === "guest") {
+      const ex = r.extras.filter((x) => x.save > 0 || x.pt);
+      h = `<div class="tei-guest"><p class="tg-c">${esc(r.c.name)}</p><p class="tg-plan">${esc(p.name)}<small>${esc(p.data)}</small></p>` +
+        (r.bill ? `<div class="tg-row"><span>今</span><b class="num">月 ${en(r.bill)}</b></div><i class="tg-arrow" aria-hidden="true"></i>` : "") +
+        `<div class="tg-row tg-new"><span>ご提案</span><b class="num">月 ${en(r.full)}</b></div>` +
+        (diff > 0 ? `<p class="tg-save">1年で 約<b class="num">${en(diff * 12)}</b> おトク</p>` : "") +
+        (r.pt ? `<p class="tg-pt">さらに ポイント 年 約${en(r.pt * 12)}分</p>` : "") +
+        (ex.length ? `<ul class="tg-ex">` + ex.map((x) => `<li><b>${esc(x.name)}</b>${x.save > 0 ? `<span class="num">月 −${en(x.save)}</span>` : `<span>ポイントがたまる</span>`}</li>`).join("") + `</ul>` : "") +
+        (r.sub ? `<p class="tg-sub">もっと安くしたい方へ：${esc(r.sub.name)}（${esc(r.sub.data)}） 月 ${en(r.subFull)}〜</p>` : "") +
+        `<p class="tg-note">※ 目安です。くわしい料金は、お申し込みのときにお調べします。${r.extras.some((x) => x.k !== "card") ? "光・でんきの料金は別です。" : ""}${r.n > 1 ? `家族${r.n >= 3 ? "3人以上" : r.n + "人"}が同じプランの場合です。` : ""}</p></div>`;
+    } else {
+      const top = r.extras.slice(0, 3);
+      h = `<div class="tei-card tei-plan"><p class="tc-k">おすすめのプラン</p><p class="tc-name">${esc(p.name)}<small>${esc(p.data)}</small></p>` +
+        `<ul class="tc-why">` + teiWhy(r, I).map((x) => `<li>${esc(x)}</li>`).join("") + `</ul>` +
+        `<dl class="tc-dl"><dt>料金（1人）</dt><dd class="num">${en(p.price)}</dd><dt>今のままの割引で</dt><dd class="num">月 ${en(r.base)}</dd><dt>光・でんき・カードまで入れると</dt><dd class="num">月 ${en(r.full)}</dd>` +
+        (r.bill ? `<dt>今の料金とくらべて</dt><dd class="num ${diff >= 0 ? "ok" : "ng"}">${diff >= 0 ? `月 ${en(diff)} 安い` : `月 ${en(-diff)} 高い`}</dd>` : "") + `</dl>` +
+        (r.calls ? `<p class="tc-memo">電話のオプション（月${en(r.calls)}）を入れて計算しています。</p>` : "") +
+        (p.memo ? `<p class="tc-memo">${esc(p.memo)}</p>` : "") + `</div>` +
+        top.map((x, i) => `<div class="tei-card"><p class="tc-k">副商材 ${i + 1}</p><p class="tc-name">${esc(x.name)}</p>` +
+          `<p class="tc-val">${x.save > 0 ? `スマホ代 月 −${en(x.save)}` : ""}${x.pt ? `${x.save > 0 ? "・" : ""}ポイント 月 約${en(x.pt)}` : ""}${!x.save && !x.pt ? "スマホ代の割引はなし" : ""}</p>` + (x.fee ? `<p class="tc-memo">年会費 ${en(x.fee)}</p>` : "") +
+          `<p class="tc-talk">「${esc(x.talk)}」</p>${x.note ? `<p class="tc-memo">${esc(x.note)}</p>` : ""}</div>`).join("") +
+        (r.sub ? `<div class="tei-card tei-subc"><p class="tc-k">もっと安くしたい人向け（サブブランド）</p><p class="tc-name">${esc(r.sub.name)}<small>${esc(r.sub.data)}</small></p>` +
+          `<p class="tc-val">割引を全部入れて 月 ${en(r.subFull)}</p>${r.sub.memo ? `<p class="tc-memo">${esc(r.sub.memo)}</p>` : ""}</div>` : "") +
+        `<div class="tei-card"><p class="tc-k">手続き（${esc(I.proc)}）</p><p class="tc-memo">${esc(TEI_PROC[I.proc])}</p></div>` +
+        ((teiData.ng || []).length ? `<div class="tei-card tei-ng"><p class="tc-k">やってはいけないこと</p><ul>` + teiData.ng.map((x) => `<li>${esc(x)}</li>`).join("") + `</ul></div>` : "") +
+        `<p class="hint">料金は ${esc(String(r.at || "").slice(0, 10))} 時点。目安なので、お申し込みのときに確かめてください。</p>`;
+    }
+    box.innerHTML = face + h;
+    for (const b of box.querySelectorAll("[data-face]")) b.onclick = () => { teiFace = b.dataset.face; paintTeiOut(); };
+  }
 
   // ---- 研修予約: 研修担当 put out the times they can teach, date by date (e.g. 12:00-19:00 and 21:00-23:00); anyone
   // else picks a start in them and books an hour with a ticket (a few a month). Taking one back needs a reason, which
@@ -4434,7 +4644,7 @@ window.addEventListener("error", function (e) {
   }
 
   let view = new Date(); view = new Date(view.getFullYear(), view.getMonth(), 1);
-  const tabView = { home: view, train: view, menu: view, notice: view, point: view, invite: view, plaza: view, mypage: view, card: view, inv: new Date(view.getFullYear(), view.getMonth() - 1, 1), pay: new Date(view.getFullYear(), view.getMonth() - 1, 1), hope: new Date(view.getFullYear(), view.getMonth() + 1, 1) };
+  const tabView = { home: view, train: view, tei: view, menu: view, notice: view, point: view, invite: view, plaza: view, mypage: view, card: view, inv: new Date(view.getFullYear(), view.getMonth() - 1, 1), pay: new Date(view.getFullYear(), view.getMonth() - 1, 1), hope: new Date(view.getFullYear(), view.getMonth() + 1, 1) };
   const viewYm = () => `${view.getFullYear()}-${pad(view.getMonth() + 1)}`;
   function watchView() {
     if (!backend) return;
@@ -5919,7 +6129,7 @@ window.addEventListener("error", function (e) {
     if (!v) return;
     for (const k of Object.keys(tabView)) if (/^\d{4}-\d{2}$/.test(v.months?.[k] || "")) { const [y, m] = v.months[k].split("-").map(Number); tabView[k] = new Date(y, m - 1, 1); }
     view = tabView[tab];
-    setTab(["card", "inv", "hope", "train", "pay", "menu", "point", "plaza", "invite", "mypage"].includes(v.tab) && tabOk(v.tab) ? v.tab : "home");
+    setTab(["card", "inv", "hope", "train", "pay", "menu", "point", "plaza", "invite", "tei", "mypage"].includes(v.tab) && tabOk(v.tab) ? v.tab : "home");
   }
   // the admin screen's tab (請求書 only for 運営) and months
   function adoptAdminView(v) {
@@ -6021,6 +6231,7 @@ window.addEventListener("error", function (e) {
   function showPerson(me) {
     window.TC_NAME = me.name; window.TC_WORK = me.workType || "";
     window.TC_ADMIN = !!me.admin; window.TC_OWNER = !!me.owner; window.TC_REP = !!me.rep; window.TC_CONTRACT = me.contractAsk !== false; window.TC_TEST = !!me.test; window.TC_NEED_NAME = !!me.needName;
+    window.TC_TEI = !!me.tei; $("m-tei").hidden = !me.tei;
     $("logout").hidden = false; $("chpass").hidden = false;
     // admins use the normal site too; the header button switches to the admin screen and back
     $("adminbtn").hidden = !me.admin; $("m-admin").hidden = !me.admin;
@@ -6071,7 +6282,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.2.0", APP_DATE = "2026-10-30";
+  const APP_VER = "2.2.1", APP_DATE = "2026-10-31";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -6354,21 +6565,21 @@ window.addEventListener("error", function (e) {
   const DH = { name: 0, date: 1, kind: 3, store: 4, pIn: 5, pOut: 6, in: 7, out: 8, work: 9, absWhy: 10, wake: 11, dep: 12,
     transport: 13, ride: 14, km: 15, imgs: 16, result: 17, memo: 18, early: 20, earlyWhy: 21 };
   let adTab = "today", adData = null, adKey = "";
-  const adMonth = (() => { const d = new Date(), m = (n) => ymOf(dayKey(new Date(d.getFullYear(), d.getMonth() + n, 1))); return { work: m(0), inv: m(-1), hope: m(1), today: m(0), members: m(0), bills: m(0), sales: m(0), points: m(0), ask: m(0), notices: m(0) }; })();
+  const adMonth = (() => { const d = new Date(), m = (n) => ymOf(dayKey(new Date(d.getFullYear(), d.getMonth() + n, 1))); return { work: m(0), inv: m(-1), hope: m(1), today: m(0), members: m(0), bills: m(0), sales: m(0), points: m(0), ask: m(0), notices: m(0), tei: m(0) }; })();
   const adMsg = (t) => { $("ad-msg").textContent = t || ""; };
   const minOf = (hm) => { const m = /^(\d+):(\d{2})$/.exec(hm || ""); return m ? Number(m[1]) * 60 + Number(m[2]) : 0; };
   const ymLabel = (ym) => { const [y, m] = ym.split("-").map(Number); return `${y}年${m}月`; };
   const link = (url, text) => (url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : "");
 
   // the money tabs make up the 運営画面 (運営 only); the rest is the 管理画面. Which one shows follows the open tab
-  const UNEI_TABS = ["inv", "bills", "members", "sales", "points", "notices"];
+  const UNEI_TABS = ["inv", "bills", "members", "sales", "points", "notices", "tei"];
   const spaceOf = (t) => (UNEI_TABS.includes(t) ? "unei" : "kanri");
   const adLast = { kanri: "today", unei: "inv" };
   function paintAdTabs() {
     const sp = spaceOf(adTab);
     adLast[sp] = adTab;
     for (const b of $("ad-tabs").querySelectorAll("button")) {
-      b.hidden = spaceOf(b.dataset.t) !== sp || (sp === "unei" && !window.TC_OWNER);
+      b.hidden = spaceOf(b.dataset.t) !== sp || (sp === "unei" && !window.TC_OWNER) || (b.dataset.t === "tei" && !window.TC_TEI);
       b.setAttribute("aria-selected", b.dataset.t === adTab);
     }
     for (const b of $("ad-space").querySelectorAll("button")) b.setAttribute("aria-selected", b.dataset.s === sp);
@@ -6412,6 +6623,7 @@ window.addEventListener("error", function (e) {
     if (adTab === "points") { await adPoints(); saveView(); return; }
     if (adTab === "ask") { await adAsk(); saveView(); return; }
     if (adTab === "notices") { adNotices(); saveView(); return; }
+    if (adTab === "tei") { await adTei(); saveView(); return; }
     const key = adKeyNow();
     if (force || key !== adKey || !adData) {
       // the tab tapped shows at once, empty, so the tap never looks ignored while the read finishes
@@ -7353,6 +7565,77 @@ window.addEventListener("error", function (e) {
     for (const b of $("ad-body").querySelectorAll("[data-pg]")) b.onclick = () => {
       const [k, p] = b.dataset.pg.split(":"); adPage[k] = Number(p); redraw();
       b.closest(".ad-paged")?.scrollIntoView({ block: "start", behavior: "smooth" });
+    };
+  }
+  // 運営画面 › 提案: the prices and discounts the 提案 screen uses, carrier by carrier; nothing is kept until 保存する
+  let teiAd = null, teiAdC = "docomo", teiAdOpen = -1;
+  const TEI_F = [["fam2", "家族2人"], ["fam3", "家族3人以上"], ["hikari", "光セット"], ["cardN", "カード（ふつう）"], ["cardG", "カード（ゴールド）"], ["denki", "でんき"]];
+  async function adTei() {
+    if (!teiAd) {
+      $("ad-body").innerHTML = `<p class="ad-loading">読み込んでいます…</p>`;
+      try { teiAd = JSON.parse(await call("api_tei")); } catch (e) { $("ad-body").innerHTML = ""; adMsg(errText(e)); return; }
+      if (adTab !== "tei") return;
+    }
+    adMsg("");
+    const D = teiAd, c = D.carriers[teiAdC], list = D.plans.map((p, i) => [p, i]).filter(([p]) => p.c === teiAdC);
+    const inp = (k, label, v, attr) => `<label class="f"><span>${label}</span><input ${attr || 'type="text"'} data-ck="${k}" value="${esc(v)}"></label>`;
+    const pin = (i, k, label, v, attr) => `<label class="f"><span>${label}</span><input ${attr || 'type="text"'} data-pi="${i}" data-pk="${k}" value="${esc(v)}"></label>`;
+    const flags = (i, k, opts, multi) => `<div class="f"><span>${{ use: "合うデータ量", age: "年齢", tag: "向いている人", sub: "種類", alt: "家族割と光" }[k]}</span><div class="chips" data-pi="${i}" data-pk="${k}"${multi ? ' data-multi="1"' : ""}>` +
+      opts.map(([v, t]) => `<button type="button" class="chip" data-v="${v}" aria-pressed="${multi ? D.plans[i][k].includes(v) : String(D.plans[i][k]) === v}">${t}</button>`).join("") + `</div></div>`;
+    $("ad-body").innerHTML = `<div class="tei-ad"><p class="hint">提案の画面で使う値段です。金額は税込・1回線の月額。最後に直した日：${esc(D.at || "—")}${D.by ? `（${esc(D.by)}）` : ""}</p>` +
+      `<div class="chips tei-adc">` + Object.entries(TEI_C).map(([k, t]) => `<button type="button" class="chip" data-adc="${k}" aria-pressed="${k === teiAdC}">${t}</button>`).join("") + `</div>` +
+      `<h4 class="bl-h">${esc(c.name)}の副商材と電話</h4><div class="tei-grid">` +
+      inp("card", "ゴールドカードの名前", c.card) + inp("cardFee", "年会費（円）", c.cardFee, 'type="number" min="0"') + inp("cardRate", "携帯料金のポイント（%）", c.cardRate, 'type="number" min="0" step="0.5"') +
+      inp("pay", "よく使う支払い", c.pay) + inp("hikari", "光の名前", c.hikari) + inp("denki", "でんきの名前", c.denki) +
+      inp("call5", "5分かけ放題（円）", c.call5, 'type="number" min="0"') + inp("callAll", "かけ放題（円）", c.callAll, 'type="number" min="0"') + `</div>` +
+      [["talkCard", "カードのトーク"], ["talkHikari", "光のトーク"], ["talkDenki", "でんきのトーク"]].map(([k, t]) => `<label class="f"><span>${t}</span><textarea rows="2" data-ck="${k}">${esc(c[k])}</textarea></label>`).join("") +
+      `<h4 class="bl-h">${esc(c.name)}のプラン（${list.length}）</h4><div class="tei-plans">` + list.map(([p, i]) =>
+        `<div class="tei-pl${teiAdOpen === i ? " open" : ""}"><button type="button" class="tei-plh" data-open="${i}"><b>${esc(p.name)}</b><span>${esc(p.data)}・${en(p.price)}${p.sub ? "・サブ" : ""}${p.from ? `・${esc(p.from)}から` : ""}${p.to ? `・${esc(p.to)}まで` : ""}</span></button>` +
+        (teiAdOpen === i ? `<div class="tei-grid">` + pin(i, "name", "プラン名", p.name) + pin(i, "data", "データ量（表示）", p.data) + pin(i, "price", "月額（円）", p.price, 'type="number" min="0"') +
+          TEI_F.map(([k, t]) => pin(i, k, t + "の割引（円）", p[k], 'type="number" min="0"')).join("") +
+          pin(i, "from", "この日から（空なら今も）", p.from, 'type="date"') + pin(i, "to", "この日まで（空ならずっと）", p.to, 'type="date"') + pin(i, "video", "セットの動画（Netflix など）", p.video) + `</div>` +
+          flags(i, "use", Object.entries(TEI_USE), true) + flags(i, "age", [["", "だれでも"], ["u12", "12歳以下"], ["u18", "18歳以下"], ["60", "60歳以上"]]) +
+          flags(i, "tag", [["", "だれでも"], ["poi", `${esc(c.pay)}をよく使う人`]]) + flags(i, "sub", [["false", "メイン"], ["true", "サブブランド"]]) +
+          flags(i, "alt", [["false", "いっしょに使える"], ["true", "大きいほうだけ"]]) +
+          `<label class="f"><span>メモ（カンペに出る）</span><textarea rows="2" data-pi="${i}" data-pk="memo">${esc(p.memo)}</textarea></label>` +
+          `<button type="button" class="tool danger" data-pdel="${i}">このプランを消す</button>` : "") + `</div>`).join("") + `</div>` +
+      `<button type="button" class="tool" id="tei-padd">＋ プランを足す</button>` +
+      `<h4 class="bl-h">3社共通</h4>` +
+      `<label class="f"><span>カードの注意（カンペ）</span><textarea rows="2" data-dk="cardNote">${esc(D.cardNote)}</textarea></label>` +
+      `<label class="f"><span>光・でんきの注意（カンペ）</span><textarea rows="2" data-dk="hikariNote">${esc(D.hikariNote)}</textarea></label>` +
+      `<label class="f"><span>やってはいけないこと（1行に1つ）</span><textarea rows="5" data-dk="ng">${esc((D.ng || []).join("\n"))}</textarea></label>` +
+      `<button type="button" class="btn primary" id="tei-save">保存する</button></div>`;
+    const NUM = ["price", "fam2", "fam3", "hikari", "cardN", "cardG", "denki", "cardFee", "cardRate", "call5", "callAll"];
+    const val = (k, v) => (NUM.includes(k) ? Number(v) || 0 : v);
+    for (const b of $("ad-body").querySelectorAll("[data-adc]")) b.onclick = () => { teiAdC = b.dataset.adc; teiAdOpen = -1; adTei(); };
+    for (const b of $("ad-body").querySelectorAll("[data-open]")) b.onclick = () => { teiAdOpen = teiAdOpen === Number(b.dataset.open) ? -1 : Number(b.dataset.open); adTei(); };
+    for (const e of $("ad-body").querySelectorAll("[data-ck]")) e.oninput = () => { c[e.dataset.ck] = val(e.dataset.ck, e.value); };
+    for (const e of $("ad-body").querySelectorAll("[data-dk]")) e.oninput = () => { D[e.dataset.dk] = e.dataset.dk === "ng" ? e.value.split("\n").map((s) => s.trim()).filter(Boolean) : e.value; };
+    for (const e of $("ad-body").querySelectorAll("input[data-pi], textarea[data-pi]")) e.oninput = () => { D.plans[e.dataset.pi][e.dataset.pk] = val(e.dataset.pk, e.value); };
+    for (const g of $("ad-body").querySelectorAll(".chips[data-pi]")) for (const b of g.children) b.onclick = () => {
+      const p = D.plans[g.dataset.pi], k = g.dataset.pk, v = b.dataset.v;
+      if (g.dataset.multi) p[k] = "abcd".split("").filter((x) => (x === v) !== p[k].includes(x)).join("");
+      else p[k] = k === "sub" || k === "alt" ? v === "true" : v;
+      adTei();
+    };
+    for (const b of $("ad-body").querySelectorAll("[data-pdel]")) b.onclick = async () => {
+      const p = D.plans[b.dataset.pdel];
+      if (!await ask("このプランを消しますか？", `「${p.name}（${p.data}）」を消します。保存するまでは元に戻せます（この画面を開き直す）。`, "消す", true)) return;
+      D.plans.splice(Number(b.dataset.pdel), 1); teiAdOpen = -1; adTei();
+    };
+    $("tei-padd").onclick = () => {
+      D.plans.push({ c: teiAdC, name: "新しいプラン", data: "", price: 0, use: "", age: "", tag: "", video: "", sub: false, alt: false, fam2: 0, fam3: 0, hikari: 0, cardN: 0, cardG: 0, denki: 0, from: "", to: "", memo: "" });
+      teiAdOpen = D.plans.length - 1; adTei();
+    };
+    $("tei-save").onclick = async () => {
+      busyOn("保存しています");
+      try {
+        const out = await call("api_teiSave", JSON.stringify(D));
+        teiAd = JSON.parse(out); teiData = JSON.parse(out);
+        try { localStorage.setItem("tc_tei", JSON.stringify(teiData)); } catch (e) {}
+        await busyDone("保存しました");
+        if (adTab === "tei") adTei();
+      } catch (e) { busyOff(); adMsg(errText(e)); }
     };
   }
   function adNotices() {
