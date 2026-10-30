@@ -1,4 +1,4 @@
-const CACHE = "themis-portal-20261031030413";
+const CACHE = "themis-portal-20261031033744";
 const SHELL = ["./", "./index.html", "./config.js", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/apple-touch-icon.png"];
 self.addEventListener("install", (e) => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).catch(() => {})); });
 self.addEventListener("activate", (e) => e.waitUntil(
