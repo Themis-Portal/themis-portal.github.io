@@ -2491,16 +2491,6 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
 .tei-guest .tg-ex li span { white-space: nowrap; color: #5a5470; }
 .tei-guest .tg-sub { font-size: 13px; color: #5a5470; }
 .tei-guest .tg-note { font-size: 12px; color: #7a7490; line-height: 1.6; text-align: left; }
-/* 運営画面 › 提案 */
-.tei-ad { display: grid; gap: 12px; }
-.tei-ad .f > span { font-size: 13px; color: var(--ink-soft); }
-.tei-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px 12px; }
-.tei-plans { display: grid; gap: 8px; }
-.tei-pl { border: 1px solid var(--rule); border-radius: 12px; background: var(--card); display: grid; gap: 10px; padding: 0 0 0; }
-.tei-pl.open { padding-bottom: 12px; } .tei-pl.open > :not(.tei-plh) { margin: 0 12px; }
-.tei-plh { display: grid; gap: 2px; text-align: left; border: 0; background: transparent; color: var(--ink); padding: 10px 12px; }
-.tei-plh span { font-size: 12px; color: var(--ink-soft); }
-.tei-pl > .tool.danger { justify-self: start; }
 .tei-show1 { padding: 12px 8px; font-size: 15px; }
 /* the shop's carrier, a small glossy oval at the top right of 今日の予定 / 明日の予定, lit in its colour: docomo red,
    au orange, SoftBank black with a silver ring so it shows on the dark card */
@@ -2648,7 +2638,6 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
         <button type="button" role="tab" data-t="members" aria-selected="false">メンバー</button>
         <button type="button" role="tab" data-t="points" aria-selected="false" aria-label="ポイント（TP）">ポイント</button>
         <button type="button" role="tab" data-t="notices" aria-selected="false">お知らせ</button>
-        <button type="button" role="tab" data-t="tei" aria-selected="false" hidden>提案</button>
         <button type="button" role="tab" data-t="sales" aria-selected="false" aria-label="売上・利益">売上</button>
       </div>
       <div class="month-nav">
@@ -4485,7 +4474,7 @@ window.addEventListener("error", function (e) {
   let teiSide = "main";
   function paintTeiOut() {
     const r = teiOut, I = teiIn, box = $("tei-out");
-    if (r.none) { box.innerHTML = `<p class="hint">${esc(r.c.name)}で合うプランが見つかりませんでした。運営画面の「提案」で、プランを確かめてください。</p>`; return; }
+    if (r.none) { box.innerHTML = `<p class="hint">${esc(r.c.name)}で合うプランが見つかりませんでした。Themisに知らせてください。</p>`; return; }
     if (!r.alt) teiSide = "main";
     box.innerHTML = (r.alt ? `<div class="tei-face" role="tablist"><button type="button" role="tab" data-side="main" aria-selected="${teiSide === "main"}">メインのカンペ</button>` +
       `<button type="button" role="tab" data-side="alt" aria-selected="${teiSide === "alt"}">サブブランドのカンペ</button></div>` : "") +
@@ -6508,7 +6497,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.3.0", APP_DATE = "2026-10-31";
+  const APP_VER = "2.3.1", APP_DATE = "2026-10-31";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -6798,14 +6787,14 @@ window.addEventListener("error", function (e) {
   const link = (url, text) => (url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : "");
 
   // the money tabs make up the 運営画面 (運営 only); the rest is the 管理画面. Which one shows follows the open tab
-  const UNEI_TABS = ["inv", "bills", "members", "sales", "points", "notices", "tei"];
+  const UNEI_TABS = ["inv", "bills", "members", "sales", "points", "notices"];
   const spaceOf = (t) => (UNEI_TABS.includes(t) ? "unei" : "kanri");
   const adLast = { kanri: "today", unei: "inv" };
   function paintAdTabs() {
     const sp = spaceOf(adTab);
     adLast[sp] = adTab;
     for (const b of $("ad-tabs").querySelectorAll("button")) {
-      b.hidden = spaceOf(b.dataset.t) !== sp || (sp === "unei" && !window.TC_OWNER) || ((b.dataset.t === "tei" || b.dataset.t === "got") && !window.TC_TEI);
+      b.hidden = spaceOf(b.dataset.t) !== sp || (sp === "unei" && !window.TC_OWNER) || (b.dataset.t === "got" && !window.TC_TEI);
       b.setAttribute("aria-selected", b.dataset.t === adTab);
     }
     for (const b of $("ad-space").querySelectorAll("button")) b.setAttribute("aria-selected", b.dataset.s === sp);
@@ -6849,7 +6838,6 @@ window.addEventListener("error", function (e) {
     if (adTab === "points") { await adPoints(); saveView(); return; }
     if (adTab === "ask") { await adAsk(); saveView(); return; }
     if (adTab === "notices") { adNotices(); saveView(); return; }
-    if (adTab === "tei") { await adTei(); saveView(); return; }
     if (adTab === "got") { await adGot(); saveView(); return; }
     const key = adKeyNow();
     if (force || key !== adKey || !adData) {
@@ -7792,79 +7780,6 @@ window.addEventListener("error", function (e) {
     for (const b of $("ad-body").querySelectorAll("[data-pg]")) b.onclick = () => {
       const [k, p] = b.dataset.pg.split(":"); adPage[k] = Number(p); redraw();
       b.closest(".ad-paged")?.scrollIntoView({ block: "start", behavior: "smooth" });
-    };
-  }
-  // 運営画面 › 提案: the prices and discounts the 提案 screen uses, carrier by carrier; nothing is kept until 保存する
-  let teiAd = null, teiAdC = "docomo", teiAdOpen = -1;
-  const TEI_F = [["fam2", "家族2人"], ["fam3", "家族3人以上"], ["hikari", "光セット"], ["cardN", "カード（ふつう）"], ["cardG", "カード（ゴールド）"], ["denki", "でんき"]];
-  async function adTei() {
-    if (!teiAd) {
-      $("ad-body").innerHTML = `<p class="ad-loading">読み込んでいます…</p>`;
-      try { teiAd = JSON.parse(await call("api_tei")); } catch (e) { $("ad-body").innerHTML = ""; adMsg(errText(e)); return; }
-      if (adTab !== "tei") return;
-    }
-    adMsg("");
-    const D = teiAd, c = D.carriers[teiAdC], list = D.plans.map((p, i) => [p, i]).filter(([p]) => p.c === teiAdC);
-    const inp = (k, label, v, attr) => `<label class="f"><span>${label}</span><input ${attr || 'type="text"'} data-ck="${k}" value="${esc(v)}"></label>`;
-    const pin = (i, k, label, v, attr) => `<label class="f"><span>${label}</span><input ${attr || 'type="text"'} data-pi="${i}" data-pk="${k}" value="${esc(v)}"></label>`;
-    const flags = (i, k, opts, multi) => `<div class="f"><span>${{ use: "合うデータ量", age: "年齢", tag: "向いている人", sub: "種類", alt: "家族割と光・でんき", one: "光とでんき" }[k]}</span><div class="chips" data-pi="${i}" data-pk="${k}"${multi ? ' data-multi="1"' : ""}>` +
-      opts.map(([v, t]) => `<button type="button" class="chip" data-v="${v}" aria-pressed="${multi ? D.plans[i][k].includes(v) : String(D.plans[i][k]) === v}">${t}</button>`).join("") + `</div></div>`;
-    $("ad-body").innerHTML = `<div class="tei-ad"><p class="hint">提案の画面で使う値段です。金額は税込・1回線の月額。最後に直した日：${esc(D.at || "—")}${D.by ? `（${esc(D.by)}）` : ""}</p>` +
-      `<div class="chips tei-adc">` + Object.entries(TEI_C).map(([k, t]) => `<button type="button" class="chip" data-adc="${k}" aria-pressed="${k === teiAdC}">${t}</button>`).join("") + `</div>` +
-      `<h4 class="bl-h">${esc(c.name)}の副商材と電話</h4><div class="tei-grid">` +
-      inp("card", "ゴールドカードの名前", c.card) + inp("cardFee", "年会費（円）", c.cardFee, 'type="number" min="0"') + inp("cardRate", "携帯料金のポイント（%）", c.cardRate, 'type="number" min="0" step="0.5"') +
-      inp("pay", "よく使う支払い", c.pay) + inp("hikari", "光の名前", c.hikari) + inp("denki", "でんきの名前", c.denki) +
-      inp("call5", "5分かけ放題（円）", c.call5, 'type="number" min="0"') + inp("callAll", "かけ放題（円）", c.callAll, 'type="number" min="0"') + `</div>` +
-      [["talkCard", "カードのトーク"], ["talkHikari", "光のトーク"], ["talkDenki", "でんきのトーク"]].map(([k, t]) => `<label class="f"><span>${t}</span><textarea rows="2" data-ck="${k}">${esc(c[k])}</textarea></label>`).join("") +
-      `<h4 class="bl-h">${esc(c.name)}のプラン（${list.length}）</h4><div class="tei-plans">` + list.map(([p, i]) =>
-        `<div class="tei-pl${teiAdOpen === i ? " open" : ""}"><button type="button" class="tei-plh" data-open="${i}"><b>${esc(p.name)}</b><span>${esc(p.data)}・${en(p.price)}${p.sub ? "・サブ" : ""}${p.from ? `・${esc(p.from)}から` : ""}${p.to ? `・${esc(p.to)}まで` : ""}</span></button>` +
-        (teiAdOpen === i ? `<div class="tei-grid">` + pin(i, "name", "プラン名", p.name) + pin(i, "data", "データ量（表示）", p.data) + pin(i, "price", "月額（円）", p.price, 'type="number" min="0"') +
-          TEI_F.map(([k, t]) => pin(i, k, t + "の割引（円）", p[k], 'type="number" min="0"')).join("") +
-          (p.tag === "poi" ? [["poiG", "ポイ活：ゴールドで（%）"], ["capG", "ゴールドの上限（円/月）"], ["poiN", "ポイ活：ふつうで（%）"], ["capN", "ふつうの上限（円/月）"]]
-            .map(([k, t]) => pin(i, k, t, p[k] || 0, 'type="number" min="0" step="0.5"')).join("") : "") +
-          pin(i, "from", "この日から（空なら今も）", p.from, 'type="date"') + pin(i, "to", "この日まで（空ならずっと）", p.to, 'type="date"') + `</div>` +
-          flags(i, "use", Object.entries(TEI_USE), true) + flags(i, "age", [["", "だれでも"], ["u12", "12歳以下"], ["u18", "18歳以下"], ["60", "60歳以上"]]) +
-          flags(i, "tag", [["", "だれでも"], ["poi", `${esc(c.pay)}をよく使う人`]]) + flags(i, "sub", [["false", "メイン"], ["true", "サブブランド"]]) +
-          flags(i, "alt", [["false", "いっしょに使える"], ["true", "大きいほうだけ"]]) + flags(i, "one", [["false", "いっしょに使える"], ["true", "どちらか1つ"]]) +
-          `<label class="f"><span>メモ（カンペに出る）</span><textarea rows="2" data-pi="${i}" data-pk="memo">${esc(p.memo)}</textarea></label>` +
-          `<button type="button" class="tool danger" data-pdel="${i}">このプランを消す</button>` : "") + `</div>`).join("") + `</div>` +
-      `<button type="button" class="tool" id="tei-padd">＋ プランを足す</button>` +
-      `<h4 class="bl-h">3社共通</h4>` +
-      `<label class="f"><span>カードの注意（カンペ）</span><textarea rows="2" data-dk="cardNote">${esc(D.cardNote)}</textarea></label>` +
-      `<label class="f"><span>光・でんきの注意（カンペ）</span><textarea rows="2" data-dk="hikariNote">${esc(D.hikariNote)}</textarea></label>` +
-      `<label class="f"><span>やってはいけないこと（1行に1つ）</span><textarea rows="5" data-dk="ng">${esc((D.ng || []).join("\n"))}</textarea></label>` +
-      `<button type="button" class="btn primary" id="tei-save">保存する</button></div>`;
-    const NUM = ["price", "fam2", "fam3", "hikari", "cardN", "cardG", "denki", "cardFee", "cardRate", "call5", "callAll", "poiG", "poiN", "capG", "capN"];
-    const val = (k, v) => (NUM.includes(k) ? Number(v) || 0 : v);
-    for (const b of $("ad-body").querySelectorAll("[data-adc]")) b.onclick = () => { teiAdC = b.dataset.adc; teiAdOpen = -1; adTei(); };
-    for (const b of $("ad-body").querySelectorAll("[data-open]")) b.onclick = () => { teiAdOpen = teiAdOpen === Number(b.dataset.open) ? -1 : Number(b.dataset.open); adTei(); };
-    for (const e of $("ad-body").querySelectorAll("[data-ck]")) e.oninput = () => { c[e.dataset.ck] = val(e.dataset.ck, e.value); };
-    for (const e of $("ad-body").querySelectorAll("[data-dk]")) e.oninput = () => { D[e.dataset.dk] = e.dataset.dk === "ng" ? e.value.split("\n").map((s) => s.trim()).filter(Boolean) : e.value; };
-    for (const e of $("ad-body").querySelectorAll("input[data-pi], textarea[data-pi]")) e.oninput = () => { D.plans[e.dataset.pi][e.dataset.pk] = val(e.dataset.pk, e.value); };
-    for (const g of $("ad-body").querySelectorAll(".chips[data-pi]")) for (const b of g.children) b.onclick = () => {
-      const p = D.plans[g.dataset.pi], k = g.dataset.pk, v = b.dataset.v;
-      if (g.dataset.multi) p[k] = "abcd".split("").filter((x) => (x === v) !== p[k].includes(x)).join("");
-      else p[k] = k === "sub" || k === "alt" || k === "one" ? v === "true" : v;
-      adTei();
-    };
-    for (const b of $("ad-body").querySelectorAll("[data-pdel]")) b.onclick = async () => {
-      const p = D.plans[b.dataset.pdel];
-      if (!await ask("このプランを消しますか？", `「${p.name}（${p.data}）」を消します。保存するまでは元に戻せます（この画面を開き直す）。`, "消す", true)) return;
-      D.plans.splice(Number(b.dataset.pdel), 1); teiAdOpen = -1; adTei();
-    };
-    $("tei-padd").onclick = () => {
-      D.plans.push({ c: teiAdC, name: "新しいプラン", data: "", price: 0, use: "", age: "", tag: "", sub: false, alt: false, one: false, fam2: 0, fam3: 0, hikari: 0, cardN: 0, cardG: 0, denki: 0, from: "", to: "", memo: "" });
-      teiAdOpen = D.plans.length - 1; adTei();
-    };
-    $("tei-save").onclick = async () => {
-      busyOn("保存しています");
-      try {
-        const out = await call("api_teiSave", JSON.stringify(D));
-        teiAd = JSON.parse(out); teiData = JSON.parse(out);
-        try { localStorage.setItem("tc_tei", JSON.stringify(teiData)); } catch (e) {}
-        await busyDone("保存しました");
-        if (adTab === "tei") adTei();
-      } catch (e) { busyOff(); adMsg(errText(e)); }
     };
   }
   // 今日の成果 counts in lines: クローズ is the plain items, 登録 the "登録:" ones, キャッチ the 着座 (each apart, no double count)
