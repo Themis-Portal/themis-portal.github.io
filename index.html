@@ -2500,18 +2500,44 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
 .tei-plh span { font-size: 12px; color: var(--ink-soft); }
 .tei-pl > .tool.danger { justify-self: start; }
 .tei-show1 { padding: 12px 8px; font-size: 15px; }
-/* the shop's carrier, a small oval at the top right of 今日の予定 / 明日の予定: docomo red, au orange, SoftBank black with
-   a light ring so it shows on the dark card */
-.shift-today .st-car { position: absolute; top: 12px; right: 12px; min-width: 52px; height: 22px; padding: 0 8px; border-radius: 999px; display: grid; place-items: center;
-  font-family: var(--f-num); font-size: 10.5px; font-weight: 800; letter-spacing: .02em; color: #fff; line-height: 1; box-shadow: 0 2px 6px -2px rgb(0 0 0 / .6); }
+/* the shop's carrier, a small glossy oval at the top right of 今日の予定 / 明日の予定, lit in its colour: docomo red,
+   au orange, SoftBank black with a silver ring so it shows on the dark card */
+.shift-today .st-car { position: absolute; top: 12px; right: 12px; min-width: 54px; height: 22px; padding: 0 10px; border-radius: 999px; display: grid; place-items: center;
+  overflow: hidden; border: 1px solid rgb(255 255 255 / .45); font-family: var(--f-num); font-size: 10.5px; font-weight: 800; letter-spacing: .06em; color: #fff; line-height: 1;
+  text-shadow: 0 1px 2px rgb(0 0 0 / .35); box-shadow: inset 0 1px 0 rgb(255 255 255 / .35), 0 0 14px -3px var(--car-glow, transparent), 0 3px 8px -3px rgb(0 0 0 / .7); }
+.shift-today .st-car::after { content: ""; position: absolute; inset: 0 0 50%; background: linear-gradient(180deg, rgb(255 255 255 / .28), rgb(255 255 255 / 0)); pointer-events: none; }
 .shift-today .st-car[hidden], body:not(.tei-on) .shift-today .st-car { display: none; }
 body:not(.tei-on) .tei-only { display: none !important; }
 body.tei-on .trn-tix i { background-image: var(--ic-trn-ticket); }
-.shift-today.small .st-car { top: 50%; transform: translateY(-50%); min-width: 46px; height: 20px; font-size: 9.5px; }
-.shift-today .st-car.c-docomo { background: #cc0033; }
-.shift-today .st-car.c-au { background: #eb5505; }
-.shift-today .st-car.c-sb { background: #0b0b0b; border: 1px solid #d9d9e3; }
-body.tei-on .shift-today.has-car { padding-right: 76px; }
+/* 今日の成果: the role, then each item with − count ＋, the total under them */
+body.tei-on .tei-hide { display: none; }
+.got { display: grid; gap: 10px; }
+.got-grp { display: grid; gap: 2px; padding: 8px 12px; border-radius: 12px; background: var(--plate); border: 1px solid var(--plate-line); color: var(--plate-ink); }
+.got-grp > b { font-size: 11px; letter-spacing: .1em; color: #5ff0d0; }
+.got-seat { border-color: rgb(246 210 122 / .45); } .got-seat > b { color: #f6d27a; }
+.got-reg { border-color: rgb(120 180 255 / .45); } .got-reg > b { color: #9cc9ff; }
+.got-ad-l > i { font-style: normal; font-size: 11px; font-weight: 800; color: var(--plate-soft); flex-basis: 100%; margin-top: 2px; }
+.got-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 40px; }
+.got-row > span { font-size: 14px; font-weight: 700; min-width: 0; }
+.got-step { display: flex; align-items: center; gap: 4px; flex: none; }
+.got-step button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--plate-line); background: rgb(255 255 255 / .06); color: var(--plate-ink); font-size: 18px; line-height: 1; padding: 0; }
+.got-step button[data-d="1"] { background: linear-gradient(135deg, #8b5cff, #5b35d6) border-box; border-color: transparent; color: #fff; }
+.got-step button:disabled { opacity: .4; }
+.got-step b { min-width: 30px; text-align: center; font-family: var(--f-num); font-size: 18px; font-weight: 800; }
+.got-sum { margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; font-size: 14px; font-weight: 700; }
+.got-sum b { font-family: var(--f-num); font-size: 20px; color: #f6d27a; }
+.got-car { padding: 2px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 800; color: #fff; border: 1px solid rgb(255 255 255 / .4); }
+.got-car.c-docomo { background: linear-gradient(135deg, #ff3d64, #c8002f); } .got-car.c-au { background: linear-gradient(135deg, #ffa057, #f06414); } .got-car.c-sb { background: linear-gradient(135deg, #3a3b45, #000); border-color: #cfd3de; }
+.got-ad { display: grid; gap: 6px; padding: 10px 14px; border-radius: 12px; background: var(--plate); border: 1px solid var(--plate-line); color: var(--plate-ink); margin-bottom: 8px; }
+.got-ad-h { display: flex; align-items: baseline; gap: 10px; } .got-ad-h > span { font-size: 12px; color: var(--plate-soft); } .got-ad-h > b:last-child { margin-left: auto; color: #f6d27a; font-family: var(--f-num); }
+.got-ad-l { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; } .got-ad-l b { font-family: var(--f-num); }
+.shift-today.small .st-car { top: 10px; min-width: 48px; height: 20px; font-size: 9.5px; }
+.shift-today .st-car.c-docomo { background: linear-gradient(135deg, #ff3d64, #c8002f 55%, #96001f); --car-glow: rgb(255 40 80 / .8); }
+.shift-today .st-car.c-au { background: linear-gradient(135deg, #ffa057, #f06414 55%, #c44300); --car-glow: rgb(255 120 40 / .8); }
+.shift-today .st-car.c-sb { background: linear-gradient(135deg, #3a3b45, #0c0c10 60%, #000); border-color: #cfd3de; color: #eef0f6; --car-glow: rgb(220 225 240 / .45); }
+/* the mark sits beside the label and the store; 修正 at the foot keeps the full width */
+body.tei-on .shift-today.has-car :is(.st-label, .st-store) { padding-right: 66px; }
+body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
 .tei-plan.alt { border-color: rgb(95 240 208 / .5); box-shadow: 0 0 18px -6px rgb(95 240 208 / .45); }
 .tei-plan.alt .tc-k { color: #b3a2ff; }
 .tei-call .tc-k { color: #9fb6ff; }
@@ -2620,6 +2646,7 @@ body.tei-on .shift-today.has-car { padding-right: 76px; }
         <button type="button" role="tab" data-t="points" aria-selected="false" aria-label="ポイント（TP）">ポイント</button>
         <button type="button" role="tab" data-t="notices" aria-selected="false">お知らせ</button>
         <button type="button" role="tab" data-t="tei" aria-selected="false" hidden>提案</button>
+        <button type="button" role="tab" data-t="got" aria-selected="false" hidden>成果</button>
         <button type="button" role="tab" data-t="sales" aria-selected="false" aria-label="売上・利益">売上</button>
       </div>
       <div class="month-nav">
@@ -3073,7 +3100,8 @@ body.tei-on .shift-today.has-car { padding-right: 76px; }
         <span class="hint perr" id="f-perr" role="alert"></span>
       </div>
       <div class="sec wide sec-row"><span>稼働実績</span><button type="button" class="tool" id="f-resedit">修正</button></div>
-      <label class="f wide res">この日の成果・対応内容<textarea id="f-result" maxlength="500" rows="3" placeholder="例：来店対応 12件、新規契約 3件、デモ実施 5回"></textarea></label>
+      <div class="got wide tei-only" id="f-got"></div>
+      <label class="f wide res"><span class="tei-hide">この日の成果・対応内容</span><span class="tei-only">ひとこと（任意）</span><textarea id="f-result" maxlength="500" rows="3" placeholder="例：来店対応 12件、新規契約 3件、デモ実施 5回"></textarea></label>
       <div class="sec wide">メモ</div>
       <label class="f wide">Themisへの連絡事項など（任意）<textarea id="f-memo" maxlength="200" rows="2" placeholder="例：電車の遅延で10分遅れて到着しました"></textarea></label>
     </div>
@@ -3094,7 +3122,8 @@ body.tei-on .shift-today.has-car { padding-right: 76px; }
     <h3>今日の稼働実績</h3>
     <p class="hint r-sub" id="r-sub"></p>
     <p class="r-tp">提出すると <b>+50TP</b><small>（打刻通り・遅刻、早退無し・稼働8時間以上の日）</small></p>
-    <label class="f">この日の成果・対応内容<textarea id="r-text" maxlength="500" rows="5" placeholder="例：来店対応 12件、新規契約 3件、デモ実施 5回"></textarea></label>
+    <div class="got tei-only" id="r-got"></div>
+    <label class="f"><span class="tei-hide">この日の成果・対応内容</span><span class="tei-only">ひとこと（任意）</span><textarea id="r-text" maxlength="500" rows="5" placeholder="例：来店対応 12件、新規契約 3件、デモ実施 5回"></textarea></label>
     <label class="check"><input type="checkbox" id="r-early"> 早退</label>
     <label class="f" id="r-early-wrap" hidden>早退理由<input type="text" id="r-early-reason" maxlength="100" placeholder="例：体調不良のため"></label>
     <div class="modal-actions">
@@ -3792,9 +3821,11 @@ window.addEventListener("error", function (e) {
     fx.querySelector("button").onclick = () => fx.remove();
   }
   // the server pays once per day, only for a day clocked out with its 稼働実績 written (asking again does nothing)
+  // the 稼働実績 is in: its words, or the 今日の成果 counts saved (even all 0)
+  const hasResult = (r) => !!String(r?.result || "").trim() || !!r?.gotAt;
   function tpForResult(key) {
     const r = rec(key);
-    if (!r?.out || !String(r.result || "").trim()) return;
+    if (!r?.out || !hasResult(r)) return;
     call("api_tpResult", key).then((s) => {
       const v = JSON.parse(s); tp.bal = v.bal; paintWho();
       if (v.added) { msg(`稼働実績を保存しました。${v.added}TPもらいました。`); tpFx(v.added, "稼働実績の提出ありがとうございます"); }
@@ -4278,7 +4309,7 @@ window.addEventListener("error", function (e) {
   try { const c = JSON.parse(localStorage.getItem("tc_tei") || "null"); if (c && c.plans) teiData = c; } catch (e) {}
   const TEI_C = { docomo: "ドコモ", au: "au", sb: "ソフトバンク" };
   const TEI_USE = { a: "〜5GB", b: "〜10GB", c: "〜30GB", d: "もっと" };
-  const teiIn = { c: "", proc: "機種変更", n: 1, use: "c", age: "", call: "none", pay: "none", bill: "", hikari: "none", denki: "other", card: "cash" };
+  const teiIn = { c: "", proc: "機種変更", n: 1, use: "c", age: "", call: "none", spend: "", bill: "", hikari: "none", denki: "other", card: "cash" };
   const teiToday = () => rec(dayKey(new Date()))?.store || "";
   // the carrier of a store's name (ドコモショップ〇〇, auショップ, ソフトバンク, ワイモバイル, UQ …)
   const teiCarrierOf = (s) => /ドコモ|docomo|ahamo/i.test(s || "") ? "docomo" : /ソフトバンク|softbank|ワイモバイル|y!?mobile/i.test(s || "") ? "sb"
@@ -4306,21 +4337,26 @@ window.addEventListener("error", function (e) {
     const now = { h: I.hikari === "set", d: I.denki === "set", card: I.card === "gold" ? "gold" : I.card === "base" ? "base" : "" };
     const all = { h: true, d: true, card: "gold" };
     const calls = I.call === "short" ? c.call5 : I.call === "long" ? c.callAll : 0;
-    // the plan whose data fits (or the next bigger), the cheapest once every extra is in; a plan for the age, for
-    // paying with the carrier's own payment comes first
-    function pick(sub) {
+    const total = (p, o) => teiNet(p, n, o) * n + calls;
+    // a ポイ活 plan's points a month on what is spent with the carrier's own payment (paid with its gold card, as
+    // proposed), up to its cap
+    const spend = Number(String(I.spend || "").replace(/[^\d]/g, "")) || 0;
+    const pts = (p) => (p.tag === "poi" ? Math.round(Math.min(spend * (p.poiG || 0) / 100, p.capG || Infinity)) : 0);
+    // the plan whose data fits (or the next bigger), the cheapest once every extra is in and its points taken off;
+    // a plan for the age comes first
+    function pick(sub, noPoi) {
       for (let i = levels.indexOf(I.use); i < 4; i++) {
-        const ok = D.plans.filter((p) => live(p) && !!p.sub === sub && p.use.includes(levels[i]) && ageOk(p) &&
-          (p.tag !== "poi" || I.pay === "own"));
+        const ok = D.plans.filter((p) => live(p) && !!p.sub === sub && p.use.includes(levels[i]) && ageOk(p) && (p.tag !== "poi" || (spend && !noPoi)));
         if (!ok.length) continue;
-        const score = (p) => teiNet(p, n, all) - (p.age ? 5000 : 0) - (p.tag === "poi" ? 5000 : 0);
+        const score = (p) => total(p, all) - pts(p) - (p.age ? 100000 : 0);
         return ok.sort((a, b) => score(a) - score(b))[0];
       }
       return null;
     }
     const plan = pick(false), sub = pick(true);
     if (!plan) return { c, none: true };
-    const total = (p, o) => teiNet(p, n, o) * n + calls;
+    // a ポイ活 plan won on its points: what it costs more than the best plan without them
+    const plain = plan.tag === "poi" ? pick(false, true) : null;
     // the extras not had yet, the one worth most a year first; the card's year is its discount and points less its fee
     function view(p) {
       const extras = [];
@@ -4335,13 +4371,14 @@ window.addEventListener("error", function (e) {
       return { plan: p, base: total(p, now), full: total(p, all), extras };
     }
     const bill = Number(String(I.bill).replace(/[^\d]/g, "")) || 0;
-    return { c, n, calls, call: I.call, bill, main: view(plan), alt: sub ? view(sub) : null, at: D.at };
+    return { c, n, calls, call: I.call, bill, spend, main: view(plan), alt: sub ? view(sub) : null, at: D.at,
+      poi: plain ? { pts: pts(plan), more: total(plan, all) - total(plain, all), plain: plain.name } : null };
   }
   // the reasons the plan was picked, in words
   function teiWhy(r, I) {
     const p = r.main.plan, w = [`${I.n >= 3 ? "3人以上" : I.n + "人"}で使う・データ${TEI_USE[I.use]}`];
     if (p.age) w.push({ u12: "12歳以下", u18: "18歳以下", 60: "60歳以上" }[p.age] + "の人向けのプラン");
-    if (p.tag === "poi") w.push(`${r.c.pay}をよく使う → 買い物でポイントが多くもどる`);
+    if (r.poi) w.push(`${r.c.pay}やカードで月${en(r.spend)}買い物する → ポイントが月約${en(r.poi.pts)}もどる`);
     return w;
   }
   const TEI_PROC = { 機種変更: "今の機種の残りの支払いと、データのうつし方を先に確かめる。", 乗りかえ: "今の会社の解約金・残りの支払いを確かめる。番号はそのまま使える（MNP）。",
@@ -4364,7 +4401,7 @@ window.addEventListener("error", function (e) {
       row("データ量（1人の1か月）", "use", Object.entries(TEI_USE)) +
       (has((p) => p.age) ? row("年齢", "age", [["", "それ以外"], ["u12", "12歳以下"], ["u18", "18歳以下"], ["60", "60歳以上"]]) : "") +
       row("電話", "call", [["none", "ほぼしない"], ["short", "短い電話が多い"], ["long", "長電話が多い"]]) +
-      (has((p) => p.tag === "poi") ? row(`${c.pay}をよく使う？`, "pay", [["own", "よく使う"], ["none", "使わない"]]) : "") +
+      (has((p) => p.tag === "poi") ? `<label class="f tei-q">${esc(c.pay)}やカードで、月いくら買い物する？（円・だいたい。しなければ空のまま）<input id="tei-spend" type="text" inputmode="numeric" maxlength="7" placeholder="例：50000" value="${esc(I.spend)}"></label>` : "") +
       `<label class="f tei-q">今の月の料金（家族の合計・円）<input id="tei-bill" type="text" inputmode="numeric" maxlength="7" placeholder="例：15000" value="${esc(I.bill)}"></label>` +
       row(`家の光回線（${c.hikari}）`, "hikari", [["none", "入っていない"], ["set", "もう入っている"]]) +
       row(`でんき（${c.denki}）`, "denki", [["other", "入っていない"], ["set", "もう入っている"]]) +
@@ -4378,6 +4415,7 @@ window.addEventListener("error", function (e) {
       teiOut = null; renderTei();
     };
     $("tei-bill").oninput = (e) => { I.bill = e.target.value.replace(/[^\d]/g, ""); };
+    if ($("tei-spend")) $("tei-spend").oninput = (e) => { I.spend = e.target.value.replace(/[^\d]/g, ""); };
     $("tei-go").onclick = () => { teiOut = teiCalc(D, I); teiSide = "main"; paintTeiOut(); $("tei-out").scrollIntoView({ behavior: "smooth", block: "start" }); };
     if (teiOut) paintTeiOut();
   }
@@ -4398,6 +4436,7 @@ window.addEventListener("error", function (e) {
       (now ? `<div class="tg-row"><span>今</span><b class="num">月 ${en(now)}</b></div><i class="tg-arrow" aria-hidden="true"></i>` : "") +
       `<div class="tg-row tg-new"><span>ご提案</span><b class="num">月 ${en(v.full)}</b></div>` +
       (diff > 0 ? `<p class="tg-save">1年で 約<b class="num">${en(diff * 12)}</b> おトク</p>` : "") +
+      (!isAlt && r.poi ? `<p class="tg-pt">さらに 買い物で ポイント 月 約${en(r.poi.pts)}</p>` : "") +
       (ex.length ? `<ul class="tg-ex">` + ex.map((x) => `<li><b>${esc(x.name)}</b><span class="num">月 −${en(x.save)}</span></li>`).join("") + `</ul>` : "") +
       (card ? `<div class="tg-card"><b>${esc(card.name)}</b>${teiCardRows(card)}</div>` : "") +
       (teiCall(r) ? `<ul class="tg-ex"><li><b>電話：${teiCall(r).name}</b><span class="num">月 ${en(r.calls)}（ご提案に込み）</span></li></ul>` : "") +
@@ -4419,6 +4458,8 @@ window.addEventListener("error", function (e) {
       `<ul class="tc-why">` + why.map((x) => `<li>${esc(x)}</li>`).join("") + `</ul>` +
       `<dl class="tc-dl"><dt>料金（1人）</dt><dd class="num">${en(p.price)}</dd><dt>今のままの割引で</dt><dd class="num">月 ${en(v.base)}</dd><dt>光・でんき・カードまで入れると</dt><dd class="num">月 ${en(v.full)}</dd>` +
       (now ? `<dt>今の料金とくらべて</dt><dd class="num ${diff >= 0 ? "ok" : "ng"}">${diff >= 0 ? `月 ${en(diff)} 安い` : `月 ${en(-diff)} 高い`}</dd>` : "") + `</dl>` +
+      (!isAlt && r.poi ? `<p class="tc-val">ポイント 月 約${en(r.poi.pts)} − 月額の差 ${en(r.poi.more)} ＝ 月 約${en(r.poi.pts - r.poi.more)} おトク</p>` +
+        `<p class="tc-memo">ポイントのない「${esc(r.poi.plain)}」より月額は${en(r.poi.more)}高いけれど、買い物のポイントで取り返せる。</p>` : "") +
       (p.memo ? `<p class="tc-memo">${esc(p.memo)}</p>` : "") + `</div>` +
       (call ? `<div class="tei-card tei-call"><p class="tc-k">電話のオプション</p><p class="tc-name">${call.name}</p><p class="tc-val">月 ${en(call.price)}（上の料金に入っています）</p><p class="tc-talk">「${esc(call.talk)}」</p></div>` : "") +
       v.extras.slice(0, 3).map((x, i) => `<div class="tei-card"><p class="tc-k">副商材 ${i + 1}</p><p class="tc-name">${esc(x.name)}</p>` +
@@ -5218,7 +5259,7 @@ window.addEventListener("error", function (e) {
   // it is clocked out; a day that falls short ends the run. Shown from 2 days on. Counted from the months on this
   // device (this month and last month)
   function dayKept(r, key) {
-    if (r.absent || r.early || !r.out || !String(r.result || "").trim()) return false;
+    if (r.absent || r.early || !r.out || !hasResult(r)) return false;
     const legacy = key && key < "2026-10-26";   // punched before the key presses were kept
     if (!r.punchIn && !legacy) return false;
     if (!r.punchOut && !legacy && !(r.autoOut && r.autoReason === "残業")) return false;
@@ -5673,7 +5714,10 @@ window.addEventListener("error", function (e) {
   // the shop's carrier (docomo / au / SoftBank), for the 提案 screen; it stays as last picked (and with each store)
   const setCarrier = (v) => { for (const b of $("f-carrier").children) b.setAttribute("aria-pressed", String(b.dataset.v === v)); };
   const getCarrier = () => [...$("f-carrier").children].find((b) => b.getAttribute("aria-pressed") === "true")?.dataset.v || "";
-  for (const b of $("f-carrier").children) b.onclick = () => setCarrier(b.dataset.v);
+  for (const b of $("f-carrier").children) b.onclick = () => {
+    setCarrier(b.dataset.v);
+    if (gotOn() && gotEd) { gotEd.carrier = b.dataset.v; gotPaint($("f-got"), $("f-resedit").getAttribute("aria-expanded") !== "true"); }
+  };
   const getTransport = () => [...$("f-transport").children].filter((b) => b.getAttribute("aria-pressed") === "true").map((b) => b.textContent).join("・");
   function setTransport(s) {
     const picked = new Set(String(s || "").split("・"));
@@ -5701,6 +5745,7 @@ window.addEventListener("error", function (e) {
     $("f-result").value = r?.result || "";
     const ahead = key > dayKey(new Date());
     $("f-resedit").closest(".sec").style.display = ahead ? "none" : ""; $("f-result").closest(".res").style.display = ahead ? "none" : "";
+    $("f-got").style.display = ahead ? "none" : "";
     $("f-early").checked = !!r?.early;
     $("f-early-reason").value = r?.earlyReason || "";
     // 早退 and 実働 belong to a day that is over: clocked out, a past day, or a plan whose time has passed
@@ -5711,6 +5756,7 @@ window.addEventListener("error", function (e) {
     $("f-store").value = src.store || "";
     filledBy = src.store || null;
     setCarrier(r?.carrier || last.carrier || "");
+    if (gotOn()) gotStart(r, getCarrier());
     $("f-pin").value = actual.in ? hm(r.in) : src.planIn || "";
     $("f-pout").value = r?.out ? hm(r.out) : src.planOut || "";
     // the labels stay plain 出勤 / 退勤; only a past day missing its 退勤 punch gets a note
@@ -5869,7 +5915,11 @@ window.addEventListener("error", function (e) {
       earlyReason: inMs != null && $("f-early").checked ? $("f-early-reason").value.trim() : "",
       // the key presses (for TP) and Themis's mark on a shift it put in stay as they were
       punchIn: prev?.punchIn, punchOut: prev?.punchOut, adminPlan: prev?.adminPlan,
+      got: prev?.got, roles: prev?.roles, role: prev?.role, gotAt: prev?.gotAt,
     };
+    // 今日の成果: kept once handed in, or once anything is counted here (a day ahead has none)
+    if (gotOn() && gotEd && key <= dayKey(new Date()) && (prev?.gotAt || Object.values(gotEd.got).some((v) => v > 0))) gotSave(m.days[key]);
+    for (const f of ["got", "roles", "role", "gotAt"]) if (m.days[key][f] == null) delete m.days[key][f];
     if (absent) { m.days[key].absent = true; if (prev?.absentReason) m.days[key].absentReason = prev.absentReason; }
     if ((inMs == null || outMs) && state().openDate === key) state().openDate = null;
     if (inMs != null && !outMs && !state().openDate) state().openDate = key;
@@ -5877,6 +5927,63 @@ window.addEventListener("error", function (e) {
     msg(`${key.slice(5).replace("-", "/")} の記録を保存しました。`);
     if (await persist("m-" + ymOf(key), "state", "billing")) tpForResult(key);
   });
+  // ---- 今日の成果 (for now 代表 only, with 提案): the 稼働実績 as counts, item by item for the day's carrier, with − / ＋.
+  // The roles of the day are picked, one or more (kept for next time): キャッチ counts 着座, クローズ the items, and 登録 the
+  // items again as "登録:<item>" (one list on screen, with a switch when both). Handed in, it gives the usual 50TP
+  const GOT_ITEMS = {
+    docomo: [["回線", ["乗りかえ", "新規", "機種変更", "ahamo"]], ["おうち", ["ドコモ光", "home 5G", "ドコモでんき"]], ["カード", ["dカード GOLD", "dカード PLATINUM"]]],
+    au: [["回線", ["乗りかえ", "新規", "機種変更", "UQ"]], ["おうち", ["auひかり", "ホームルーター", "auでんき"]], ["カード", ["au PAY ゴールドカード"]]],
+    sb: [["回線", ["乗りかえ", "新規", "機種変更", "ワイモバイル"]], ["おうち", ["ソフトバンク光", "Air", "おうちでんき"]], ["カード", ["PayPayカード ゴールド"]]],
+  };
+  const GOT_CAR = { docomo: "docomo", au: "au", sb: "SoftBank" };
+  const gotOn = () => document.body.classList.contains("tei-on");
+  const GOT_ROLES = [["catch", "キャッチ"], ["close", "クローズ"], ["reg", "登録"]];
+  const gotRoles = (v) => (Array.isArray(v) ? v : String(v || "").split(",")).filter((x) => GOT_ROLES.some(([k]) => k === x));
+  let gotEd = null;
+  function gotStart(r, carrier) {
+    let roles = gotRoles(r?.roles || r?.role);
+    if (!roles.length) try { roles = gotRoles(localStorage.getItem("tc_role")); } catch (e) {}
+    gotEd = { roles: roles.length ? roles : ["close"], carrier: r?.carrier || carrier || "", got: { ...(r?.got || {}) } };
+    gotEd.side = gotEd.roles.includes("close") ? "close" : "reg";
+  }
+  function gotPaint(box, locked) {
+    const g = gotEd, items = GOT_ITEMS[g.carrier], has = (v) => g.roles.includes(v);
+    const step = (k, label) => `<div class="got-row"><span>${esc(label || k)}</span><div class="got-step"><button type="button" data-gk="${esc(k)}" data-d="-1" aria-label="${esc(label || k)}を1つ減らす">−</button>` +
+      `<b class="num">${g.got[k] || 0}</b><button type="button" data-gk="${esc(k)}" data-d="1" aria-label="${esc(label || k)}を1つ増やす">＋</button></div></div>`;
+    const lists = ["close", "reg"].filter(has), side = lists.includes(g.side) ? g.side : lists[0], pre = side === "reg" ? "登録:" : "";
+    const sum = (p) => (items || []).flatMap(([, ks]) => ks).reduce((a, k) => a + (g.got[p + k] || 0), 0);
+    const sums = [has("close") && `クローズ <b class="num">${sum("")}</b>件`, has("reg") && `登録 <b class="num">${sum("登録:")}</b>件`, has("catch") && `着座 <b class="num">${g.got["着座"] || 0}</b>件`].filter(Boolean);
+    box.innerHTML = `<div class="chips got-role" role="group" aria-label="今日の役割（いくつでも）">` + GOT_ROLES.map(([v, t]) =>
+        `<button type="button" class="chip" data-role="${v}" aria-pressed="${has(v)}">${t}</button>`).join("") + `</div>` +
+      (has("catch") ? `<div class="got-grp got-seat"><b>キャッチ</b>${step("着座")}</div>` : "") +
+      (!lists.length ? "" : items ? (lists.length > 1 ? `<div class="tei-face" role="tablist">` + lists.map((v) =>
+          `<button type="button" role="tab" data-gside="${v}" aria-selected="${side === v}">${v === "reg" ? "登録した件数" : "クローズした件数"}</button>`).join("") + `</div>` : "") +
+          items.map(([h, ks]) => `<div class="got-grp${side === "reg" ? " got-reg" : ""}"><b>${side === "reg" ? "登録・" + h : h}</b>${ks.map((k) => step(pre + k, k)).join("")}</div>`).join("")
+        : `<p class="hint">この日の会社を選んでください。</p><div class="chips">` + Object.entries(GOT_CAR).map(([v, t]) => `<button type="button" class="chip" data-gcar="${v}">${t}</button>`).join("") + `</div>`) +
+      (items || !lists.length ? `<p class="got-sum">${items ? `<span class="got-car c-${g.carrier}">${GOT_CAR[g.carrier]}</span>` : ""}今日　${sums.join("　")}</p>` : "");
+    for (const b of box.querySelectorAll("[data-gk]")) b.onclick = () => { const k = b.dataset.gk; g.got[k] = Math.max(0, Math.min(99, (g.got[k] || 0) + Number(b.dataset.d))); gotPaint(box); };
+    for (const b of box.querySelectorAll("[data-role]")) b.onclick = () => {
+      const v = b.dataset.role, next = has(v) ? g.roles.filter((x) => x !== v) : GOT_ROLES.map(([k]) => k).filter((k) => k === v || has(k));
+      if (!next.length) return;
+      g.roles = next;
+      if (v !== "catch" && next.includes(v)) g.side = v;
+      try { localStorage.setItem("tc_role", next.join(",")); } catch (e) {}
+      gotPaint(box);
+    };
+    for (const b of box.querySelectorAll("[data-gside]")) b.onclick = () => { g.side = b.dataset.gside; gotPaint(box); };
+    for (const b of box.querySelectorAll("[data-gcar]")) b.onclick = () => { g.carrier = b.dataset.gcar; gotPaint(box); };
+    lock(box, !!locked);
+  }
+  // into the day's record: per role, the items of its carrier (着座 for キャッチ, "登録:<item>" for 登録), each count (0 too)
+  function gotSave(r) {
+    const g = gotEd, ks = (GOT_ITEMS[g.carrier] || []).flatMap(([, x]) => x);
+    const keys = [...(g.roles.includes("catch") ? ["着座"] : []), ...(g.roles.includes("close") ? ks : []), ...(g.roles.includes("reg") ? ks.map((k) => "登録:" + k) : [])];
+    r.got = Object.fromEntries(keys.map((k) => [k, g.got[k] || 0]));
+    r.roles = g.roles;
+    delete r.role;
+    if (g.carrier) r.carrier = g.carrier;
+    r.gotAt ||= Date.now();
+  }
   // right after clocking out: a small sheet with only the day's results, saved into the same record
   let resKey = null;
   function openResult(key) {
@@ -5887,6 +5994,7 @@ window.addEventListener("error", function (e) {
     $("r-early").checked = !!r?.early || leftEarly(key, r?.planIn, r?.planOut, r?.out);
     $("r-early-reason").value = r?.earlyReason || "";
     $("r-early-wrap").hidden = !$("r-early").checked;
+    if (gotOn()) { gotStart(r, doc("billing").lastShift?.carrier); gotPaint($("r-got")); }
     $("res-sheet").hidden = false; $("res-sheet").querySelector(".modal").scrollTop = 0;
     focusIfMouse($("r-text"));
   }
@@ -5899,11 +6007,12 @@ window.addEventListener("error", function (e) {
     const key = resKey, r = rec(key);
     if (!r) { $("res-sheet").hidden = true; return; }
     r.result = $("r-text").value.trim();
+    if (gotOn()) gotSave(r);
     r.early = $("r-early").checked;
     r.earlyReason = r.early ? $("r-early-reason").value.trim() : "";
     $("res-sheet").hidden = true;
     render();
-    msg(r.result ? "稼働実績を保存しました。" : "稼働実績は空のまま保存しました。");
+    msg(hasResult(r) ? "稼働実績を保存しました。" : "稼働実績は空のまま保存しました。");
     if (await persist("m-" + ymOf(key))) tpForResult(key);
   });
   function lock(el, locked) {
@@ -5914,6 +6023,7 @@ window.addEventListener("error", function (e) {
   // results open locked behind 修正 (a toggle); only the sheet opened right after clocking out starts unlocked
   function setResOpen(open) {
     lock($("edit-form").querySelector(".res"), !open);
+    if (gotOn() && gotEd) gotPaint($("f-got"), !open);
     $("f-resedit").textContent = open ? "修正を終える" : "修正";
     $("f-resedit").setAttribute("aria-expanded", String(open));
     $("f-resedit").disabled = !actAllowed;
@@ -6388,7 +6498,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.2.6", APP_DATE = "2026-10-31";
+  const APP_VER = "2.2.8", APP_DATE = "2026-10-31";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -6671,21 +6781,21 @@ window.addEventListener("error", function (e) {
   const DH = { name: 0, date: 1, kind: 3, store: 4, pIn: 5, pOut: 6, in: 7, out: 8, work: 9, absWhy: 10, wake: 11, dep: 12,
     transport: 13, ride: 14, km: 15, imgs: 16, result: 17, memo: 18, early: 20, earlyWhy: 21 };
   let adTab = "today", adData = null, adKey = "";
-  const adMonth = (() => { const d = new Date(), m = (n) => ymOf(dayKey(new Date(d.getFullYear(), d.getMonth() + n, 1))); return { work: m(0), inv: m(-1), hope: m(1), today: m(0), members: m(0), bills: m(0), sales: m(0), points: m(0), ask: m(0), notices: m(0), tei: m(0) }; })();
+  const adMonth = (() => { const d = new Date(), m = (n) => ymOf(dayKey(new Date(d.getFullYear(), d.getMonth() + n, 1))); return { work: m(0), inv: m(-1), hope: m(1), today: m(0), members: m(0), bills: m(0), sales: m(0), points: m(0), ask: m(0), notices: m(0), tei: m(0), got: m(0) }; })();
   const adMsg = (t) => { $("ad-msg").textContent = t || ""; };
   const minOf = (hm) => { const m = /^(\d+):(\d{2})$/.exec(hm || ""); return m ? Number(m[1]) * 60 + Number(m[2]) : 0; };
   const ymLabel = (ym) => { const [y, m] = ym.split("-").map(Number); return `${y}年${m}月`; };
   const link = (url, text) => (url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : "");
 
   // the money tabs make up the 運営画面 (運営 only); the rest is the 管理画面. Which one shows follows the open tab
-  const UNEI_TABS = ["inv", "bills", "members", "sales", "points", "notices", "tei"];
+  const UNEI_TABS = ["inv", "bills", "members", "sales", "points", "notices", "tei", "got"];
   const spaceOf = (t) => (UNEI_TABS.includes(t) ? "unei" : "kanri");
   const adLast = { kanri: "today", unei: "inv" };
   function paintAdTabs() {
     const sp = spaceOf(adTab);
     adLast[sp] = adTab;
     for (const b of $("ad-tabs").querySelectorAll("button")) {
-      b.hidden = spaceOf(b.dataset.t) !== sp || (sp === "unei" && !window.TC_OWNER) || (b.dataset.t === "tei" && !window.TC_TEI);
+      b.hidden = spaceOf(b.dataset.t) !== sp || (sp === "unei" && !window.TC_OWNER) || ((b.dataset.t === "tei" || b.dataset.t === "got") && !window.TC_TEI);
       b.setAttribute("aria-selected", b.dataset.t === adTab);
     }
     for (const b of $("ad-space").querySelectorAll("button")) b.setAttribute("aria-selected", b.dataset.s === sp);
@@ -6716,7 +6826,7 @@ window.addEventListener("error", function (e) {
   }
   async function adLoad(force) {
     paintAdTabs();
-    const monthly = adTab === "work" || adTab === "inv" || adTab === "hope";
+    const monthly = adTab === "work" || adTab === "inv" || adTab === "hope" || adTab === "got";
     $("ad-month").hidden = !monthly;
     $("ad-label").textContent = ymLabel(adMonth[adTab]);
     $("ad-next").disabled = adTab === "inv" && adMonth.inv >= adLastBillable();
@@ -6730,6 +6840,7 @@ window.addEventListener("error", function (e) {
     if (adTab === "ask") { await adAsk(); saveView(); return; }
     if (adTab === "notices") { adNotices(); saveView(); return; }
     if (adTab === "tei") { await adTei(); saveView(); return; }
+    if (adTab === "got") { await adGot(); saveView(); return; }
     const key = adKeyNow();
     if (force || key !== adKey || !adData) {
       // the tab tapped shows at once, empty, so the tap never looks ignored while the read finishes
@@ -7699,6 +7810,8 @@ window.addEventListener("error", function (e) {
         `<div class="tei-pl${teiAdOpen === i ? " open" : ""}"><button type="button" class="tei-plh" data-open="${i}"><b>${esc(p.name)}</b><span>${esc(p.data)}・${en(p.price)}${p.sub ? "・サブ" : ""}${p.from ? `・${esc(p.from)}から` : ""}${p.to ? `・${esc(p.to)}まで` : ""}</span></button>` +
         (teiAdOpen === i ? `<div class="tei-grid">` + pin(i, "name", "プラン名", p.name) + pin(i, "data", "データ量（表示）", p.data) + pin(i, "price", "月額（円）", p.price, 'type="number" min="0"') +
           TEI_F.map(([k, t]) => pin(i, k, t + "の割引（円）", p[k], 'type="number" min="0"')).join("") +
+          (p.tag === "poi" ? [["poiG", "ポイ活：ゴールドで（%）"], ["capG", "ゴールドの上限（円/月）"], ["poiN", "ポイ活：ふつうで（%）"], ["capN", "ふつうの上限（円/月）"]]
+            .map(([k, t]) => pin(i, k, t, p[k] || 0, 'type="number" min="0" step="0.5"')).join("") : "") +
           pin(i, "from", "この日から（空なら今も）", p.from, 'type="date"') + pin(i, "to", "この日まで（空ならずっと）", p.to, 'type="date"') + `</div>` +
           flags(i, "use", Object.entries(TEI_USE), true) + flags(i, "age", [["", "だれでも"], ["u12", "12歳以下"], ["u18", "18歳以下"], ["60", "60歳以上"]]) +
           flags(i, "tag", [["", "だれでも"], ["poi", `${esc(c.pay)}をよく使う人`]]) + flags(i, "sub", [["false", "メイン"], ["true", "サブブランド"]]) +
@@ -7711,7 +7824,7 @@ window.addEventListener("error", function (e) {
       `<label class="f"><span>光・でんきの注意（カンペ）</span><textarea rows="2" data-dk="hikariNote">${esc(D.hikariNote)}</textarea></label>` +
       `<label class="f"><span>やってはいけないこと（1行に1つ）</span><textarea rows="5" data-dk="ng">${esc((D.ng || []).join("\n"))}</textarea></label>` +
       `<button type="button" class="btn primary" id="tei-save">保存する</button></div>`;
-    const NUM = ["price", "fam2", "fam3", "hikari", "cardN", "cardG", "denki", "cardFee", "cardRate", "call5", "callAll"];
+    const NUM = ["price", "fam2", "fam3", "hikari", "cardN", "cardG", "denki", "cardFee", "cardRate", "call5", "callAll", "poiG", "poiN", "capG", "capN"];
     const val = (k, v) => (NUM.includes(k) ? Number(v) || 0 : v);
     for (const b of $("ad-body").querySelectorAll("[data-adc]")) b.onclick = () => { teiAdC = b.dataset.adc; teiAdOpen = -1; adTei(); };
     for (const b of $("ad-body").querySelectorAll("[data-open]")) b.onclick = () => { teiAdOpen = teiAdOpen === Number(b.dataset.open) ? -1 : Number(b.dataset.open); adTei(); };
@@ -7743,6 +7856,25 @@ window.addEventListener("error", function (e) {
         if (adTab === "tei") adTei();
       } catch (e) { busyOff(); adMsg(errText(e)); }
     };
+  }
+  // 運営画面 › 成果: the month's 今日の成果 by person and by store, the most first
+  async function adGot() {
+    const ym = adMonth.got;
+    $("ad-body").innerHTML = `<p class="ad-loading">読み込んでいます…</p>`;
+    let v;
+    try { v = JSON.parse(await call("api_adminGot", ym)); } catch (e) { $("ad-body").innerHTML = ""; adMsg(errText(e)); return; }
+    if (adTab !== "got" || ym !== adMonth.got) return;
+    adMsg("");
+    // クローズ is the plain items, 登録 the "登録:" ones; 着座 and 登録 are shown apart, not in the 件数 (no double count)
+    const part = (g, f) => Object.entries(g).filter(([k, n]) => n > 0 && f(k));
+    const isClose = (k) => k !== "着座" && !k.startsWith("登録:"), isReg = (k) => k.startsWith("登録:");
+    const tot = (g) => part(g, (k) => k !== "着座").reduce((a, [, n]) => a + n, 0);
+    const row = (h, list, cut) => list.length ? `<i>${h} ${list.reduce((a, [, n]) => a + n, 0)}件</i>` + list.map(([k, n]) => `<span>${esc(k.slice(cut))} <b class="num">${n}</b></span>`).join("") : "";
+    const card = (title, sub, x) => `<div class="got-ad"><div class="got-ad-h"><b>${title}</b><span>${sub}</span></div>` +
+      `<div class="got-ad-l">${row("クローズ", part(x.got, isClose), 0) + row("登録", part(x.got, isReg), 3) + row("キャッチ", part(x.got, (k) => k === "着座"), 0) || `<span class="muted">0件</span>`}</div></div>`;
+    const by = (a, b) => tot(b.got) - tot(a.got);
+    $("ad-body").innerHTML = `<h4 class="bl-h">人ごと</h4>` + (v.people.length ? v.people.sort(by).map((x) => card(esc(x.name), `${x.days}日`, x)).join("") : `<p class="hint">この月の成果はまだありません。</p>`) +
+      `<h4 class="bl-h">お店ごと</h4>` + (v.stores.length ? v.stores.sort(by).map((x) => card(esc(x.store), `${GOT_CAR[x.carrier] || ""}　${x.days}日`, x)).join("") : `<p class="hint">この月の成果はまだありません。</p>`);
   }
   function adNotices() {
     const list = inbox.items.filter((x) => x.kind === "n" && !x.personal);
