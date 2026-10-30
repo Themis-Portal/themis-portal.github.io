@@ -678,7 +678,9 @@ body:has(#member-ui:not([hidden])) .brand-btns { display: none; }
 .modal, .viewer-scroll { overflow-x: hidden; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .modal > *, .fields > * { min-width: 0; }
 .chip-x button:first-child { overflow-wrap: anywhere; text-align: left; }
-.modal-bg { overscroll-behavior: contain; }
+/* below the status bar and above the home bar on an iPhone, so 戻る at the top is easy to press */
+.modal-bg { overscroll-behavior: contain; padding-top: max(16px, calc(env(safe-area-inset-top, 0px) + 14px)); padding-bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 8px)); }
+#e-back { min-height: 40px; padding-inline: 14px; flex: none; }
 .modal h3 { margin: 0; font-size: 17px; }
 /* the long day sheet scrolls; its title and a way back stay pinned at the top */
 .modal-head { position: sticky; top: -22px; z-index: 1; margin: -22px -22px 0; padding: 16px 22px 12px; background: var(--card); border-bottom: 1px solid var(--rule); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -2640,13 +2642,13 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
         <button type="button" role="tab" data-t="work" aria-selected="false">勤怠</button>
         <button type="button" role="tab" data-t="hope" aria-selected="false" aria-label="シフト希望">シフト</button>
         <button type="button" role="tab" data-t="ask" aria-selected="false" aria-label="お問い合わせ">問い合わせ</button>
+        <button type="button" role="tab" data-t="got" aria-selected="false" hidden>成果</button>
         <button type="button" role="tab" data-t="inv" aria-selected="false">報酬・給与</button>
         <button type="button" role="tab" data-t="bills" aria-selected="false" aria-label="他社への請求書">他社請求</button>
         <button type="button" role="tab" data-t="members" aria-selected="false">メンバー</button>
         <button type="button" role="tab" data-t="points" aria-selected="false" aria-label="ポイント（TP）">ポイント</button>
         <button type="button" role="tab" data-t="notices" aria-selected="false">お知らせ</button>
         <button type="button" role="tab" data-t="tei" aria-selected="false" hidden>提案</button>
-        <button type="button" role="tab" data-t="got" aria-selected="false" hidden>成果</button>
         <button type="button" role="tab" data-t="sales" aria-selected="false" aria-label="売上・利益">売上</button>
       </div>
       <div class="month-nav">
@@ -3123,7 +3125,7 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
     <p class="hint r-sub" id="r-sub"></p>
     <p class="r-tp">提出すると <b>+50TP</b><small>（打刻通り・遅刻、早退無し・稼働8時間以上の日）</small></p>
     <div class="got tei-only" id="r-got"></div>
-    <label class="f"><span class="tei-hide">この日の成果・対応内容</span><span class="tei-only">ひとこと（任意）</span><textarea id="r-text" maxlength="500" rows="5" placeholder="例：来店対応 12件、新規契約 3件、デモ実施 5回"></textarea></label>
+    <label class="f"><span class="tei-hide">この日の成果・対応内容</span><span class="tei-only">メモ（任意）</span><textarea id="r-text" maxlength="500" rows="5" placeholder="例：来店対応 12件、新規契約 3件、デモ実施 5回"></textarea></label>
     <label class="check"><input type="checkbox" id="r-early"> 早退</label>
     <label class="f" id="r-early-wrap" hidden>早退理由<input type="text" id="r-early-reason" maxlength="100" placeholder="例：体調不良のため"></label>
     <div class="modal-actions">
@@ -4134,11 +4136,15 @@ window.addEventListener("error", function (e) {
       if (dayKept(r, k)) best = Math.max(best, ++run); else run = 0;
     }
     const diff = (a, b, unit) => (last.have ? `<span class="sx-diff${a - b < 0 ? " down" : ""}">先月より ${a - b >= 0 ? "+" : "−"}${Math.abs(a - b)}${unit}</span>` : "");
+    // this month's 今日の成果, added up (for now 代表 only)
+    const gotDays = gotOn() ? cur.rows.filter((x) => x.r.gotAt) : [], gotSum = {};
+    for (const x of gotDays) for (const [k, n] of Object.entries(x.r.got || {})) gotSum[k] = (gotSum[k] || 0) + n;
     $("st-body").innerHTML =
       `<div class="sx-hero"><span class="sx-cap">MY PAGE</span><h2>${cm}月のふりかえり</h2>` +
       `<div class="sx-big"><div><span>出勤</span><b class="num">${cur.days}<small>日</small></b>${diff(cur.days, last.days, "日")}</div>` +
       `<div><span>稼働</span><b class="num">${Math.floor(cur.min / 60)}<small>時間</small></b>${diff(Math.floor(cur.min / 60), Math.floor(last.min / 60), "時間")}</div>` +
       `<div><span><i class="ico ico-fire" aria-hidden="true"></i> 連続</span><b class="num">${streakDays()}<small>日</small></b></div></div></div>` +
+      (gotDays.length ? `<h4 class="bl-h">今月の成果</h4><div class="got-ad"><div class="got-ad-h"><b>${cm}月</b><span>${gotDays.length}日分</span></div>${gotLines(gotSum)}</div>` : "") +
       `<h4 class="bl-h">累計の記録${loading ? "（読み込んでいます…）" : ""}</h4>` +
       `<div class="sx-tiles">` + [["出勤日数", `${all.length}日`], ["獲得TP", myStats ? `${tpN(myStats.tp)}TP` : "—"],
         ["もらったありがとう", myStats ? `${myStats.thanks}回` : "—"], ["行った店舗", `${Object.keys(stores).length}店舗`], ["最高の連続", `${best}日`]]
@@ -5744,7 +5750,8 @@ window.addEventListener("error", function (e) {
     $("f-absnote").textContent = r?.absent ? `この日は欠勤です${r.absentReason ? "\n理由：" + r.absentReason : ""}` : "";
     $("f-result").value = r?.result || "";
     const ahead = key > dayKey(new Date());
-    $("f-resedit").closest(".sec").style.display = ahead ? "none" : ""; $("f-result").closest(".res").style.display = ahead ? "none" : "";
+    // with 今日の成果 the words go in メモ below (an older day's text still shows)
+    $("f-resedit").closest(".sec").style.display = ahead ? "none" : ""; $("f-result").closest(".res").style.display = ahead || (gotOn() && !r?.result) ? "none" : "";
     $("f-got").style.display = ahead ? "none" : "";
     $("f-early").checked = !!r?.early;
     $("f-early-reason").value = r?.earlyReason || "";
@@ -5990,7 +5997,11 @@ window.addEventListener("error", function (e) {
     resKey = key;
     const r = rec(key);
     $("r-sub").textContent = `${key.slice(5).replace("-", "/")}${r?.store ? "　" + r.store : ""}　稼働 ${dur(workMin(r, Date.now()))}`;
-    $("r-text").value = r?.result || "";
+    // with 今日の成果 the box is the day's メモ (as in the day sheet), not the 稼働実績 text
+    const asMemo = gotOn();
+    $("r-text").value = (asMemo ? r?.memo : r?.result) || "";
+    $("r-text").maxLength = asMemo ? 200 : 500; $("r-text").rows = asMemo ? 2 : 5;
+    $("r-text").placeholder = asMemo ? $("f-memo").placeholder : "例：来店対応 12件、新規契約 3件、デモ実施 5回";
     $("r-early").checked = !!r?.early || leftEarly(key, r?.planIn, r?.planOut, r?.out);
     $("r-early-reason").value = r?.earlyReason || "";
     $("r-early-wrap").hidden = !$("r-early").checked;
@@ -6006,8 +6017,7 @@ window.addEventListener("error", function (e) {
     e.preventDefault();
     const key = resKey, r = rec(key);
     if (!r) { $("res-sheet").hidden = true; return; }
-    r.result = $("r-text").value.trim();
-    if (gotOn()) gotSave(r);
+    if (gotOn()) { r.memo = $("r-text").value.trim(); gotSave(r); } else r.result = $("r-text").value.trim();
     r.early = $("r-early").checked;
     r.earlyReason = r.early ? $("r-early-reason").value.trim() : "";
     $("res-sheet").hidden = true;
@@ -6031,7 +6041,7 @@ window.addEventListener("error", function (e) {
   $("f-resedit").onclick = () => {
     const open = $("f-resedit").getAttribute("aria-expanded") !== "true";
     setResOpen(open);
-    if (open) $("f-result").focus();
+    if (open && !gotOn()) $("f-result").focus();
   };
   // mark a past or upcoming day absent (two presses), keeping the planned store and times
   let eAbsArmed = false;
@@ -6498,7 +6508,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.2.8", APP_DATE = "2026-10-31";
+  const APP_VER = "2.3.0", APP_DATE = "2026-10-31";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -6788,7 +6798,7 @@ window.addEventListener("error", function (e) {
   const link = (url, text) => (url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(text)}</a>` : "");
 
   // the money tabs make up the 運営画面 (運営 only); the rest is the 管理画面. Which one shows follows the open tab
-  const UNEI_TABS = ["inv", "bills", "members", "sales", "points", "notices", "tei", "got"];
+  const UNEI_TABS = ["inv", "bills", "members", "sales", "points", "notices", "tei"];
   const spaceOf = (t) => (UNEI_TABS.includes(t) ? "unei" : "kanri");
   const adLast = { kanri: "today", unei: "inv" };
   function paintAdTabs() {
@@ -7857,7 +7867,14 @@ window.addEventListener("error", function (e) {
       } catch (e) { busyOff(); adMsg(errText(e)); }
     };
   }
-  // 運営画面 › 成果: the month's 今日の成果 by person and by store, the most first
+  // 今日の成果 counts in lines: クローズ is the plain items, 登録 the "登録:" ones, キャッチ the 着座 (each apart, no double count)
+  function gotLines(g) {
+    const part = (f) => Object.entries(g).filter(([k, n]) => n > 0 && f(k));
+    const row = (h, list, cut) => list.length ? `<i>${h} ${list.reduce((a, [, n]) => a + n, 0)}件</i>` + list.map(([k, n]) => `<span>${esc(k.slice(cut))} <b class="num">${n}</b></span>`).join("") : "";
+    return `<div class="got-ad-l">${row("クローズ", part((k) => k !== "着座" && !k.startsWith("登録:")), 0) + row("登録", part((k) => k.startsWith("登録:")), 3) +
+      row("キャッチ", part((k) => k === "着座"), 0) || `<span class="muted">0件</span>`}</div>`;
+  }
+  // 管理者画面 › 成果: the month's 今日の成果 by person, the most first
   async function adGot() {
     const ym = adMonth.got;
     $("ad-body").innerHTML = `<p class="ad-loading">読み込んでいます…</p>`;
@@ -7865,16 +7882,9 @@ window.addEventListener("error", function (e) {
     try { v = JSON.parse(await call("api_adminGot", ym)); } catch (e) { $("ad-body").innerHTML = ""; adMsg(errText(e)); return; }
     if (adTab !== "got" || ym !== adMonth.got) return;
     adMsg("");
-    // クローズ is the plain items, 登録 the "登録:" ones; 着座 and 登録 are shown apart, not in the 件数 (no double count)
-    const part = (g, f) => Object.entries(g).filter(([k, n]) => n > 0 && f(k));
-    const isClose = (k) => k !== "着座" && !k.startsWith("登録:"), isReg = (k) => k.startsWith("登録:");
-    const tot = (g) => part(g, (k) => k !== "着座").reduce((a, [, n]) => a + n, 0);
-    const row = (h, list, cut) => list.length ? `<i>${h} ${list.reduce((a, [, n]) => a + n, 0)}件</i>` + list.map(([k, n]) => `<span>${esc(k.slice(cut))} <b class="num">${n}</b></span>`).join("") : "";
-    const card = (title, sub, x) => `<div class="got-ad"><div class="got-ad-h"><b>${title}</b><span>${sub}</span></div>` +
-      `<div class="got-ad-l">${row("クローズ", part(x.got, isClose), 0) + row("登録", part(x.got, isReg), 3) + row("キャッチ", part(x.got, (k) => k === "着座"), 0) || `<span class="muted">0件</span>`}</div></div>`;
-    const by = (a, b) => tot(b.got) - tot(a.got);
-    $("ad-body").innerHTML = `<h4 class="bl-h">人ごと</h4>` + (v.people.length ? v.people.sort(by).map((x) => card(esc(x.name), `${x.days}日`, x)).join("") : `<p class="hint">この月の成果はまだありません。</p>`) +
-      `<h4 class="bl-h">お店ごと</h4>` + (v.stores.length ? v.stores.sort(by).map((x) => card(esc(x.store), `${GOT_CAR[x.carrier] || ""}　${x.days}日`, x)).join("") : `<p class="hint">この月の成果はまだありません。</p>`);
+    const tot = (g) => Object.entries(g).reduce((a, [k, n]) => a + (k === "着座" ? 0 : n), 0);
+    $("ad-body").innerHTML = v.people.length ? v.people.sort((a, b) => tot(b.got) - tot(a.got)).map((x) =>
+      `<div class="got-ad"><div class="got-ad-h"><b>${esc(x.name)}</b><span>${x.days}日</span></div>${gotLines(x.got)}</div>`).join("") : `<p class="hint">この月の成果はまだありません。</p>`;
   }
   function adNotices() {
     const list = inbox.items.filter((x) => x.kind === "n" && !x.personal);
