@@ -2373,7 +2373,7 @@ body:has(#member-ui:not([hidden])) #scroller { padding-bottom: calc(112px + env(
 
 /* 研修チケット: one ticket per time, the ones left lit */
 .trn-tix { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
-.trn-tix i { width: 30px; height: 30px; background: center / contain no-repeat var(--ic-trn-ticket); filter: drop-shadow(0 0 6px rgb(255 156 198 / .5)); }
+.trn-tix i { width: 30px; height: 30px; background: center / contain no-repeat var(--ic-ticket); filter: drop-shadow(0 0 6px rgb(255 156 198 / .5)); }
 .trn-tix i.used { filter: grayscale(1) brightness(.6); opacity: .45; }
 .trn-hero .tp-cap { color: #ffb3d9 !important; }
 
@@ -2500,16 +2500,18 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
 .tei-plh span { font-size: 12px; color: var(--ink-soft); }
 .tei-pl > .tool.danger { justify-self: start; }
 .tei-show1 { padding: 12px 8px; font-size: 15px; }
-/* the shop's carrier, round, at the top right of 今日の予定 / 明日の予定: docomo red, au orange, SoftBank black with a light
-   ring so it shows on the dark card */
-.shift-today .st-car { position: absolute; top: 12px; right: 12px; width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
-  font-family: var(--f-num); font-size: 10px; font-weight: 800; letter-spacing: 0; color: #fff; line-height: 1; box-shadow: 0 2px 8px -2px rgb(0 0 0 / .6); }
-.shift-today .st-car[hidden] { display: none; }
-.shift-today.small .st-car { top: 50%; transform: translateY(-50%); width: 40px; height: 40px; font-size: 9px; }
+/* the shop's carrier, a small oval at the top right of 今日の予定 / 明日の予定: docomo red, au orange, SoftBank black with
+   a light ring so it shows on the dark card */
+.shift-today .st-car { position: absolute; top: 12px; right: 12px; min-width: 52px; height: 22px; padding: 0 8px; border-radius: 999px; display: grid; place-items: center;
+  font-family: var(--f-num); font-size: 10.5px; font-weight: 800; letter-spacing: .02em; color: #fff; line-height: 1; box-shadow: 0 2px 6px -2px rgb(0 0 0 / .6); }
+.shift-today .st-car[hidden], body:not(.tei-on) .shift-today .st-car { display: none; }
+body:not(.tei-on) .tei-only { display: none !important; }
+body.tei-on .trn-tix i { background-image: var(--ic-trn-ticket); }
+.shift-today.small .st-car { top: 50%; transform: translateY(-50%); min-width: 46px; height: 20px; font-size: 9.5px; }
 .shift-today .st-car.c-docomo { background: #cc0033; }
-.shift-today .st-car.c-au { background: #eb5505; font-size: 13px; }
-.shift-today .st-car.c-sb { background: #0b0b0b; border: 1.5px solid #d9d9e3; font-size: 8.5px; }
-.shift-today.has-car { padding-right: 70px; }
+.shift-today .st-car.c-au { background: #eb5505; }
+.shift-today .st-car.c-sb { background: #0b0b0b; border: 1px solid #d9d9e3; }
+body.tei-on .shift-today.has-car { padding-right: 76px; }
 .tei-plan.alt { border-color: rgb(95 240 208 / .5); box-shadow: 0 0 18px -6px rgb(95 240 208 / .45); }
 .tei-plan.alt .tc-k { color: #b3a2ff; }
 .tei-call .tc-k { color: #9fb6ff; }
@@ -2534,6 +2536,12 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
 .tei-seg button[aria-selected="true"] { background: #fff; color: #1d1830; box-shadow: 0 1px 4px rgb(0 0 0 / .12); }
 .tei-x { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 0; background: #e7e1f5; color: #5a5470; font-size: 22px; line-height: 1; }
 .tei-guest .tg-row span small { display: block; font-size: 11px; }
+/* a phone turned on its side: the page is made for upright use, so it asks to be turned back (an installed app on
+   Android is held upright by its manifest; an iPhone does not follow that) */
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+  html:root:root body.tei-on::after { content: "画面を縦にしてください"; position: fixed; inset: 0; height: auto; z-index: 2000; display: grid; place-items: center;
+    background: #0b0916; color: #ecebf5; font-size: 18px; font-weight: 700; letter-spacing: .06em; }
+}
 </style>
 <!-- the opening screen only when the app is newly opened: decided before anything is drawn, so a reload shows nothing of it -->
 <script>(function () {
@@ -3044,7 +3052,7 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
       <p class="foldsum wide" id="f-plansum"></p>
       <label class="f wide pl-f">店舗名<input type="text" id="f-store" maxlength="60" placeholder="例：〇〇デンキ 新宿西口店"></label>
       <div class="chips wide pl-f" id="store-chips" role="group" aria-label="前に入れた店舗"></div>
-      <div class="f wide pl-f">会社<div class="chips" id="f-carrier" role="group" aria-label="会社"><button type="button" class="chip" data-v="docomo" aria-pressed="false">docomo</button><button type="button" class="chip" data-v="au" aria-pressed="false">au</button><button type="button" class="chip" data-v="sb" aria-pressed="false">SoftBank</button></div></div>
+      <div class="f wide pl-f tei-only">会社<div class="chips" id="f-carrier" role="group" aria-label="会社"><button type="button" class="chip" data-v="docomo" aria-pressed="false">docomo</button><button type="button" class="chip" data-v="au" aria-pressed="false">au</button><button type="button" class="chip" data-v="sb" aria-pressed="false">SoftBank</button></div></div>
       <label class="f pl-f"><span>出勤 <small class="tsrc" id="f-insrc"></small></span><input type="time" id="f-pin" step="300"></label>
       <label class="f pl-f"><span>退勤 <small class="tsrc" id="f-outsrc"></small></span><input type="time" id="f-pout" step="300"></label>
       <p class="hint wide pl-f" id="f-lockn" hidden>打刻した出勤の時間は、退勤すると修正できます。</p>
@@ -4270,7 +4278,7 @@ window.addEventListener("error", function (e) {
   try { const c = JSON.parse(localStorage.getItem("tc_tei") || "null"); if (c && c.plans) teiData = c; } catch (e) {}
   const TEI_C = { docomo: "ドコモ", au: "au", sb: "ソフトバンク" };
   const TEI_USE = { a: "〜5GB", b: "〜10GB", c: "〜30GB", d: "もっと" };
-  const teiIn = { c: "", now: "main", proc: "機種変更", from: "", n: 1, use: "c", age: "", call: "none", pay: "none", bill: "", hikari: "none", denki: "other", card: "cash" };
+  const teiIn = { c: "", proc: "機種変更", n: 1, use: "c", age: "", call: "none", pay: "none", bill: "", hikari: "none", denki: "other", card: "cash" };
   const teiToday = () => rec(dayKey(new Date()))?.store || "";
   // the carrier of a store's name (ドコモショップ〇〇, auショップ, ソフトバンク, ワイモバイル, UQ …)
   const teiCarrierOf = (s) => /ドコモ|docomo|ahamo/i.test(s || "") ? "docomo" : /ソフトバンク|softbank|ワイモバイル|y!?mobile/i.test(s || "") ? "sb"
@@ -4344,32 +4352,33 @@ window.addEventListener("error", function (e) {
     // the carrier picked on today's シフト, else read from the store's name, else the last one used
     if (!teiIn.c) teiIn.c = rec(dayKey(new Date()))?.carrier || teiCarrierOf(teiToday()) || (() => { try { return localStorage.getItem("tc_tei_c"); } catch (e) { return ""; } })() || "docomo";
     const c = D.carriers[teiIn.c], I = teiIn;
+    // only what changes the answer is asked: 年齢 where the carrier has a plan for an age, よく使う支払い where it has a
+    // ポイ活 plan; two answers that count the same are one choice
+    const has = (f) => D.plans.some((p) => p.c === I.c && f(p));
     const row = (label, k, opts, multi) => `<div class="tei-q"><span>${label}</span><div class="chips" data-q="${k}"${multi ? ` data-multi="1"` : ""}>` +
       opts.map(([v, t]) => `<button type="button" class="chip" data-v="${esc(v)}" aria-pressed="${multi ? I[k].includes(v) : String(I[k]) === String(v)}">${esc(t)}</button>`).join("") + `</div></div>`;
     body.innerHTML = `<h3 class="tei-h">お客さまに合うプランを出す</h3>` +
       row("提案する会社（今日のお店の会社）", "c", Object.entries(TEI_C)) +
       row("手続き", "proc", Object.keys(TEI_PROC).map((x) => [x, x])) +
-      row("お客さまの今のプラン", "now", [["main", "メインのプラン"], ["sub", "サブブランド"]]) +
-      (I.proc === "乗りかえ" ? row("お客さまが今使っている会社", "from", [["docomo", "ドコモ"], ["au", "au"], ["sb", "ソフトバンク"], ["rakuten", "楽天"], ["mvno", "格安SIM・サブブランド"]].filter(([v]) => v !== I.c)) : "") +
       row("何人で使う？", "n", [[1, "1人"], [2, "2人"], [3, "3人以上"]]) +
       row("データ量（1人の1か月）", "use", Object.entries(TEI_USE)) +
-      row("年齢", "age", [["", "それ以外"], ["u12", "12歳以下"], ["u18", "18歳以下"], ["60", "60歳以上"]]) +
+      (has((p) => p.age) ? row("年齢", "age", [["", "それ以外"], ["u12", "12歳以下"], ["u18", "18歳以下"], ["60", "60歳以上"]]) : "") +
       row("電話", "call", [["none", "ほぼしない"], ["short", "短い電話が多い"], ["long", "長電話が多い"]]) +
-      row("よく使う支払い", "pay", [["own", c.pay], ["other", "ほかの支払い"], ["none", "あまり使わない"]]) +
+      (has((p) => p.tag === "poi") ? row(`${c.pay}をよく使う？`, "pay", [["own", "よく使う"], ["none", "使わない"]]) : "") +
       `<label class="f tei-q">今の月の料金（家族の合計・円）<input id="tei-bill" type="text" inputmode="numeric" maxlength="7" placeholder="例：15000" value="${esc(I.bill)}"></label>` +
-      row("家の光回線", "hikari", [["none", "なし"], ["other", "他社"], ["set", c.hikari + "（もう入っている）"]]) +
-      row("でんき", "denki", [["other", "他社"], ["set", c.denki + "（もう入っている）"]]) +
-      row("今の支払い", "card", [["cash", "現金・口座"], ["other", "ほかのカード"], ["base", teiCardBase(c)], ["gold", c.card]]) +
+      row(`家の光回線（${c.hikari}）`, "hikari", [["none", "入っていない"], ["set", "もう入っている"]]) +
+      row(`でんき（${c.denki}）`, "denki", [["other", "入っていない"], ["set", "もう入っている"]]) +
+      row("今の支払い", "card", [["cash", "ほかの支払い"], ["base", teiCardBase(c)], ["gold", c.card]]) +
       `<button type="button" class="btn primary tei-go" id="tei-go">おすすめを出す</button><div id="tei-out"></div>`;
     for (const g of body.querySelectorAll("[data-q]")) for (const b of g.children) b.onclick = () => {
       const k = g.dataset.q, v = k === "n" ? Number(b.dataset.v) : b.dataset.v;
       if (g.dataset.multi) I[k] = I[k].includes(v) ? I[k].filter((x) => x !== v) : [...I[k], v];
       else I[k] = v;
-      if (k === "c") { try { localStorage.setItem("tc_tei_c", v); } catch (e) {} if (I.from === v) I.from = ""; }
+      if (k === "c") { try { localStorage.setItem("tc_tei_c", v); } catch (e) {} }
       teiOut = null; renderTei();
     };
     $("tei-bill").oninput = (e) => { I.bill = e.target.value.replace(/[^\d]/g, ""); };
-    $("tei-go").onclick = () => { teiOut = teiCalc(D, I); teiSide = I.now === "sub" ? "alt" : "main"; paintTeiOut(); $("tei-out").scrollIntoView({ behavior: "smooth", block: "start" }); };
+    $("tei-go").onclick = () => { teiOut = teiCalc(D, I); teiSide = "main"; paintTeiOut(); $("tei-out").scrollIntoView({ behavior: "smooth", block: "start" }); };
     if (teiOut) paintTeiOut();
   }
   // the card in full: its discount and points a year, less the 年会費, so the fee is never a surprise
@@ -4425,7 +4434,7 @@ window.addEventListener("error", function (e) {
       ((teiData.ng || []).length ? `<div class="tei-card tei-ng"><p class="tc-k">やってはいけないこと</p><ul>` + teiData.ng.map((x) => `<li>${esc(x)}</li>`).join("") + `</ul></div>` : "") +
       `<p class="hint">料金は ${esc(String(r.at || "").slice(0, 10))} 時点。目安なので、お申し込みのときに確かめてください。</p>`;
   }
-  // which カンペ is open: the sub brand's first for a customer on a sub brand now
+  // which カンペ is open (the main plan's first)
   let teiSide = "main";
   function paintTeiOut() {
     const r = teiOut, I = teiIn, box = $("tei-out");
@@ -6327,6 +6336,8 @@ window.addEventListener("error", function (e) {
     window.TC_NAME = me.name; window.TC_WORK = me.workType || "";
     window.TC_ADMIN = !!me.admin; window.TC_OWNER = !!me.owner; window.TC_REP = !!me.rep; window.TC_CONTRACT = me.contractAsk !== false; window.TC_TEST = !!me.test; window.TC_NEED_NAME = !!me.needName;
     window.TC_TEI = !!me.tei; $("m-tei").hidden = !me.tei;
+    // what is tried out by 代表 first (提案, the shop's carrier, the new 研修チケット, the upright-only note) hangs on this
+    document.body.classList.toggle("tei-on", !!me.tei);
     $("logout").hidden = false; $("chpass").hidden = false;
     // admins use the normal site too; the header button switches to the admin screen and back
     $("adminbtn").hidden = !me.admin; $("m-admin").hidden = !me.admin;
@@ -6377,7 +6388,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.2.4", APP_DATE = "2026-10-31";
+  const APP_VER = "2.2.6", APP_DATE = "2026-10-31";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
