@@ -2468,7 +2468,10 @@ html.ios-app body::after { content: ""; position: fixed; left: 0; right: 0; top:
 .tei-user .tool { padding: 4px 9px; }
 .tei-add { justify-self: start; }
 .tei-face { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 12px; background: var(--card); border: 1px solid var(--rule); }
-.tei-face button { border: 0; border-radius: 9px; padding: 9px; background: transparent; color: var(--ink-soft); font-weight: 700; font-size: 14px; }
+.tei-face button { border: 0; border-radius: 9px; padding: 9px; background: transparent; color: var(--ink-soft); font-weight: 700; font-size: 14px; min-width: 0;
+  display: grid; place-content: center; gap: 1px; line-height: 1.3; text-align: center; word-break: keep-all; overflow-wrap: anywhere; }
+/* a second line of its own, small: the kind under the name (メイン / サブブランド) */
+.tei-face button small { font-size: 11px; font-weight: 600; opacity: .75; letter-spacing: .04em; }
 .tei-face button[aria-selected="true"] { background: var(--lit) border-box; color: #fff; }
 .tei-card { background: var(--plate); border: 1px solid var(--plate-line); border-radius: var(--r); padding: 14px 16px; display: grid; gap: 6px; color: var(--plate-ink); }
 .tei-card .tc-k { font-size: 12px; font-weight: 700; color: #5ff0d0; letter-spacing: .04em; }
@@ -4524,8 +4527,8 @@ window.addEventListener("error", function (e) {
     const r = teiOut, I = teiIn, box = $("tei-out");
     if (r.none) { box.innerHTML = `<p class="hint">${esc(r.c.name)}で合うプランが見つかりませんでした。Themisに知らせてください。</p>`; return; }
     if (!r.alt) teiSide = "main";
-    box.innerHTML = (r.alt ? `<div class="tei-pick"><b>どちらのカンペを見る？</b><div class="tei-face" role="tablist"><button type="button" role="tab" data-side="main" aria-selected="${teiSide === "main"}">${esc(r.c.name)}（メイン）</button>` +
-      `<button type="button" role="tab" data-side="alt" aria-selected="${teiSide === "alt"}">${esc(r.alt.plan.name.split(" ")[0])}（サブブランド）</button></div></div>` : "") +
+    box.innerHTML = (r.alt ? `<div class="tei-pick"><b>どちらのカンペを見る？</b><div class="tei-face" role="tablist"><button type="button" role="tab" data-side="main" aria-selected="${teiSide === "main"}"><span>${esc(r.c.name)}</span><small>メイン</small></button>` +
+      `<button type="button" role="tab" data-side="alt" aria-selected="${teiSide === "alt"}"><span>${esc(r.alt.plan.name.split(" ")[0])}</span><small>サブブランド</small></button></div></div>` : "") +
       `<button type="button" class="btn primary tei-show1" data-show="${teiSide}">お客さまに見せる</button>` + teiKanpe(r, I, teiSide === "alt");
     for (const b of box.querySelectorAll("[data-side]")) b.onclick = () => { teiSide = b.dataset.side; paintTeiOut(); };
     for (const b of box.querySelectorAll("[data-show]")) b.onclick = () => teiShow(b.dataset.show);
@@ -5984,7 +5987,7 @@ window.addEventListener("error", function (e) {
     sb: [["回線", ["MNP（乗り換え）", "新規", "機種変更", "YM→SB"]], ["ワイモバイル", ["MNP（乗り換え）", "新規", "機種変更", "SB→YM"], "YM"],
       ["おうち", ["ソフトバンク光", "ソフトバンクAir", "おうちでんき"]], ["カード", ["PayPayカード", "PayPayカード ゴールド"]]],
   };
-  const GOT_PRE = { catch: "キャッチ:", close: "", reg: "登録:" }, GOT_TAB = { catch: "キャッチした件数", close: "クローズした件数", reg: "登録した件数" };
+  const GOT_PRE = { catch: "キャッチ:", close: "", reg: "登録:" }, GOT_TAB = { catch: "キャッチ", close: "クローズ", reg: "登録" };
   // every [key, label] of a carrier's items
   const gotKeys = (c) => (GOT_ITEMS[c] || []).flatMap(([, ks, p]) => ks.map((k) => [p ? p + " " + k : k, k]));
   const GOT_CAR = { docomo: "docomo", au: "au", sb: "SoftBank" };
@@ -6555,7 +6558,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.4.0", APP_DATE = "2026-10-31";
+  const APP_VER = "2.4.1", APP_DATE = "2026-10-31";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
