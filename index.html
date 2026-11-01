@@ -3561,7 +3561,8 @@ window.addEventListener("error", function (e) {
     $("m-train").textContent = t === "train" ? "‹ シフト表に戻る" : "研修予約";
     for (const k of ["card", "hope"]) $("tab-" + k).setAttribute("aria-selected", t === k);
     for (const k of ["card", "hope", "train", "inv", "pay", "menu", "notice", "point", "invite", "tei", "plaza", "mypage"]) $("p-" + k).hidden = t !== k;
-    if (t === "tei") { renderTei(); loadTei(); }
+    // 提案 starts empty each time it is opened (one customer's answers are not the next one's)
+    if (t === "tei") { if (moved) teiReset(); renderTei(); loadTei(); }
     if ($("tei-show")) $("tei-show").hidden = true;
     if (t === "train") { renderTrain(); loadTrn(); }
     $("sub-act").replaceChildren();
@@ -3762,7 +3763,8 @@ window.addEventListener("error", function (e) {
   $("nt-home-post").onclick = () => showNotice("post", null, "home");
   $("m-invite").onclick = () => pickTab("invite");
   $("m-tei").onclick = () => pickTab("tei");
-  // ---- ポイント（TP）: 1TP = 1円; 50TP for each day's 稼働実績 after 退勤; exchanged for えらべるPay on request ----
+  // ---- ポイント（TP）: 1TP = 1円; 50TP for each day's 稼働実績 after 退勤; used TP_STEP at a time ----
+  const TP_STEP = 1000;
   let tp = { bal: null, item: "えらべるPay", amounts: [500, 1000, 3000, 5000], reqs: [] };
   // the last balance and requests are kept on this device, so the TP shows beside the name at once on opening
   const TP_KEY = "tc_tp";
@@ -3902,7 +3904,7 @@ window.addEventListener("error", function (e) {
         // TP is used as 報酬 on the invoice (a TP報酬 line of its own); a 社員 asks for it to be added to the 給与
         `<div class="tp-card tp-use"><b><span class="tp-coin" aria-hidden="true">TP</span>${staff ? "TPを給与に加算" : "TPを使用する"}</b>` +
         `<p class="hint" id="tp-use-how"></p>` +
-        `<div class="tp-row"><span class="tp-in"><input type="number" id="tp-amt" inputmode="numeric" min="1" step="1" placeholder="使用TP" aria-label="使用するポイント"><small>TP</small></span>` +
+        `<div class="tp-row"><span class="tp-in"><input type="number" id="tp-amt" inputmode="numeric" min="${TP_STEP}" step="${TP_STEP}" placeholder="使用TP" aria-label="使用するポイント"><small>TP</small></span>` +
         `<button type="button" class="btn primary" id="tp-go">${staff ? "給与に加算を申請" : "請求書に追加"}</button></div>` +
         `<p class="hint" id="tp-range"></p></div>`;
       $("tp-go").onclick = useTp;
@@ -3913,17 +3915,20 @@ window.addEventListener("error", function (e) {
     const noAmt = !staff && !sent && doc("inv-" + prev).fixedAmount == null;
     $("tp-use-how").textContent = staff ? "申請すると、Themisが給与に加算します（1TP＝1円）" : `使用すると、${pm}月分の請求書に「TP報酬」として追加されます（1TP＝1円）`;
     $("tp-bal").innerHTML = `${tp.bal == null ? "—" : tpN(bal)}<small>TP</small>`;
-    $("tp-amt").max = bal; $("tp-amt").disabled = sent || noAmt;
-    $("tp-go").disabled = bal < 1 || sent || noAmt;
+    // TP is used TP_STEP at a time, up to what the balance covers
+    const most = Math.floor(bal / TP_STEP) * TP_STEP;
+    $("tp-amt").max = most; $("tp-amt").disabled = sent || noAmt || most < TP_STEP;
+    $("tp-go").disabled = most < TP_STEP || sent || noAmt;
     $("tp-range").textContent = sent ? `${pm}月分の請求書は提出済みのため、TPは使用できません。来月から使用できます。`
       : noAmt ? `${pm}月分の請求金額がまだ設定されていないため、TPは使用できません。設定されると使用できます。`
-      : bal < 1 ? "TPがたまると使えます。" : `1〜${tpN(bal)}TPの間で入れてください。`;
+      : most < TP_STEP ? `TPは${tpN(TP_STEP)}TPたまると使えます。` : `${tpN(TP_STEP)}TP単位で、${tpN(TP_STEP)}〜${tpN(most)}TPの間で入れてください。`;
     $("tp-range").classList.toggle("tp-locked", sent || noAmt);
     paintRank(); paintThanks();
   }
   async function useTp() {
     const sel = $("tp-amt"), a = Number(sel.value), bal = tp.bal ?? 0, staff = window.TC_WORK === "社員" || !!window.TC_REP;
     if (!Number.isInteger(a) || a < 1) { msg("使用するTPの数を入れてください。"); sel.focus(); return; }
+    if (a % TP_STEP) { msg(`TPは${tpN(TP_STEP)}TP単位で使えます（${tpN(TP_STEP)}・${tpN(TP_STEP * 2)}・${tpN(TP_STEP * 3)}…）`); sel.focus(); return; }
     if (a > bal) { msg(`TPが足りません（残高 ${tpN(bal)}TP）`); sel.focus(); return; }
     if (!await ask(staff ? "給与への加算を申請しますか？" : "請求書に追加しますか？",
       staff ? `${tpN(a)}TP（${tpN(a)}円）を給与に加算するよう申請します。` : `${tpN(a)}TP（${tpN(a)}円）を、請求書のTP報酬に追加します。追加したTPは戻せません。`, staff ? "申請する" : "追加する")) return;
@@ -4173,7 +4178,7 @@ window.addEventListener("error", function (e) {
     const url = window.TC_API ? location.origin + location.pathname + "?v=3" : "";
     $("iv-body").innerHTML =
       `<div class="iv-hero"><span class="iv-cap">INVITE FRIENDS</span><h2>友達を招待して<br>毎月 <em>${bonus}TP</em> もらおう</h2>` +
-      `<p>あなたの招待コードで友達がメンバーになると、友達とあなたに <b>${welcome}TP</b> ずつ。さらに、その友達が月${days}日以上出勤した月は、あなたに毎月 <b>${bonus}TP</b>（${bonus}円分）のボーナスが届きます。何人でも招待できます。</p>` +
+      `<p>あなたの招待コードで友達がメンバーになり、月${days}日以上出勤すると、翌月に友達とあなたに <b>${welcome}TP</b> ずつ届きます。その次の月からも、友達が月${days}日以上出勤した月は、あなたに毎月 <b>${bonus}TP</b>（${bonus}円分）のボーナスが届きます。何人でも招待できます。</p>` +
       `<div class="iv-code"><span>あなたの招待コード</span><b class="num" id="iv-code">${v ? esc(v.code) : "……"}</b></div>` +
       `<div class="iv-acts"><button type="button" class="btn primary" id="iv-copy"${v ? "" : " disabled"}>コードをコピー</button>` +
       (navigator.share ? `<button type="button" class="btn iv-share" id="iv-share"${v ? "" : " disabled"}>友達に送る</button>` : "") + `</div></div>` +
@@ -4312,7 +4317,10 @@ window.addEventListener("error", function (e) {
   const TEI_C = { docomo: "ドコモ", au: "au", sb: "ソフトバンク" };
   const TEI_USE = { a: "〜5GB", b: "〜10GB", c: "〜30GB", d: "もっと" };
   // `users`: each person's data level (the first is the customer); `from`: the company a 乗りかえ comes from
-  const teiIn = { c: "", proc: "機種変更", from: "", users: ["c"], age: "", call: "none", shop: "no", spend: "", bill: "", hikari: "none", denki: "other", card: "cash" };
+  const TEI_IN0 = { c: "", proc: "機種変更", from: "", users: ["c"], age: "", call: "none", spend: "", bill: "", hikari: "none", denki: "other", card: "cash" };
+  const teiIn = {};
+  function teiReset() { Object.assign(teiIn, TEI_IN0, { users: [...TEI_IN0.users] }); teiOut = null; }
+  teiReset();
   const TEI_USERS_MAX = 6;
   // the companies a 乗りかえ can come from; one from a sub brand opens the sub brand カンペ first
   const TEI_FROM = [["docomo", "ドコモ"], ["au", "au"], ["sb", "ソフトバンク"], ["ahamo", "ahamo"], ["uq", "UQ mobile"], ["ym", "ワイモバイル"],
@@ -4350,7 +4358,7 @@ window.addEventListener("error", function (e) {
     const total = (ps, o) => ps.reduce((a, p) => a + teiNet(p, n, o), 0) + calls;
     // a ポイ活 plan's points a month on what is spent with the carrier's own payment (paid with its gold card, as
     // proposed), up to its cap; only the customer (the first person) shops with it
-    const spend = I.shop === "yes" ? Number(String(I.spend || "").replace(/[^\d]/g, "")) || 0 : 0;
+    const spend = I.card !== "cash" ? Number(String(I.spend || "").replace(/[^\d]/g, "")) || 0 : 0;
     const pts = (p) => (p && p.tag === "poi" ? Math.round(Math.min(spend * (p.poiG || 0) / 100, p.capG || Infinity)) : 0);
     // for one person: the plan whose data fits (or the next bigger), the cheapest once every extra is in and its
     // points taken off; a plan for the age comes first
@@ -4425,13 +4433,13 @@ window.addEventListener("error", function (e) {
       (I.users.length < TEI_USERS_MAX ? `<button type="button" class="tool tei-add" id="tei-adduser">＋ 1人足す（家族）</button>` : "") + `</div>` +
       (has((p) => p.age) ? row("年齢", "age", [["", "それ以外"], ["u12", "12歳以下"], ["u18", "18歳以下"], ["60", "60歳以上"]]) : "") +
       row("電話", "call", [["none", "ほぼしない"], ["short", "短い電話が多い"], ["long", "長電話が多い"]]) +
-      // the amount is asked only of one who shops with the carrier's own payment
-      (has((p) => p.tag === "poi") ? row(`${esc(c.pay)}や${esc(teiCardBase(c))}で買い物する？`, "shop", [["no", "しない"], ["yes", "する"]]) +
-        (I.shop === "yes" ? `<label class="f tei-q">月いくらくらい？（円・だいたい）<input id="tei-spend" type="text" inputmode="numeric" maxlength="7" placeholder="例：50000" value="${esc(I.spend)}"></label>` : "") : "") +
       `<label class="f tei-q">今の月の料金（家族の合計・円）<input id="tei-bill" type="text" inputmode="numeric" maxlength="7" placeholder="例：15000" value="${esc(I.bill)}"></label>` +
       row(`家の光回線（${c.hikari}）`, "hikari", [["none", "入っていない"], ["set", "もう入っている"]]) +
       row(`でんき（${c.denki}）`, "denki", [["other", "入っていない"], ["set", "もう入っている"]]) +
       row("今の支払い", "card", [["cash", "ほかの支払い"], ["base", teiCardBase(c)], ["gold", c.card]]) +
+      // one who pays with the carrier's card: how much is spent with it (for the ポイ活 plans)
+      (I.card !== "cash" && has((p) => p.tag === "poi") ? `<label class="f tei-q">${esc(I.card === "gold" ? c.card : teiCardBase(c))}や${esc(c.pay)}で、月いくらくらい買い物する？（円・だいたい）` +
+        `<input id="tei-spend" type="text" inputmode="numeric" maxlength="7" placeholder="例：50000" value="${esc(I.spend)}"></label>` : "") +
       `<button type="button" class="btn primary tei-go" id="tei-go">おすすめを出す</button><div id="tei-out"></div>`;
     for (const g of body.querySelectorAll("[data-q]")) for (const b of g.children) b.onclick = () => {
       const k = g.dataset.q, v = b.dataset.v;
@@ -6547,7 +6555,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.3.3", APP_DATE = "2026-10-31";
+  const APP_VER = "2.4.0", APP_DATE = "2026-10-31";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -7906,7 +7914,7 @@ window.addEventListener("error", function (e) {
     };
     const who = (id) => ivAd.list.find((x) => x.id === id);
     for (const b of $("ad-body").querySelectorAll("[data-iv-ok]")) b.onclick = () => { const x = who(b.dataset.ivOk);
-      act(x.id, "ok", "招待を許可しますか？", `${x.inviteeName}さんと${x.inviterName}さんに ${tpN(ivAd.welcome || 5000)}TP ずつ届きます。さらに${x.inviterName}さんには、${x.inviteeName}さんが月${ivAd.days || 20}日以上出勤した月ごとに ${tpN(ivAd.bonus)}TP が付きます（今月の分から）`, "許可する", false, "許可しました。"); };
+      act(x.id, "ok", "招待を許可しますか？", `${x.inviteeName}さんが月${ivAd.days || 20}日以上出勤した月があると（今月の分から）、翌月に${x.inviteeName}さんと${x.inviterName}さんに ${tpN(ivAd.welcome || 5000)}TP ずつ届きます。その次の月からは、月${ivAd.days || 20}日以上出勤した月ごとに${x.inviterName}さんに ${tpN(ivAd.bonus)}TP が付きます`, "許可する", false, "許可しました。"); };
     for (const b of $("ad-body").querySelectorAll("[data-iv-ng]")) b.onclick = () => { const x = who(b.dataset.ivNg);
       act(x.id, "ng", "招待を却下しますか？", `${x.inviteeName}さんが入れた、${x.inviterName}さんの招待コードを認めません。`, "却下する", true, "却下しました。"); };
     for (const b of $("ad-body").querySelectorAll("[data-iv-stop]")) b.onclick = () => { const x = who(b.dataset.ivStop);
