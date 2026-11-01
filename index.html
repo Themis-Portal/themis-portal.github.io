@@ -2508,6 +2508,8 @@ body.tei-on .tei-hide { display: none; }
 .got-grp > b { font-size: 11px; letter-spacing: .1em; color: #5ff0d0; }
 .got-seat { border-color: rgb(246 210 122 / .45); } .got-seat > b { color: #f6d27a; }
 .got-reg { border-color: rgb(120 180 255 / .45); } .got-reg > b { color: #9cc9ff; }
+.got-catch { border-color: rgb(246 210 122 / .35); } .got-catch > b { color: #f6d27a; }
+.tei-face.three { grid-template-columns: repeat(3, 1fr); } .tei-face.three button { padding: 9px 4px; font-size: 12.5px; }
 .got-ad-l > i { font-style: normal; font-size: 11px; font-weight: 800; color: var(--plate-soft); flex-basis: 100%; margin-top: 2px; }
 .got-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 40px; }
 .got-row > span { font-size: 14px; font-weight: 700; min-width: 0; }
@@ -2554,12 +2556,6 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
 .tei-seg button[aria-selected="true"] { background: #fff; color: #1d1830; box-shadow: 0 1px 4px rgb(0 0 0 / .12); }
 .tei-x { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 0; background: #e7e1f5; color: #5a5470; font-size: 22px; line-height: 1; }
 .tei-guest .tg-row span small { display: block; font-size: 11px; }
-/* a phone turned on its side: the page is made for upright use, so it asks to be turned back (an installed app on
-   Android is held upright by its manifest; an iPhone does not follow that) */
-@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
-  html:root:root body.tei-on::after { content: "画面を縦にしてください"; position: fixed; inset: 0; height: auto; z-index: 2000; display: grid; place-items: center;
-    background: #0b0916; color: #ecebf5; font-size: 18px; font-weight: 700; letter-spacing: .06em; }
-}
 </style>
 <!-- the opening screen only when the app is newly opened: decided before anything is drawn, so a reload shows nothing of it -->
 <script>(function () {
@@ -2631,8 +2627,8 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
         <button type="button" role="tab" data-t="today" aria-selected="true">今日</button>
         <button type="button" role="tab" data-t="work" aria-selected="false">勤怠</button>
         <button type="button" role="tab" data-t="hope" aria-selected="false" aria-label="シフト希望">シフト</button>
-        <button type="button" role="tab" data-t="ask" aria-selected="false" aria-label="お問い合わせ">問い合わせ</button>
         <button type="button" role="tab" data-t="got" aria-selected="false" hidden>成果</button>
+        <button type="button" role="tab" data-t="ask" aria-selected="false" aria-label="お問い合わせ">問い合わせ</button>
         <button type="button" role="tab" data-t="inv" aria-selected="false">報酬・給与</button>
         <button type="button" role="tab" data-t="bills" aria-selected="false" aria-label="他社への請求書">他社請求</button>
         <button type="button" role="tab" data-t="members" aria-selected="false">メンバー</button>
@@ -5924,13 +5920,21 @@ window.addEventListener("error", function (e) {
     if (await persist("m-" + ymOf(key), "state", "billing")) tpForResult(key);
   });
   // ---- 今日の成果 (for now 代表 only, with 提案): the 稼働実績 as counts, item by item for the day's carrier, with − / ＋.
-  // The roles of the day are picked, one or more (kept for next time): キャッチ counts 着座, クローズ the items, and 登録 the
-  // items again as "登録:<item>" (one list on screen, with a switch when both). Handed in, it gives the usual 50TP
+  // The roles of the day are picked, one or more (kept for next time). Each counts the same items, kept apart by a
+  // prefix: クローズ the plain item, キャッチ "キャッチ:<item>" (and 着座), 登録 "登録:<item>"; one list on screen, with a
+  // switch when more than one. Handed in, it gives the usual 50TP.
+  // A group is [heading, items, prefix]: a sub brand's group keeps its own keys ("UQ 新規") under the plain item names
   const GOT_ITEMS = {
-    docomo: [["回線", ["乗りかえ", "新規", "機種変更", "ahamo"]], ["おうち", ["ドコモ光", "home 5G", "ドコモでんき"]], ["カード", ["dカード GOLD", "dカード PLATINUM"]]],
-    au: [["回線", ["乗りかえ", "新規", "機種変更", "UQ"]], ["おうち", ["auひかり", "ホームルーター", "auでんき"]], ["カード", ["au PAY ゴールドカード"]]],
-    sb: [["回線", ["乗りかえ", "新規", "機種変更", "ワイモバイル"]], ["おうち", ["ソフトバンク光", "Air", "おうちでんき"]], ["カード", ["PayPayカード ゴールド"]]],
+    docomo: [["回線", ["PI（乗り換え）", "新規", "機種変更"]], ["おうち", ["ドコモ光", "home 5G", "ドコモでんき"]],
+      ["カード", ["dカード", "dカード GOLD U", "dカード GOLD", "dカード PLATINUM"]]],
+    au: [["回線", ["MNP（乗り換え）", "新規", "機種変更", "UQ→au"]], ["UQ", ["MNP（乗り換え）", "新規", "機種変更", "au→UQ"], "UQ"],
+      ["おうち", ["auひかり タイプ1", "auひかり タイプ3", "ホームルーター", "auでんき"]], ["カード", ["au PAY カード", "au PAY ゴールドカード"]]],
+    sb: [["回線", ["MNP（乗り換え）", "新規", "機種変更", "YM→SB"]], ["ワイモバイル", ["MNP（乗り換え）", "新規", "機種変更", "SB→YM"], "YM"],
+      ["おうち", ["ソフトバンク光", "Air", "おうちでんき"]], ["カード", ["PayPayカード", "PayPayカード ゴールド"]]],
   };
+  const GOT_PRE = { catch: "キャッチ:", close: "", reg: "登録:" }, GOT_TAB = { catch: "キャッチした件数", close: "クローズした件数", reg: "登録した件数" };
+  // every [key, label] of a carrier's items
+  const gotKeys = (c) => (GOT_ITEMS[c] || []).flatMap(([, ks, p]) => ks.map((k) => [p ? p + " " + k : k, k]));
   const GOT_CAR = { docomo: "docomo", au: "au", sb: "SoftBank" };
   const gotOn = () => document.body.classList.contains("tei-on");
   const GOT_ROLES = [["catch", "キャッチ"], ["close", "クローズ"], ["reg", "登録"]];
@@ -5940,40 +5944,43 @@ window.addEventListener("error", function (e) {
     let roles = gotRoles(r?.roles || r?.role);
     if (!roles.length) try { roles = gotRoles(localStorage.getItem("tc_role")); } catch (e) {}
     gotEd = { roles: roles.length ? roles : ["close"], carrier: r?.carrier || carrier || "", got: { ...(r?.got || {}) } };
-    gotEd.side = gotEd.roles.includes("close") ? "close" : "reg";
+    gotEd.side = gotEd.roles[0];
   }
   function gotPaint(box, locked) {
     const g = gotEd, items = GOT_ITEMS[g.carrier], has = (v) => g.roles.includes(v);
     const step = (k, label) => `<div class="got-row"><span>${esc(label || k)}</span><div class="got-step"><button type="button" data-gk="${esc(k)}" data-d="-1" aria-label="${esc(label || k)}を1つ減らす">−</button>` +
       `<b class="num">${g.got[k] || 0}</b><button type="button" data-gk="${esc(k)}" data-d="1" aria-label="${esc(label || k)}を1つ増やす">＋</button></div></div>`;
-    const lists = ["close", "reg"].filter(has), side = lists.includes(g.side) ? g.side : lists[0], pre = side === "reg" ? "登録:" : "";
-    const sum = (p) => (items || []).flatMap(([, ks]) => ks).reduce((a, k) => a + (g.got[p + k] || 0), 0);
-    const sums = [has("close") && `クローズ <b class="num">${sum("")}</b>件`, has("reg") && `登録 <b class="num">${sum("登録:")}</b>件`, has("catch") && `着座 <b class="num">${g.got["着座"] || 0}</b>件`].filter(Boolean);
+    const lists = g.roles, side = lists.includes(g.side) ? g.side : lists[0], pre = GOT_PRE[side];
+    const sum = (v) => gotKeys(g.carrier).reduce((a, [k]) => a + (g.got[GOT_PRE[v] + k] || 0), 0);
+    const sums = GOT_ROLES.filter(([v]) => has(v)).map(([v, t]) => `${t} <b class="num">${sum(v)}</b>件`).concat(has("catch") ? [`着座 <b class="num">${g.got["着座"] || 0}</b>件`] : []);
     box.innerHTML = `<div class="chips got-role" role="group" aria-label="今日の役割（いくつでも）">` + GOT_ROLES.map(([v, t]) =>
         `<button type="button" class="chip" data-role="${v}" aria-pressed="${has(v)}">${t}</button>`).join("") + `</div>` +
       (has("catch") ? `<div class="got-grp got-seat"><b>キャッチ</b>${step("着座")}</div>` : "") +
-      (!lists.length ? "" : items ? (lists.length > 1 ? `<div class="tei-face" role="tablist">` + lists.map((v) =>
-          `<button type="button" role="tab" data-gside="${v}" aria-selected="${side === v}">${v === "reg" ? "登録した件数" : "クローズした件数"}</button>`).join("") + `</div>` : "") +
-          items.map(([h, ks]) => `<div class="got-grp${side === "reg" ? " got-reg" : ""}"><b>${side === "reg" ? "登録・" + h : h}</b>${ks.map((k) => step(pre + k, k)).join("")}</div>`).join("")
+      (items ? (lists.length > 1 ? `<div class="tei-face${lists.length > 2 ? " three" : ""}" role="tablist">` + GOT_ROLES.filter(([v]) => has(v)).map(([v]) =>
+          `<button type="button" role="tab" data-gside="${v}" aria-selected="${side === v}">${GOT_TAB[v]}</button>`).join("") + `</div>` : "") +
+          items.map(([h, ks, p]) => `<div class="got-grp got-${side}"><b>${side === "close" ? h : GOT_ROLES.find(([v]) => v === side)[1] + "・" + h}</b>` +
+            ks.map((k) => step(pre + (p ? p + " " + k : k), k)).join("") + `</div>`).join("")
         : `<p class="hint">この日の会社を選んでください。</p><div class="chips">` + Object.entries(GOT_CAR).map(([v, t]) => `<button type="button" class="chip" data-gcar="${v}">${t}</button>`).join("") + `</div>`) +
-      (items || !lists.length ? `<p class="got-sum">${items ? `<span class="got-car c-${g.carrier}">${GOT_CAR[g.carrier]}</span>` : ""}今日　${sums.join("　")}</p>` : "");
+      `<p class="got-sum">${items ? `<span class="got-car c-${g.carrier}">${GOT_CAR[g.carrier]}</span>` : ""}今日　${sums.join("　")}</p>`;
     for (const b of box.querySelectorAll("[data-gk]")) b.onclick = () => { const k = b.dataset.gk; g.got[k] = Math.max(0, Math.min(99, (g.got[k] || 0) + Number(b.dataset.d))); gotPaint(box); };
     for (const b of box.querySelectorAll("[data-role]")) b.onclick = () => {
       const v = b.dataset.role, next = has(v) ? g.roles.filter((x) => x !== v) : GOT_ROLES.map(([k]) => k).filter((k) => k === v || has(k));
       if (!next.length) return;
       g.roles = next;
-      if (v !== "catch" && next.includes(v)) g.side = v;
+      if (next.includes(v)) g.side = v;
       try { localStorage.setItem("tc_role", next.join(",")); } catch (e) {}
       gotPaint(box);
     };
     for (const b of box.querySelectorAll("[data-gside]")) b.onclick = () => { g.side = b.dataset.gside; gotPaint(box); };
-    for (const b of box.querySelectorAll("[data-gcar]")) b.onclick = () => { g.carrier = b.dataset.gcar; gotPaint(box); };
+    for (const b of box.querySelectorAll("[data-gcar]")) b.onclick = () => { g.carrier = b.dataset.gcar; gotPaint(box, locked); };
     lock(box, !!locked);
+    // which list is shown can change while locked too (it only looks)
+    for (const b of box.querySelectorAll("[data-gside]")) { b.disabled = false; b.onclick = () => { g.side = b.dataset.gside; gotPaint(box, locked); }; }
   }
-  // into the day's record: per role, the items of its carrier (着座 for キャッチ, "登録:<item>" for 登録), each count (0 too)
+  // into the day's record: per role, the items of its carrier with the role's prefix (and 着座 for キャッチ), each count (0 too)
   function gotSave(r) {
-    const g = gotEd, ks = (GOT_ITEMS[g.carrier] || []).flatMap(([, x]) => x);
-    const keys = [...(g.roles.includes("catch") ? ["着座"] : []), ...(g.roles.includes("close") ? ks : []), ...(g.roles.includes("reg") ? ks.map((k) => "登録:" + k) : [])];
+    const g = gotEd, ks = gotKeys(g.carrier).map(([k]) => k);
+    const keys = [...(g.roles.includes("catch") ? ["着座"] : []), ...GOT_ROLES.filter(([v]) => g.roles.includes(v)).flatMap(([v]) => ks.map((k) => GOT_PRE[v] + k))];
     r.got = Object.fromEntries(keys.map((k) => [k, g.got[k] || 0]));
     r.roles = g.roles;
     delete r.role;
@@ -6497,7 +6504,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.3.1", APP_DATE = "2026-10-31";
+  const APP_VER = "2.3.2", APP_DATE = "2026-10-31";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -7782,12 +7789,14 @@ window.addEventListener("error", function (e) {
       b.closest(".ad-paged")?.scrollIntoView({ block: "start", behavior: "smooth" });
     };
   }
-  // 今日の成果 counts in lines: クローズ is the plain items, 登録 the "登録:" ones, キャッチ the 着座 (each apart, no double count)
+  // 今日の成果 counts in lines, role by role (each apart, no double count): キャッチ is 着座 and the "キャッチ:" items,
+  // クローズ the plain items, 登録 the "登録:" ones
   function gotLines(g) {
     const part = (f) => Object.entries(g).filter(([k, n]) => n > 0 && f(k));
-    const row = (h, list, cut) => list.length ? `<i>${h} ${list.reduce((a, [, n]) => a + n, 0)}件</i>` + list.map(([k, n]) => `<span>${esc(k.slice(cut))} <b class="num">${n}</b></span>`).join("") : "";
-    return `<div class="got-ad-l">${row("クローズ", part((k) => k !== "着座" && !k.startsWith("登録:")), 0) + row("登録", part((k) => k.startsWith("登録:")), 3) +
-      row("キャッチ", part((k) => k === "着座"), 0) || `<span class="muted">0件</span>`}</div>`;
+    const row = (h, list) => list.length ? `<i>${h} ${list.reduce((a, [k, n]) => a + (k === "着座" ? 0 : n), 0)}件</i>` +
+      list.map(([k, n]) => `<span>${esc(k.replace(/^(キャッチ|登録):/, ""))} <b class="num">${n}</b></span>`).join("") : "";
+    return `<div class="got-ad-l">${row("キャッチ", part((k) => k === "着座" || k.startsWith("キャッチ:"))) + row("クローズ", part((k) => k !== "着座" && !/^(キャッチ|登録):/.test(k))) +
+      row("登録", part((k) => k.startsWith("登録:"))) || `<span class="muted">0件</span>`}</div>`;
   }
   // 管理者画面 › 成果: the month's 今日の成果 by person, the most first
   async function adGot() {
