@@ -2518,7 +2518,7 @@ body:not(.tei-on) .tei-only { display: none !important; }
 body.tei-on .trn-tix i { background-image: var(--ic-trn-ticket); }
 /* 今日の成果: the role, then each item with − count ＋, the total under them */
 body.tei-on .tei-hide { display: none; }
-.got { display: grid; gap: 10px; }
+.got-box { display: grid; gap: 10px; }
 .got-grp { display: grid; gap: 2px; padding: 8px 12px; border-radius: 12px; background: var(--plate); border: 1px solid var(--plate-line); color: var(--plate-ink); }
 .got-grp > b { font-size: 11px; letter-spacing: .1em; color: #5ff0d0; }
 .got-reg { border-color: rgb(120 180 255 / .45); } .got-reg > b { color: #9cc9ff; }
@@ -3101,7 +3101,7 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
         <span class="hint perr" id="f-perr" role="alert"></span>
       </div>
       <div class="sec wide sec-row"><span>稼働実績</span><button type="button" class="tool" id="f-resedit">修正</button></div>
-      <div class="got wide tei-only" id="f-got"></div>
+      <div class="got-box wide tei-only" id="f-got"></div>
       <label class="f wide res"><span class="tei-hide">この日の成果・対応内容</span><span class="tei-only">ひとこと（任意）</span><textarea id="f-result" maxlength="500" rows="3" placeholder="例：来店対応 12件、新規契約 3件、デモ実施 5回"></textarea></label>
       <div class="sec wide">メモ</div>
       <label class="f wide">Themisへの連絡事項など（任意）<textarea id="f-memo" maxlength="200" rows="2" placeholder="例：電車の遅延で10分遅れて到着しました"></textarea></label>
@@ -3123,7 +3123,7 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
     <h3>今日の稼働実績</h3>
     <p class="hint r-sub" id="r-sub"></p>
     <p class="r-tp">提出すると <b>+50TP</b><small>（打刻通り・遅刻、早退無し・稼働8時間以上の日）</small></p>
-    <div class="got tei-only" id="r-got"></div>
+    <div class="got-box tei-only" id="r-got"></div>
     <label class="f"><span class="tei-hide">この日の成果・対応内容</span><span class="tei-only">メモ（任意）</span><textarea id="r-text" maxlength="500" rows="5" placeholder="例：来店対応 12件、新規契約 3件、デモ実施 5回"></textarea></label>
     <label class="check"><input type="checkbox" id="r-early"> 早退</label>
     <label class="f" id="r-early-wrap" hidden>早退理由<input type="text" id="r-early-reason" maxlength="100" placeholder="例：体調不良のため"></label>
@@ -3666,14 +3666,21 @@ window.addEventListener("error", function (e) {
     const ok = $("nt-pop-ok");
     if (ok) ok.onclick = () => { markSeen([x.id]); ntPop(x, popFrom); };
     const get = $("nt-pop-get");
+    // shown as received at once (the server takes a moment); put back if the server says no
     if (get) get.onclick = async () => {
-      get.disabled = true;
+      const was = { got: x.got, unread: x.unread, bal: tp.bal };
+      x.got = true; x.unread = false; seenHere.add(x.id);
+      if (tp.bal != null) tp.bal += x.reward;
+      paintWho(); paintBell(); ntPop(x, popFrom);
+      tpFx(x.reward, "お知らせのTPを受け取りました");
       try {
         const v = JSON.parse(await call("api_noticeClaim", x.id));
-        x.got = true; x.unread = false; seenHere.add(x.id); keepInbox();
-        tp.bal = v.bal; paintWho(); paintBell(); ntPop(x, popFrom);
-        tpFx(v.added, "お知らせのTPを受け取りました");
-      } catch (e) { get.disabled = false; msg(errText(e)); }
+        keepInbox(); tp.bal = v.bal; paintWho();
+      } catch (e) {
+        x.got = was.got; x.unread = was.unread; tp.bal = was.bal; if (was.unread) seenHere.delete(x.id);
+        paintWho(); paintBell(); if (popId === x.id) ntPop(x, popFrom);
+        msg(errText(e));
+      }
     };
     const re = $("nt-pop-reply");
     if (re) re.onclick = () => { closePop(); showNotice("q", x.id, popFrom); };
@@ -3898,7 +3905,7 @@ window.addEventListener("error", function (e) {
   // the screen is built once; later calls only bring the numbers up to date, so the amount box being typed in
   // (and the phone's keyboard) is never replaced
   function renderPoint() {
-    const bal = tp.bal ?? 0, staff = window.TC_WORK === "社員" || !!window.TC_REP;
+    const bal = tp.bal ?? 0, staff = window.TC_WORK === "社員";
     if (!$("tp-amt") || $("tp-body").dataset.staff !== String(staff)) {
       $("tp-body").dataset.staff = String(staff);
       $("tp-body").innerHTML =
@@ -3929,7 +3936,7 @@ window.addEventListener("error", function (e) {
     paintRank(); paintThanks();
   }
   async function useTp() {
-    const sel = $("tp-amt"), a = Number(sel.value), bal = tp.bal ?? 0, staff = window.TC_WORK === "社員" || !!window.TC_REP;
+    const sel = $("tp-amt"), a = Number(sel.value), bal = tp.bal ?? 0, staff = window.TC_WORK === "社員";
     if (!Number.isInteger(a) || a < 1) { msg("使用するTPの数を入れてください。"); sel.focus(); return; }
     if (a % TP_STEP) { msg(`TPは${tpN(TP_STEP)}TP単位で使えます（${tpN(TP_STEP)}・${tpN(TP_STEP * 2)}・${tpN(TP_STEP * 3)}…）`); sel.focus(); return; }
     if (a > bal) { msg(`TPが足りません（残高 ${tpN(bal)}TP）`); sel.focus(); return; }
@@ -5376,7 +5383,7 @@ window.addEventListener("error", function (e) {
     msg(a ? "退勤の時刻を実際の時刻に直して、稼働実績を保存してください。TPも付きます。" : "退勤の時刻を、実際に退勤した時刻に直して保存してください。");
   }
 
-  // 勤務の確認: from 21:00 on the last day of the month (a テスト用 account: at any time, to try it out) everyone but
+  // 勤務の確認: from 21:00 on the last day of the month everyone but
   // 代表 is shown the month's days to look over. A day is corrected by tapping it (the day sheet opens over the list),
   // and 提出する sends it. Until then it opens again at every start of the app (あとで only puts it off) and a line
   // on ホーム leads back to it; last month's is asked for too if it was never sent. After it comes a nudge to next
@@ -5386,8 +5393,9 @@ window.addEventListener("error", function (e) {
   function mcDue() {
     if (!mc || window.TC_REP || mode !== "member") return "";
     const now = new Date(), cur = ymOf(dayKey(now)), prev = ymOf(dayKey(new Date(now.getFullYear(), now.getMonth() - 1, 1)));
-    const open = window.TC_TEST || (now.getDate() === new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() && now.getHours() >= MC_HOUR);
-    return (open ? [cur] : []).concat(window.TC_TEST ? [] : [prev]).find((ym) => ym >= MC_FROM && ym in mc && !mc[ym]) || "";
+    // the month just over first; this month's only from MC_HOUR on its last day (a テスト用 account too)
+    const open = now.getDate() === new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate() && now.getHours() >= MC_HOUR;
+    return [prev].concat(open ? [cur] : []).find((ym) => ym >= MC_FROM && ym in mc && !mc[ym]) || "";
   }
   const mcMonth = (ym) => `${Number(ym.slice(5))}月`;
   // called with every render: the line on ホーム, the list kept up to date while open (after a day is corrected),
@@ -6558,7 +6566,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.4.1", APP_DATE = "2026-10-31";
+  const APP_VER = "2.4.3", APP_DATE = "2026-10-31";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
