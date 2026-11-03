@@ -4327,7 +4327,7 @@ window.addEventListener("error", function (e) {
   const TEI_C = { docomo: "ドコモ", au: "au", sb: "ソフトバンク" };
   const TEI_USE = { a: "〜5GB", b: "〜10GB", c: "〜30GB", d: "もっと" };
   // `users`: each person's data level (the first is the customer); `from`: the company a 乗りかえ comes from
-  const TEI_IN0 = { c: "", proc: "機種変更", from: "", users: ["c"], age: "", call: "none", spend: "", bill: "", hikari: "none", denki: "other", card: "cash" };
+  const TEI_IN0 = { c: "", proc: "機種変更", from: "", users: ["c"], age: "", abroad: "no", call: "none", spend: "", bill: "", hikari: "none", denki: "other", card: "cash" };
   const teiIn = {};
   function teiReset() { Object.assign(teiIn, TEI_IN0, { users: [...TEI_IN0.users] }); teiOut = null; }
   teiReset();
@@ -4371,12 +4371,12 @@ window.addEventListener("error", function (e) {
     const spend = I.card !== "cash" ? Number(String(I.spend || "").replace(/[^\d]/g, "")) || 0 : 0;
     const pts = (p) => (p && p.tag === "poi" ? Math.round(Math.min(spend * (p.poiG || 0) / 100, p.capG || Infinity)) : 0);
     // for one person: the plan whose data fits (or the next bigger), the cheapest once every extra is in and its
-    // points taken off; a plan for the age comes first
+    // points taken off; a plan for the age comes first, then the one for going abroad (the customer only)
     function pick(use, sub, poi) {
       for (let i = levels.indexOf(use); i < 4; i++) {
-        const ok = D.plans.filter((p) => live(p) && !!p.sub === sub && p.use.includes(levels[i]) && ageOk(p) && (p.tag !== "poi" || (spend && poi)));
+        const ok = D.plans.filter((p) => live(p) && !!p.sub === sub && p.use.includes(levels[i]) && ageOk(p) && (p.tag !== "poi" || (spend && poi)) && (p.tag !== "abroad" || (poi && I.abroad === "yes")));
         if (!ok.length) continue;
-        const score = (p) => teiNet(p, n, all) - (poi ? pts(p) : 0) - (p.age ? 100000 : 0);
+        const score = (p) => teiNet(p, n, all) - (poi ? pts(p) : 0) - (p.age ? 100000 : 0) - (p.tag === "abroad" ? 50000 : 0);
         return ok.sort((a, b) => score(a) - score(b))[0];
       }
       return null;
@@ -4415,6 +4415,7 @@ window.addEventListener("error", function (e) {
   function teiWhy(r, I) {
     const w = [teiUsers(I)];
     if (r.main.plans.some((x) => x.age)) w.push({ u12: "12歳以下", u18: "18歳以下", 60: "60歳以上" }[r.main.plans.find((x) => x.age).age] + "の人向けのプラン");
+    if (r.main.plans.some((x) => x.tag === "abroad")) w.push("海外によく行く");
     if (r.poi) w.push(`${r.c.pay}やカードで月${en(r.spend)}買い物する → ポイントが月約${en(r.poi.pts)}もどる`);
     return w;
   }
@@ -4442,6 +4443,7 @@ window.addEventListener("error", function (e) {
         (i ? `<button type="button" class="tool" data-unuser="${i}" aria-label="${i + 1}人目を消す">×</button>` : "<span></span>") + `</div>`).join("") + `</div>` +
       (I.users.length < TEI_USERS_MAX ? `<button type="button" class="tool tei-add" id="tei-adduser">＋ 1人足す（家族）</button>` : "") + `</div>` +
       (has((p) => p.age) ? row("年齢", "age", [["", "それ以外"], ["u12", "12歳以下"], ["u18", "18歳以下"], ["60", "60歳以上"]]) : "") +
+      (has((p) => p.tag === "abroad") ? row("海外によく行く？", "abroad", [["no", "行かない"], ["yes", "よく行く"]]) : "") +
       row("電話", "call", [["none", "ほぼしない"], ["short", "短い電話が多い"], ["long", "長電話が多い"]]) +
       `<label class="f tei-q">今の月の料金（家族の合計・円）<input id="tei-bill" type="text" inputmode="numeric" maxlength="7" placeholder="例：15000" value="${esc(I.bill)}"></label>` +
       row(`家の光回線（${c.hikari}）`, "hikari", [["none", "入っていない"], ["set", "もう入っている"]]) +
@@ -6566,7 +6568,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.4.4", APP_DATE = "2026-11-03";
+  const APP_VER = "2.5.0", APP_DATE = "2026-11-03";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
