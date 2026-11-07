@@ -2539,6 +2539,23 @@ body.tei-on .tei-hide { display: none; }
 .got-ad { display: grid; gap: 6px; padding: 10px 14px; border-radius: 12px; background: var(--plate); border: 1px solid var(--plate-line); color: var(--plate-ink); margin-bottom: 8px; }
 .got-ad-h { display: flex; align-items: baseline; gap: 10px; } .got-ad-h > span { font-size: 12px; color: var(--plate-soft); } .got-ad-h > b:last-child { margin-left: auto; color: #f6d27a; font-family: var(--f-num); }
 .got-ad-l { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; } .got-ad-l b { font-family: var(--f-num); }
+/* 成果: a name opens a month calendar of that person */
+.got-ad-name { width: 100%; border: 0; background: transparent; color: inherit; font: inherit; padding: 0; text-align: left; cursor: pointer; }
+.got-ad-name em { margin-left: auto; font-style: normal; font-size: 12px; color: #f6d27a; white-space: nowrap; }
+.got-cal-box { display: grid; gap: 8px; margin-top: 4px; }
+.gc-week, .gc-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.gc-week span { text-align: center; font-size: 11px; color: var(--plate-soft); }
+.gc-d { display: grid; justify-items: center; align-content: start; gap: 1px; min-height: 42px; padding: 4px 0; border-radius: 8px; font-size: 12px; color: var(--plate-soft); }
+.gc-d i { font-style: normal; }
+.gc-d.sun i { color: var(--sun); } .gc-d.sat i { color: var(--sat); }
+.gc-blank { visibility: hidden; }
+.gc-has { border: 1px solid var(--plate-line); background: rgb(255 255 255 / .06); color: var(--plate-ink); font: inherit; font-size: 12px; cursor: pointer; }
+.gc-has b { font-family: var(--f-num); font-size: 15px; color: #f6d27a; line-height: 1.1; }
+.gc-has.on { border-color: #f6d27a; background: rgb(246 210 122 / .18); }
+.gc-day, .gc-total { display: grid; gap: 6px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--plate-line); }
+.gc-total { background: rgb(255 255 255 / .05); }
+.gc-day-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; } .gc-day-h > span { font-size: 12px; color: var(--plate-soft); }
+.gc-none { margin: 0; font-size: 12px; color: var(--plate-soft); }
 .shift-today.small .st-car { top: 10px; min-width: 48px; height: 20px; font-size: 9.5px; }
 .shift-today .st-car.c-docomo { background: linear-gradient(135deg, #ff3d64, #c8002f 55%, #96001f); --car-glow: rgb(255 40 80 / .8); }
 .shift-today .st-car.c-au { background: linear-gradient(135deg, #ffa057, #f06414 55%, #c44300); --car-glow: rgb(255 120 40 / .8); }
@@ -6569,7 +6586,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.5.2", APP_DATE = "2026-11-08";
+  const APP_VER = "2.5.3", APP_DATE = "2026-11-08";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -7873,9 +7890,50 @@ window.addEventListener("error", function (e) {
     try { v = JSON.parse(await call("api_adminGot", ym)); } catch (e) { $("ad-body").innerHTML = ""; adMsg(errText(e)); return; }
     if (adTab !== "got" || ym !== adMonth.got) return;
     adMsg("");
-    const tot = (g) => Object.entries(g).reduce((a, [k, n]) => a + (k === "着座" ? 0 : n), 0);
-    $("ad-body").innerHTML = v.people.length ? v.people.sort((a, b) => tot(b.got) - tot(a.got)).map((x) =>
-      `<div class="got-ad"><div class="got-ad-h"><b>${esc(x.name)}</b><span>${x.days}日</span></div>${gotLines(x.got)}</div>`).join("") : `<p class="hint">この月の成果はまだありません。</p>`;
+    const tot = (g) => Object.entries(g || {}).reduce((a, [k, n]) => a + (k === "着座" ? 0 : n), 0);
+    const people = v.people.sort((a, b) => tot(b.got) - tot(a.got));
+    $("ad-body").innerHTML = people.length ? people.map((x, i) =>
+      `<div class="got-ad" data-gp="${i}"><button type="button" class="got-ad-h got-ad-name" aria-expanded="false"><b>${esc(x.name)}</b><span>${x.days}日</span><em>日ごとに見る ›</em></button>` +
+      `<div class="got-ad-sum">${gotLines(x.got)}</div><div class="got-cal-box" hidden></div></div>`).join("") : `<p class="hint">この月の成果はまだありません。</p>`;
+    // 2026-11-08 the owner asked: a name opens that month as a calendar, a day shows its counts, the month's total under it
+    for (const card of $("ad-body").querySelectorAll("[data-gp]")) {
+      const x = people[Number(card.dataset.gp)], head = card.querySelector(".got-ad-name"), box = card.querySelector(".got-cal-box");
+      head.onclick = () => {
+        const open = box.hidden;
+        box.hidden = !open; card.querySelector(".got-ad-sum").hidden = open;
+        head.setAttribute("aria-expanded", String(open)); head.querySelector("em").textContent = open ? "閉じる ‹" : "日ごとに見る ›";
+        if (open) gotCal(box, ym, x, tot);
+      };
+    }
+  }
+  // one person's month: Sun–Sat grid, a dot of the day's count on each handed-in day; a tap shows that day below,
+  // and the month's total stays at the bottom
+  function gotCal(box, ym, x, tot) {
+    const [y, m] = ym.split("-").map(Number), first = new Date(y, m - 1, 1).getDay(), last = new Date(y, m, 0).getDate();
+    const by = x.byDay || {}, keys = Object.keys(by).sort();
+    let pick = keys[keys.length - 1] || "";
+    const cells = [];
+    for (let i = 0; i < first; i++) cells.push(`<span class="gc-d gc-blank"></span>`);
+    for (let d = 1; d <= last; d++) {
+      const k = `${ym}-${String(d).padStart(2, "0")}`, r = by[k], wd = (first + d - 1) % 7;
+      cells.push(r ? `<button type="button" class="gc-d gc-has${wd === 0 ? " sun" : wd === 6 ? " sat" : ""}" data-gd="${k}"><i>${d}</i><b class="num">${tot(r.got)}</b></button>`
+        : `<span class="gc-d${wd === 0 ? " sun" : wd === 6 ? " sat" : ""}"><i>${d}</i></span>`);
+    }
+    const day = () => {
+      const r = by[pick];
+      if (!r) return `<p class="gc-none">色のついた日を押すと、その日の成果が出ます。</p>`;
+      const [, mm, dd] = pick.split("-").map(Number), wd = "日月火水木金土"[new Date(y, mm - 1, dd).getDay()];
+      return `<div class="gc-day-h"><b>${mm}月${dd}日（${wd}）</b><span>${esc([GOT_CAR[r.carrier] || "", r.store].filter(Boolean).join("・"))}</span></div>${gotLines(r.got)}`;
+    };
+    const paint = () => {
+      box.innerHTML = `<div class="gc-week">${[..."日月火水木金土"].map((w) => `<span>${w}</span>`).join("")}</div><div class="gc-grid">${cells.join("")}</div>` +
+        `<div class="gc-day">${day()}</div><div class="gc-total"><div class="gc-day-h"><b>${m}月の総実績</b><span>${x.days}日・${tot(x.got)}件</span></div>${gotLines(x.got)}</div>`;
+      for (const b of box.querySelectorAll("[data-gd]")) {
+        if (b.dataset.gd === pick) b.classList.add("on");
+        b.onclick = () => { pick = b.dataset.gd; paint(); };
+      }
+    };
+    paint();
   }
   function adNotices() {
     const list = inbox.items.filter((x) => x.kind === "n" && !x.personal);
