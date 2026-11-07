@@ -2539,23 +2539,8 @@ body.tei-on .tei-hide { display: none; }
 .got-ad { display: grid; gap: 6px; padding: 10px 14px; border-radius: 12px; background: var(--plate); border: 1px solid var(--plate-line); color: var(--plate-ink); margin-bottom: 8px; }
 .got-ad-h { display: flex; align-items: baseline; gap: 10px; } .got-ad-h > span { font-size: 12px; color: var(--plate-soft); } .got-ad-h > b:last-child { margin-left: auto; color: #f6d27a; font-family: var(--f-num); }
 .got-ad-l { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; } .got-ad-l b { font-family: var(--f-num); }
-/* 成果: a name opens a month calendar of that person */
-.got-ad-name { width: 100%; border: 0; background: transparent; color: inherit; font: inherit; padding: 0; text-align: left; cursor: pointer; }
-.got-ad-name em { margin-left: auto; font-style: normal; font-size: 12px; color: #f6d27a; white-space: nowrap; }
-.got-cal-box { display: grid; gap: 8px; margin-top: 4px; }
-.gc-week, .gc-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
-.gc-week span { text-align: center; font-size: 11px; color: var(--plate-soft); }
-.gc-d { display: grid; justify-items: center; align-content: start; gap: 1px; min-height: 42px; padding: 4px 0; border-radius: 8px; font-size: 12px; color: var(--plate-soft); }
-.gc-d i { font-style: normal; }
-.gc-d.sun i { color: var(--sun); } .gc-d.sat i { color: var(--sat); }
-.gc-blank { visibility: hidden; }
-.gc-has { border: 1px solid var(--plate-line); background: rgb(255 255 255 / .06); color: var(--plate-ink); font: inherit; font-size: 12px; cursor: pointer; }
-.gc-has b { font-family: var(--f-num); font-size: 15px; color: #f6d27a; line-height: 1.1; }
-.gc-has.on { border-color: #f6d27a; background: rgb(246 210 122 / .18); }
-.gc-day, .gc-total { display: grid; gap: 6px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--plate-line); }
-.gc-total { background: rgb(255 255 255 / .05); }
-.gc-day-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; } .gc-day-h > span { font-size: 12px; color: var(--plate-soft); }
-.gc-none { margin: 0; font-size: 12px; color: var(--plate-soft); }
+/* 成果 of one day, under the 勤怠 day detail and in the 成果 calendar */
+.got-ad.got-day { margin-top: 10px; }
 .shift-today.small .st-car { top: 10px; min-width: 48px; height: 20px; font-size: 9.5px; }
 .shift-today .st-car.c-docomo { background: linear-gradient(135deg, #ff3d64, #c8002f 55%, #96001f); --car-glow: rgb(255 40 80 / .8); }
 .shift-today .st-car.c-au { background: linear-gradient(135deg, #ffa057, #f06414 55%, #c44300); --car-glow: rgb(255 120 40 / .8); }
@@ -6586,7 +6571,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.5.3", APP_DATE = "2026-11-08";
+  const APP_VER = "2.5.5", APP_DATE = "2026-11-08";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -6918,7 +6903,7 @@ window.addEventListener("error", function (e) {
     $("ad-month").hidden = !monthly;
     $("ad-label").textContent = ymLabel(adMonth[adTab]);
     $("ad-next").disabled = adTab === "inv" && adMonth.inv >= adLastBillable();
-    if (force) blData = blPending = null;
+    if (force) { blData = blPending = null; for (const k in gotCache) delete gotCache[k]; }
     // 他社請求 has its own read (not the month's members and records)
     if (adTab === "bills" || adTab === "sales") {
       try { await adBills(); } catch (e) { adMsg(`画面を作れませんでした：${e.message}`); }
@@ -7099,7 +7084,7 @@ window.addEventListener("error", function (e) {
     let h = `<div class="pcal">` + WD.map((w, i) => `<div class="pcal-w wd-${i}">${w}</div>`).join("") + `<div></div>`.repeat(lead);
     for (let d = 1; d <= n; d++) {
       const key = `${ym}-${pad(d)}`, c = cell(key), tag = readOnly ? "div" : "button";
-      const cls = `pcal-c wd-${(lead + d - 1) % 7}${holidayName(key) ? " hol" : ""}${c.cls ? " " + c.cls : ""}${key === sel ? " sel" : ""}${key === adData.today ? " today" : ""}`;
+      const cls = `pcal-c wd-${(lead + d - 1) % 7}${holidayName(key) ? " hol" : ""}${c.cls ? " " + c.cls : ""}${key === sel ? " sel" : ""}${key === (adData?.today || dayKey(new Date())) ? " today" : ""}`;
       h += `<${tag}${readOnly ? "" : ' type="button"'} class="${cls}" data-day="${key}"><span class="pcal-d">${d}</span>${c.html || ""}</${tag}>`;
     }
     return h + `</div>`;
@@ -7145,6 +7130,14 @@ window.addEventListener("error", function (e) {
         }, sel) +
         `<div class="pcal-detail" id="pcal-detail">${dayDetail(sel, rows[sel])}</div>`;
       bindPlan(m, rows);
+      // 2026-11-08 the day's 今日の成果 under its record, from the 成果 read (it comes in after the calendar)
+      wkGot = null;
+      gotFetch(ym).then((v) => {
+        if (adTab !== "work" || adPerson?.id !== m.id || adMonth.work !== ym) return;
+        wkGot = v.people.find((p) => p.name === m.name)?.byDay || {};
+        const k = adPerson.day.startsWith(ym) ? adPerson.day : sel;
+        if (wkGot[k]) { $("pcal-detail").innerHTML = dayDetail(k, rows[k]); bindPlan(m, rows); }
+      }).catch(() => {});
       for (const b of $("ad-body").querySelectorAll(".pcal-c[data-day]")) b.onclick = () => {
         adPerson.day = b.dataset.day;
         for (const c of $("ad-body").querySelectorAll(".pcal-c.sel")) c.classList.remove("sel");
@@ -7162,15 +7155,16 @@ window.addEventListener("error", function (e) {
     // 運営以上: the day's shift (store and planned times) is put in or changed from here
     const plan = adData.owner ? `<button type="button" class="btn primary ad-plan" data-plan="${key}">${r && (r[DH.store] || r[DH.pIn]) ? "シフトを変更" : "シフトを入力"}</button>` : "";
     const title = `<h3 class="ad-h3">${mo}月${d}日（${WD[wd]}）${holidayName(key) ? `<small>${esc(holidayName(key))}</small>` : ""}</h3>`;
-    if (!r) return title + `<p class="hint">この日の記録はありません。</p>` + plan;
+    if (!r) return title + `<p class="hint">この日の記録はありません。</p>` + (wkGot?.[key] ? gotDayBox(wkGot[key]) : "") + plan;
     const items = [["区分", `${r[DH.kind]}${r[DH.early] ? "・早退" : ""}`], ["稼働店舗", r[DH.store]], ["予定", r[DH.pIn] ? `${r[DH.pIn]}–${r[DH.pOut]}` : ""],
       ["起床", r[DH.wake]], ["出発", r[DH.dep]], ["出勤", r[DH.in]], ["退勤", r[DH.out]], ["稼働", r[DH.work]],
       ["交通機関", r[DH.transport]], ["同乗者", r[DH.ride]], ["距離", r[DH.km] ? `${r[DH.km]} km` : ""],
       ["欠勤理由", r[DH.absWhy]], ["早退理由", r[DH.earlyWhy]], ["稼働実績", r[DH.result]], ["メモ", r[DH.memo]]].filter(([, v]) => v);
     const imgs = r[DH.imgs] ? r[DH.imgs].split("\n").map((u, i) => link(u, `画像${i + 1}`)).join(" ") : "";
     return title + `<dl class="ad-kv">` + items.map(([t, v]) => `<dt>${t}</dt><dd>${esc(v)}</dd>`).join("") +
-      (imgs ? `<dt>証明画像</dt><dd>${imgs}</dd>` : "") + `</dl>` + plan;
+      (imgs ? `<dt>証明画像</dt><dd>${imgs}</dd>` : "") + `</dl>` + (wkGot?.[key] ? gotDayBox(wkGot[key]) : "") + plan;
   }
+  let wkGot = null;   // the 勤怠 person's 成果 by day (null until read)
   // the shift of one person's day, typed in by 運営以上: store, 出勤, 退勤 (all blank takes the shift away)
   function bindPlan(m, rows) {
     const b = $("ad-body").querySelector("[data-plan]");
@@ -7882,58 +7876,68 @@ window.addEventListener("error", function (e) {
     return `<div class="got-ad-l">${row("キャッチ", part((k) => k === "着座" || k.startsWith("キャッチ:"))) + row("クローズ", part((k) => k !== "着座" && !/^(キャッチ|登録):/.test(k))) +
       row("登録", part((k) => k.startsWith("登録:"))) || `<span class="muted">0件</span>`}</div>`;
   }
-  // 管理者画面 › 成果: the month's 今日の成果 by person, the most first
+  // 管理者画面 › 成果 (2026-11-08, laid out as 勤怠): the month's 今日の成果 as one numbered card per person, 常勤 and 週末
+  // apart; a card opens that person's month as a calendar (the day's count), a day shows its counts, the month's total
+  // under it. The read is kept per month, and 勤怠's calendar shows the same day's 成果 from it.
+  const gotCache = {};
+  const gotFetch = (ym) => gotCache[ym] || (gotCache[ym] = call("api_adminGot", ym).then((s) => JSON.parse(s)).catch((e) => { delete gotCache[ym]; throw e; }));
+  const gotTot = (g) => Object.entries(g || {}).reduce((a, [k, n]) => a + (k === "着座" ? 0 : n), 0);
+  const gotParts = (g) => {
+    const s = { c: 0, cl: 0, r: 0 };
+    for (const [k, n] of Object.entries(g || {})) if (k !== "着座") s[k.startsWith("キャッチ:") ? "c" : k.startsWith("登録:") ? "r" : "cl"] += n;
+    return s;
+  };
+  // one day's 成果 in a box (the 勤怠 day detail and the 成果 calendar)
+  const gotDayBox = (r) => `<div class="got-ad got-day"><div class="got-ad-h"><b>成果</b><span>${esc([GOT_CAR[r.carrier] || "", r.store].filter(Boolean).join("・"))}</span><b class="num">${gotTot(r.got)}件</b></div>${gotLines(r.got)}</div>`;
   async function adGot() {
     const ym = adMonth.got;
-    $("ad-body").innerHTML = `<p class="ad-loading">読み込んでいます…</p>`;
+    if (!gotCache[ym]) $("ad-body").innerHTML = `<p class="ad-loading">読み込んでいます…</p>`;
     let v;
-    try { v = JSON.parse(await call("api_adminGot", ym)); } catch (e) { $("ad-body").innerHTML = ""; adMsg(errText(e)); return; }
+    try { v = await gotFetch(ym); } catch (e) { $("ad-body").innerHTML = ""; adMsg(errText(e)); return; }
     if (adTab !== "got" || ym !== adMonth.got) return;
     adMsg("");
-    const tot = (g) => Object.entries(g || {}).reduce((a, [k, n]) => a + (k === "着座" ? 0 : n), 0);
-    const people = v.people.sort((a, b) => tot(b.got) - tot(a.got));
-    $("ad-body").innerHTML = people.length ? people.map((x, i) =>
-      `<div class="got-ad" data-gp="${i}"><button type="button" class="got-ad-h got-ad-name" aria-expanded="false"><b>${esc(x.name)}</b><span>${x.days}日</span><em>日ごとに見る ›</em></button>` +
-      `<div class="got-ad-sum">${gotLines(x.got)}</div><div class="got-cal-box" hidden></div></div>`).join("") : `<p class="hint">この月の成果はまだありません。</p>`;
-    // 2026-11-08 the owner asked: a name opens that month as a calendar, a day shows its counts, the month's total under it
-    for (const card of $("ad-body").querySelectorAll("[data-gp]")) {
-      const x = people[Number(card.dataset.gp)], head = card.querySelector(".got-ad-name"), box = card.querySelector(".got-cal-box");
-      head.onclick = () => {
-        const open = box.hidden;
-        box.hidden = !open; card.querySelector(".got-ad-sum").hidden = open;
-        head.setAttribute("aria-expanded", String(open)); head.querySelector("em").textContent = open ? "閉じる ‹" : "日ごとに見る ›";
-        if (open) gotCal(box, ym, x, tot);
-      };
+    if (adPerson?.name) {
+      const x = v.people.find((p) => p.name === adPerson.name);
+      if (x) { gotPersonView(ym, x); return; }
+      adPerson = null;
     }
+    const people = [...v.people].sort((a, b) => gotTot(b.got) - gotTot(a.got));
+    $("ad-body").innerHTML = people.length ? byWork(people).map(([t, g]) =>
+      `<h3 class="ad-grp">${esc(groupName(t))}（${g.length}人）</h3><div class="ad-cards">` + g.map((x, i) => {
+        const p = gotParts(x.got);
+        return `<button type="button" class="ad-card ad-link" data-gname="${esc(x.name)}"><div class="ad-card-h"><span>${numName(i, x.name)}</span><span class="ad-go" aria-hidden="true">›</span></div>` +
+          `<div class="ad-mini"><span>提出 <b class="num">${x.days}</b>日</span><span>キャッチ <b class="num">${p.c}</b></span><span>クローズ <b class="num">${p.cl}</b></span>` +
+          `<span>登録 <b class="num">${p.r}</b></span><span>合計 <b class="num">${gotTot(x.got)}</b>件</span></div></button>`;
+      }).join("") + `</div>`).join("") : `<p class="hint">この月の成果はまだありません。</p>`;
+    for (const b of $("ad-body").querySelectorAll("[data-gname]")) b.onclick = () => {
+      adListY = SC.scrollTop; adPerson = { id: "", name: b.dataset.gname, day: "" }; scrollToY(0); adGot();
+    };
   }
-  // one person's month: Sun–Sat grid, a dot of the day's count on each handed-in day; a tap shows that day below,
-  // and the month's total stays at the bottom
-  function gotCal(box, ym, x, tot) {
-    const [y, m] = ym.split("-").map(Number), first = new Date(y, m - 1, 1).getDay(), last = new Date(y, m, 0).getDate();
-    const by = x.byDay || {}, keys = Object.keys(by).sort();
-    let pick = keys[keys.length - 1] || "";
-    const cells = [];
-    for (let i = 0; i < first; i++) cells.push(`<span class="gc-d gc-blank"></span>`);
-    for (let d = 1; d <= last; d++) {
-      const k = `${ym}-${String(d).padStart(2, "0")}`, r = by[k], wd = (first + d - 1) % 7;
-      cells.push(r ? `<button type="button" class="gc-d gc-has${wd === 0 ? " sun" : wd === 6 ? " sat" : ""}" data-gd="${k}"><i>${d}</i><b class="num">${tot(r.got)}</b></button>`
-        : `<span class="gc-d${wd === 0 ? " sun" : wd === 6 ? " sat" : ""}"><i>${d}</i></span>`);
-    }
-    const day = () => {
-      const r = by[pick];
-      if (!r) return `<p class="gc-none">色のついた日を押すと、その日の成果が出ます。</p>`;
-      const [, mm, dd] = pick.split("-").map(Number), wd = "日月火水木金土"[new Date(y, mm - 1, dd).getDay()];
-      return `<div class="gc-day-h"><b>${mm}月${dd}日（${wd}）</b><span>${esc([GOT_CAR[r.carrier] || "", r.store].filter(Boolean).join("・"))}</span></div>${gotLines(r.got)}`;
+  function gotPersonView(ym, x) {
+    const by = x.byDay || {}, keys = Object.keys(by).sort(), p = gotParts(x.got), [, mo] = ym.split("-").map(Number);
+    const sel = adPerson.day.startsWith(ym) && by[adPerson.day] ? adPerson.day : keys[keys.length - 1] || "";
+    const detail = (key) => {
+      if (!key) return `<p class="hint">この月の成果はありません。</p>`;
+      const [y, m, d] = key.split("-").map(Number), wd = new Date(y, m - 1, d).getDay();
+      return `<h3 class="ad-h3">${m}月${d}日（${WD[wd]}）${holidayName(key) ? `<small>${esc(holidayName(key))}</small>` : ""}</h3>` +
+        (by[key] ? gotDayBox(by[key]) : `<p class="hint">この日の成果はありません。</p>`);
     };
-    const paint = () => {
-      box.innerHTML = `<div class="gc-week">${[..."日月火水木金土"].map((w) => `<span>${w}</span>`).join("")}</div><div class="gc-grid">${cells.join("")}</div>` +
-        `<div class="gc-day">${day()}</div><div class="gc-total"><div class="gc-day-h"><b>${m}月の総実績</b><span>${x.days}日・${tot(x.got)}件</span></div>${gotLines(x.got)}</div>`;
-      for (const b of box.querySelectorAll("[data-gd]")) {
-        if (b.dataset.gd === pick) b.classList.add("on");
-        b.onclick = () => { pick = b.dataset.gd; paint(); };
-      }
+    $("ad-body").innerHTML = `<div class="ad-back"><button type="button" class="tool" id="ad-back">‹ 一覧に戻る</button>` +
+      `<h2 class="ad-h">${esc(x.name)}${x.workType ? `<span class="st st-none">${esc(x.workType)}</span>` : ""}</h2></div>` +
+      `<div class="ad-stats row5">` + [["提出", `${x.days}日`], ["キャッチ", p.c], ["クローズ", p.cl], ["登録", p.r], ["合計", `${gotTot(x.got)}件`]]
+        .map(([t, v]) => `<div class="ad-stat"><span>${t}</span><b class="num">${v}</b></div>`).join("") + `</div>` +
+      `<h3 class="pcal-ym">${esc(ymLabel(ym))}</h3>` +
+      monthCal(ym, (key) => by[key] ? { cls: "k-work", html: `<span class="pcal-s">${esc(by[key].store)}</span><span class="pcal-t num">${gotTot(by[key].got)}件</span>` } : {}, sel) +
+      `<div class="pcal-detail" id="pcal-detail">${detail(sel)}</div>` +
+      `<h3 class="ad-grp">${mo}月の総実績</h3><div class="got-ad"><div class="got-ad-h"><b>${x.days}日</b><span>提出した日</span><b class="num">${gotTot(x.got)}件</b></div>${gotLines(x.got)}</div>`;
+    for (const b of $("ad-body").querySelectorAll(".pcal-c[data-day]")) b.onclick = () => {
+      adPerson.day = b.dataset.day;
+      for (const c of $("ad-body").querySelectorAll(".pcal-c.sel")) c.classList.remove("sel");
+      b.classList.add("sel");
+      $("pcal-detail").innerHTML = detail(b.dataset.day);
     };
-    paint();
+    $("ad-back").onclick = async () => { adPerson = null; await adGot(); scrollToY(adListY); };
+    saveView();
   }
   function adNotices() {
     const list = inbox.items.filter((x) => x.kind === "n" && !x.personal);
