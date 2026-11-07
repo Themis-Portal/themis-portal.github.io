@@ -2695,6 +2695,7 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
       <div class="fields">
         <label class="f wide">請求先（会社名）<span class="sfx-in"><input id="bl-to" type="text" maxlength="80" autocomplete="off" placeholder="例：株式会社〇〇">
           <select id="bl-honor" class="bl-honor" aria-label="敬称"><option>御中</option><option>様</option></select></span></label>
+        <div class="chips wide" id="bl-to-chips" role="group" aria-label="前に入れた請求先" hidden></div>
         <div class="f wide">請求日<input id="bl-date" type="hidden"><span id="bl-date-p"></span></div>
         <div class="f wide">お支払期限<input id="bl-due" type="hidden"><span id="bl-due-p"></span></div>
         <label class="f wide">請求番号<input id="bl-no" type="text" maxlength="30" autocomplete="off" placeholder="空欄なら自動で付きます（例：202609-0001）"></label>
@@ -6568,7 +6569,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.5.1", APP_DATE = "2026-11-07";
+  const APP_VER = "2.5.2", APP_DATE = "2026-11-08";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -8083,14 +8084,30 @@ window.addEventListener("error", function (e) {
     dueTouched = !!b;
     $("bl-h").textContent = b ? `請求書を編集（${b.no}）` : "新しい請求書";
     for (const k of BILL_FIELDS) $("bl-" + k).value = blEdit[k] || "";
+    blToChips();
     blDates();
     $("bl-err").textContent = "";
     blItems(); blSum();
     $("bl-sheet").hidden = false;
     $("bl-sheet").querySelector(".modal").scrollTop = 0;
   }
+  // 2026-11-08 the owner asked for the companies already invoiced as one-tap suggestions:
+  // the names of the saved invoices, newest first, filling the 会社名 and its 敬称
+  function blToChips() {
+    const seen = new Map();
+    for (const b of [...(blData?.bills || [])].sort((p, q) => String(q.date).localeCompare(String(p.date))))
+      if (b.to && !seen.has(b.to)) seen.set(b.to, b.honor || "御中");
+    const box = $("bl-to-chips"), cur = $("bl-to").value.trim();
+    box.replaceChildren(...[...seen].filter(([to]) => to !== cur).slice(0, 8).map(([to, honor]) => {
+      const c = document.createElement("button"); c.type = "button"; c.className = "chip"; c.textContent = to;
+      c.onclick = () => { $("bl-to").value = to; $("bl-honor").value = honor; blToChips(); };
+      return c;
+    }));
+    box.hidden = !box.children.length;
+  }
+  $("bl-to").addEventListener("input", () => { if (!$("bl-to").value.trim()) blToChips(); });
   function blItems() {
-    const field = (cls, ph, mode, val) => { const el = document.createElement("input"); el.className = cls; el.placeholder = ph; el.type = "text"; if (mode) el.inputMode = mode; el.value = val ?? ""; return el; };
+    const field =(cls, ph, mode, val) => { const el = document.createElement("input"); el.className = cls; el.placeholder = ph; el.type = "text"; if (mode) el.inputMode = mode; el.value = val ?? ""; return el; };
     $("bl-items").replaceChildren(...blEdit.items.map((it, i) => {
       const row = document.createElement("div");
       row.className = "bl-item f";
