@@ -1358,6 +1358,7 @@ button.pcal-c { cursor: pointer; }
 .ad-stat.warn b { color: #ff8a8a; }
 /* headings: a lit bar before the words */
 .bl-h { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; color: var(--ink); letter-spacing: .1em; }
+.bl-h .bl-sub { font-size: 11px; font-weight: 400; color: var(--ink-soft); letter-spacing: 0; margin-left: -4px; }
 .bl-h::before, .ad-grp::before { content: ""; width: 4px; height: 1.1em; border-radius: 2px; background: linear-gradient(180deg, #7fe0cf, #5b35d6); box-shadow: 0 0 8px rgb(155 107 255 / .6); }
 /* メニュー: dark plates, the arrow lit */
 .menu-list { background: var(--plate); border-color: var(--plate-line); }
@@ -6572,7 +6573,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.5.8", APP_DATE = "2026-11-08";
+  const APP_VER = "2.5.9", APP_DATE = "2026-11-08";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -7816,14 +7817,17 @@ window.addEventListener("error", function (e) {
   }
   function adSales() {
     const { months, all } = salesMonths();
-    // 月ごと: one card per month (newest first), read top to bottom with no sideways scrolling
-    const rows = Object.keys(months).sort().reverse().map((ym) => {
+    const wym = workYm(dayKey(new Date())), [wy, wm] = wym.split("-").map(Number);
+    // 月ごと: one card per month (newest first), read top to bottom with no sideways scrolling; the month still being
+    // invoiced is left out (it is the box at the top, 2026-11-08)
+    const rows = Object.keys(months).filter((ym) => ym !== wym).sort().reverse().map((ym) => {
       const m = months[ym], [y, mo] = ym.split("-").map(Number), warn = profitOf(m) < 0 ? " warn" : "";
       return `<div class="sm-card${warn}"><div class="sm-h"><b>${y}年${mo}月</b><span>利益 <b class="num">${signed(profitOf(m))}</b>（${profitRate(m)}）</span></div>` +
         `<dl class="sm-g num"><div><dt>売上</dt><dd>${yen(m.sales)}</dd></div><div><dt>人件費</dt><dd>${yen(m.cost)}</dd></div><div><dt>TP経費</dt><dd>${yen(m.exp)}</dd></div></dl></div>`;
     });
+    // 2026-11-08 headed by the month worked (as 月ごと is), not the calendar month the invoices go out in
     $("ad-body").innerHTML =
-      `<h4 class="bl-h">${new Date().getFullYear()}年${new Date().getMonth() + 1}月</h4>` + liveBox(workYm(dayKey(new Date()))) +
+      `<h4 class="bl-h">${wy}年${wm}月の稼働<small class="bl-sub">（${new Date().getMonth() + 1}月に請求）</small></h4>` + liveBox(wym) +
       `<h4 class="bl-h">全体</h4>` + salesBox(all) +
       (rows.length ? `<h4 class="bl-h">月ごと</h4><div class="sm-list">${rows.join("")}</div>` : "");
   }
