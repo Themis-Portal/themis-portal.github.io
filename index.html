@@ -6572,7 +6572,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.5.6", APP_DATE = "2026-11-08";
+  const APP_VER = "2.5.7", APP_DATE = "2026-11-08";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -7044,7 +7044,7 @@ window.addEventListener("error", function (e) {
       const by = Object.fromEntries(v.people.map((p) => [p.name, p]));
       for (const c of $("ad-body").querySelectorAll("[data-person]")) {
         const m = adData.members.find((x) => x.id === c.dataset.person), p = m && by[m.name];
-        if (p) c.querySelector(".ad-mini").insertAdjacentHTML("beforeend", `<span class="got-n">成果 <b class="num">${gotTot(p.got)}</b>件</span>`);
+        if (p) c.querySelector(".ad-mini").insertAdjacentHTML("beforeend", `<span class="got-n">実績 <b class="num">${gotTot(p.got)}</b>件</span>`);
       }
     }).catch(() => {});
   }
@@ -7152,12 +7152,12 @@ window.addEventListener("error", function (e) {
         if (!x) return;
         for (const c of $("ad-body").querySelectorAll(".pcal-c[data-day]")) {
           const g = wkGot[c.dataset.day];
-          if (g) c.insertAdjacentHTML("beforeend", `<span class="pcal-g num">成果${gotTot(g.got)}</span>`);
+          if (g) c.insertAdjacentHTML("beforeend", `<span class="pcal-g num">実績${gotTot(g.got)}</span>`);
         }
         const k = adPerson.day.startsWith(ym) ? adPerson.day : sel;
         if (wkGot[k]) { $("pcal-detail").innerHTML = dayDetail(k, rows[k]); bindPlan(m, rows); }
         const p = gotParts(x.got), [, mo] = ym.split("-").map(Number);
-        $("wk-got").innerHTML = `<h3 class="ad-grp">${mo}月の成果（総実績）</h3><div class="got-ad got-day"><div class="got-ad-h"><b>${x.days}日</b><span>提出した日・キャッチ ${p.c}・クローズ ${p.cl}・登録 ${p.r}</span>` +
+        $("wk-got").innerHTML = `<h3 class="ad-grp">${mo}月の総実績</h3><div class="got-ad got-day"><div class="got-ad-h"><b>${x.days}日</b><span>提出した日・キャッチ ${p.c}・クローズ ${p.cl}・登録 ${p.r}</span>` +
           `<b class="num">${gotTot(x.got)}件</b></div>${gotLines(x.got)}</div>`;
       }).catch(() => {});
       for (const b of $("ad-body").querySelectorAll(".pcal-c[data-day]")) b.onclick = () => {
@@ -7181,7 +7181,7 @@ window.addEventListener("error", function (e) {
     const items = [["区分", `${r[DH.kind]}${r[DH.early] ? "・早退" : ""}`], ["稼働店舗", r[DH.store]], ["予定", r[DH.pIn] ? `${r[DH.pIn]}–${r[DH.pOut]}` : ""],
       ["起床", r[DH.wake]], ["出発", r[DH.dep]], ["出勤", r[DH.in]], ["退勤", r[DH.out]], ["稼働", r[DH.work]],
       ["交通機関", r[DH.transport]], ["同乗者", r[DH.ride]], ["距離", r[DH.km] ? `${r[DH.km]} km` : ""],
-      ["欠勤理由", r[DH.absWhy]], ["早退理由", r[DH.earlyWhy]], ["稼働実績", r[DH.result]], ["メモ", r[DH.memo]]].filter(([, v]) => v);
+      ["欠勤理由", r[DH.absWhy]], ["早退理由", r[DH.earlyWhy]], ["メモ", r[DH.memo]]].filter(([, v]) => v);
     const imgs = r[DH.imgs] ? r[DH.imgs].split("\n").map((u, i) => link(u, `画像${i + 1}`)).join(" ") : "";
     return title + `<dl class="ad-kv">` + items.map(([t, v]) => `<dt>${t}</dt><dd>${esc(v)}</dd>`).join("") +
       (imgs ? `<dt>証明画像</dt><dd>${imgs}</dd>` : "") + `</dl>` + (wkGot?.[key] ? gotDayBox(wkGot[key]) : "") + plan;
@@ -7910,7 +7910,7 @@ window.addEventListener("error", function (e) {
     return s;
   };
   // one day's 成果 in a box (the 勤怠 day detail and the 成果 calendar)
-  const gotDayBox = (r) => `<div class="got-ad got-day"><div class="got-ad-h"><b>成果</b><span>${esc([GOT_CAR[r.carrier] || "", r.store].filter(Boolean).join("・"))}</span><b class="num">${gotTot(r.got)}件</b></div>${gotLines(r.got)}</div>`;
+  const gotDayBox = (r) => `<div class="got-ad got-day"><div class="got-ad-h"><b>実績</b><span>${esc([GOT_CAR[r.carrier] || "", r.store].filter(Boolean).join("・"))}</span><b class="num">${gotTot(r.got)}件</b></div>${gotLines(r.got)}</div>`;
   function adNotices() {
     const list = inbox.items.filter((x) => x.kind === "n" && !x.personal);
     const pages = Math.max(1, Math.ceil(list.length / AD_PAGE));
