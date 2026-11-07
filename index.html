@@ -5993,7 +5993,7 @@ window.addEventListener("error", function (e) {
     docomo: [["回線", ["PI（乗り換え）", "新規", "機種変更"]], ["おうち", ["ドコモ光", "home 5G", "ドコモでんき"]],
       ["カード", ["dカード", "dカード GOLD U", "dカード GOLD", "dカード PLATINUM"]]],
     au: [["回線", ["MNP（乗り換え）", "新規", "機種変更", "UQ→au"]], ["UQ", ["MNP（乗り換え）", "新規", "機種変更", "au→UQ"], "UQ"],
-      ["おうち", ["auひかり タイプ1", "auひかり タイプ3", "ホームルーター", "auでんき"]], ["カード", ["au PAY カード", "au PAY ゴールドカード"]]],
+      ["おうち", ["ひかりプラス", "ホームルーター", "auでんき"]], ["カード", ["au PAY カード", "au PAY ゴールドカード"]]],
     sb: [["回線", ["MNP（乗り換え）", "新規", "機種変更", "YM→SB"]], ["ワイモバイル", ["MNP（乗り換え）", "新規", "機種変更", "SB→YM"], "YM"],
       ["おうち", ["ソフトバンク光", "ソフトバンクAir", "おうちでんき"]], ["カード", ["PayPayカード", "PayPayカード ゴールド"]]],
   };
@@ -6568,7 +6568,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.5.0", APP_DATE = "2026-11-03";
+  const APP_VER = "2.5.1", APP_DATE = "2026-11-07";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -7711,7 +7711,9 @@ window.addEventListener("error", function (e) {
   // then the lines across, then 振込先 beside 備考
   function billHTML(b, c, seal) {
     const t = billTotals(b), row = (k, v, cls = "") => `<tr class="${cls}"><th>${k}</th><td>${v}</td></tr>`;
-    const items = b.items.map((i) => `<tr><td>${esc(i.name)}</td><td class="r">${esc(String(i.qty))}</td><td class="r">${n0(num(i.price))}</td><td class="r">${n0(lineAmount(i))}</td></tr>`);
+    // a quantity of 1 reads 「1式」, as on the members' invoices
+    const qtyText = (q) => (num(q) === 1 ? "1式" : String(q));
+    const items = b.items.map((i) => `<tr><td>${esc(i.name)}</td><td class="r">${esc(qtyText(i.qty))}</td><td class="r">${n0(num(i.price))}</td><td class="r">${n0(lineAmount(i))}</td></tr>`);
     while (items.length < 8) items.push(`<tr><td></td><td></td><td></td><td></td></tr>`);
     const sum = (k, v, cls = "") => `<tr class="${cls}"><th>${k}</th><td class="r">${v}</td></tr>`;
     const taxRows = b.tax === "ex" ? sum("小計", n0(t.subtotal)) + sum("消費税(10%)", n0(t.tax))
