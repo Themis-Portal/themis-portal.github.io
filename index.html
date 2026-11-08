@@ -453,7 +453,7 @@ fieldset:disabled .f input, fieldset:disabled .f textarea, fieldset:disabled .f 
    メニュー: its list, and 請求書 / 給与明細 under a way back to it; the month bar wherever there is a month */
 #member-ui:not([data-tab="home"]) > :is(.shifts, .clock, .bell-row, .nt-home, .celebs) { display: none; }
 #member-ui:not([data-tab="card"]):not([data-tab="hope"]) > #shift-seg, #shift-seg:not(:has(#tab-hope:not([hidden]))) { display: none; }
-#member-ui:is([data-tab="home"], [data-tab="menu"], [data-tab="notice"], [data-tab="point"], [data-tab="invite"], [data-tab="plaza"], [data-tab="tei"]) > .bar-month { display: none; }
+#member-ui:is([data-tab="home"], [data-tab="menu"], [data-tab="notice"], [data-tab="point"], [data-tab="invite"], [data-tab="plaza"], [data-tab="learn"], [data-tab="tei"]) > .bar-month { display: none; }
 /* シフト表 and シフト希望 move by ‹ › only (no 今月 / 来月 button) */
 #member-ui:is([data-tab="card"], [data-tab="hope"]) #m-now { display: none; }
 /* ホーム: 未読のお知らせが〇件あります, and the newest お知らせ under the clock */
@@ -600,7 +600,8 @@ body:has(#member-ui:not([hidden])) .brand-btns { display: none; }
   /* a dark, game-like dock; the screen on show is a lit button */
   background: linear-gradient(180deg, #1f2c3f, #121a27); border-top: 1px solid #34465f;
   box-shadow: 0 -8px 20px -10px rgb(10 20 35 / .55), inset 0 1px 0 rgb(255 255 255 / .08); padding: 4px max(8px, env(safe-area-inset-right, 0px)) calc(4px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
-.bnav-in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+.bnav-in { max-width: 560px; margin: 0 auto; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; }
+.bnav button[hidden] { display: none; }
 .bnav button { display: grid; justify-items: center; gap: 1px; padding: 4px 2px 3px; border: 0; border-radius: 12px; background: transparent; color: #8fa3c0; font-size: 11px; font-weight: 700; letter-spacing: .02em; }
 .bnav svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .bnav button[data-g="home"] svg { fill: currentColor; fill-opacity: .15; }
@@ -1522,6 +1523,22 @@ body:not(.no-trip) .month-nav .m-acts { flex-direction: column; align-items: fle
 .trn-why { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
 .trn-why[hidden] { display: none; }
 .trn-hero .trn-cap { font-family: inherit; font-size: 13px; font-weight: 800; letter-spacing: .12em; }
+#p-learn { display: grid; gap: 12px; }
+#p-learn[hidden] { display: none; }
+.lr-h { margin: 6px 0 0; }
+.lr-grp { display: grid; gap: 8px; margin-top: 8px; }
+.lr-g { margin: 0; font-size: 13px; letter-spacing: .08em; color: var(--ink-soft); }
+.lr-list { display: grid; gap: 8px; }
+.lr-item { display: grid; gap: 8px; min-width: 0; }
+.lr-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 14px; border: 1px solid rgb(255 255 255 / .1); border-radius: 14px; background: rgb(255 255 255 / .04); color: var(--ink); text-align: left; }
+.lr-row[aria-expanded="true"] { border-color: rgb(196 168 255 / .5); background: rgb(155 107 255 / .14); }
+.lr-play { position: relative; flex: none; width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #ff8fc8, #a98bff); }
+.lr-play::after { content: ""; position: absolute; left: 13px; top: 10px; border-style: solid; border-width: 7px 0 7px 11px; border-color: transparent transparent transparent #0b0814; }
+.lr-row[aria-expanded="true"] .lr-play::after { left: 11px; top: 11px; height: 12px; border: 0; border-left: 4px solid #0b0814; border-right: 4px solid #0b0814; box-sizing: content-box; width: 4px; }
+.lr-video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; background: #000; }
+.lr-meta { flex: 1; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; }
+.lr-meta b { font-size: 15px; min-width: 0; }
+.lr-meta small { flex: none; color: var(--ink-soft); font-size: 12px; }
 #p-train { display: grid; gap: 12px; }
 #p-train[hidden] { display: none; }
 .trn-card { background: var(--card); border: 1px solid var(--rule); border-radius: var(--r); padding: 16px; display: grid; gap: 10px; }
@@ -2985,6 +3002,12 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
     <div id="tei-body"></div>
   </section>
 
+  <!-- 研修: the way to 研修予約 on top, then the 研修資料 videos by company -->
+  <section class="panel" id="p-learn" aria-label="研修" hidden>
+    <button type="button" class="sx-hero lr-hero" data-go-trn><span class="sx-cap">TRAINING</span><b>研修予約</b><small>研修チケットで、研修担当との研修を予約する</small><i class="sx-chev" aria-hidden="true"></i></button>
+    <div id="lr-body"></div>
+  </section>
+
   <!-- 広場: マイページ (this month and the totals) on top, then the ランキング, みんなの獲得ログ and ありがとうチケット -->
   <section class="panel" id="p-plaza" aria-label="広場" hidden>
     <button type="button" class="sx-hero sx-open" id="sx-open"><span class="sx-cap">MY PAGE</span><b id="sx-name">マイページ</b><small>今月のふりかえりと、累計の記録</small><i class="sx-chev" aria-hidden="true"></i></button>
@@ -3030,6 +3053,7 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
     <button type="button" data-g="home" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>ホーム</span></button>
     <button type="button" data-g="shift"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>シフト</span></button>
     <button type="button" data-g="plaza"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.5"/><path d="M2.5 19.5c.6-3.6 2.8-5.5 5.5-5.5s4.9 1.9 5.5 5.5M13.5 14.6c.9-.7 1.9-1.1 3-1.1 2.3 0 4.1 1.6 4.6 4.6"/></svg><span>広場</span></button>
+    <button type="button" data-g="learn" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9 12 4.5 22 9l-10 4.5z"/><path d="M6 11v4.5c0 1.6 2.7 3 6 3s6-1.4 6-3V11M22 9v5"/></svg><span>研修</span></button>
     <button type="button" data-g="point"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><text x="12" y="15.6" text-anchor="middle" font-size="9.5" font-weight="800" font-family="Inter, sans-serif" fill="currentColor" stroke="none">TP</text></svg><span>ポイント</span></button>
     <button type="button" data-g="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>メニュー</span></button>
   </div>
@@ -3550,11 +3574,52 @@ window.addEventListener("error", function (e) {
   $("st-fix").onclick = () => openSheet(state().openDate || dayKey(new Date()));
   $("st-fix-next").onclick = () => { const d = new Date(); openSheet(dayKey(new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1))); };  $("k-out").onclick = () => punch("out");
 
+  // ---- 研修資料: the training videos, kept beside the app on GitHub Pages (kenshu/<f>.mp4 and its still <f>.jpg) ----
+  const LR_BASE = "https://themis-portal.github.io/kenshu/";
+  // はじめに: what everyone on 業務委託 needs first (their tax), ahead of the sales videos
+  const LR_VIDEOS = [
+    ["はじめに", "tax", "税金の納め方とやること", 247], ["はじめに", "shinkoku", "確定申告のやり方", 250],
+    ["docomo", "docomo-plan", "ドコモのプランとすすめ方", 551], ["docomo", "docomo-dcard", "dカードのすすめ方", 484], ["docomo", "docomo-hikari", "ドコモ光のすすめ方", 528], ["docomo", "docomo-denki", "ドコモでんきのすすめ方", 383],
+    ["au", "au-plan", "auのプランとすすめ方", 556], ["au", "au-card", "au PAY カードのすすめ方", 391], ["au", "au-hikari", "auひかりのすすめ方", 682], ["au", "au-denki", "auでんきのすすめ方", 341],
+    ["SoftBank", "sb-plan", "ソフトバンクのプランとすすめ方", 510], ["SoftBank", "sb-card", "PayPayカードのすすめ方", 401], ["SoftBank", "sb-hikari", "ソフトバンク光のすすめ方", 518], ["SoftBank", "sb-denki", "おうちでんきのすすめ方", 373],
+    ["端末", "galaxy", "Galaxyのすすめ方", 425], ["端末", "pixel", "Pixelのすすめ方", 376],
+  ];
+  let lrOpen = null;
+  function renderLearn() {
+    // 社員 are not on 業務委託, so the tax videos under はじめに are not theirs
+    const list = LR_VIDEOS.filter(([g]) => !(g === "はじめに" && window.TC_WORK === "社員"));
+    const groups = [...new Set(list.map(([g]) => g))];
+    $("lr-body").innerHTML = `<h4 class="bl-h lr-h">研修資料</h4><p class="hint">題名をタップすると、その下で再生します。音が出るので、まわりに気をつけてください。</p>` +
+      groups.map((g) => `<section class="lr-grp"><h5 class="lr-g">${esc(g)}</h5><div class="lr-list">` + list.filter((v) => v[0] === g).map(([, f, t, s]) =>
+        `<div class="lr-item" data-lr="${f}"><button type="button" class="lr-row" aria-expanded="false"><i class="lr-play" aria-hidden="true"></i>` +
+        `<span class="lr-meta"><b>${esc(t)}</b><small>${Math.floor(s / 60)}分${String(s % 60).padStart(2, "0")}秒</small></span></button></div>`).join("") + `</div></section>`).join("");
+    lrOpen = null;
+    for (const b of $("lr-body").querySelectorAll(".lr-row")) b.onclick = () => { const it = b.closest(".lr-item"); if (lrOpen === it) lrStop(); else lrPlay(it); };
+  }
+  // one video at a time, opened under its title: opening another (or tapping the title again) closes the last one
+  function lrPlay(item) {
+    lrStop();
+    const f = item.dataset.lr, v = document.createElement("video");
+    v.className = "lr-video"; v.controls = true; v.playsInline = true; v.preload = "metadata";
+    v.setAttribute("playsinline", ""); v.poster = LR_BASE + f + ".jpg"; v.src = LR_BASE + f + ".mp4";
+    item.append(v);
+    item.querySelector(".lr-row").setAttribute("aria-expanded", "true");
+    lrOpen = item;
+    v.play().catch(() => {});
+  }
+  function lrStop() {
+    if (!lrOpen) return;
+    const it = lrOpen, v = it.querySelector("video");
+    lrOpen = null;
+    if (v) { v.pause(); v.removeAttribute("src"); v.load(); v.remove(); }
+    it.querySelector(".lr-row")?.setAttribute("aria-expanded", "false");
+  }
+
   // ---- tabs + month ----
   // the page opens on ホーム; the bar at the foot picks ホーム, シフト (シフト表 / シフト希望) or メニュー (請求書 / 給与明細 in it)
   let tab = "home", shiftTab = "card";
   // お知らせ belongs to wherever it was opened from: ホーム (the bell) or メニュー (お問い合わせ)
-  const GROUP = { home: "home", card: "shift", hope: "shift", train: "shift", point: "point", menu: "menu", inv: "menu", pay: "menu", notice: "home", invite: "menu", tei: "menu", plaza: "plaza", mypage: "plaza" };
+  const GROUP = { home: "home", card: "shift", hope: "shift", train: "learn", learn: "learn", point: "point", menu: "menu", inv: "menu", pay: "menu", notice: "home", invite: "menu", tei: "menu", plaza: "plaza", mypage: "plaza" };
   function setTab(t) {
     // each tab keeps its own month: the shift calendar opens on this month, invoices on last month
     // and its own place on the page: coming back to a screen lands where it was left
@@ -3565,14 +3630,14 @@ window.addEventListener("error", function (e) {
     $("m-now").textContent = { inv: "先月分", pay: "先月分", hope: "来月" }[t] || "今月";
     $("m-hope").hidden = !(GROUP[t] === "shift" && tabOk("hope"));
     $("m-hope").textContent = t === "hope" ? "‹ シフト表に戻る" : "シフト希望を出す";
-    $("m-train").hidden = GROUP[t] !== "shift";
-    $("m-train").textContent = t === "train" ? "‹ シフト表に戻る" : "研修予約";
+    trainBtn(t);
     for (const k of ["card", "hope"]) $("tab-" + k).setAttribute("aria-selected", t === k);
-    for (const k of ["card", "hope", "train", "inv", "pay", "menu", "notice", "point", "invite", "tei", "plaza", "mypage"]) $("p-" + k).hidden = t !== k;
+    for (const k of ["card", "hope", "train", "learn", "inv", "pay", "menu", "notice", "point", "invite", "tei", "plaza", "mypage"]) $("p-" + k).hidden = t !== k;
     // 提案 starts empty each time it is opened (one customer's answers are not the next one's)
     if (t === "tei") { if (moved) teiReset(); renderTei(); loadTei(); }
     if ($("tei-show")) $("tei-show").hidden = true;
     if (t === "train") { renderTrain(); loadTrn(); }
+    if (t === "learn") renderLearn(); else lrStop();
     $("sub-act").replaceChildren();
     if (t === "notice") renderNotice();
     if (t === "point") { renderPoint(); loadTp(); }
@@ -3590,7 +3655,7 @@ window.addEventListener("error", function (e) {
   }
   const tabScroll = {};
   for (const b of document.querySelectorAll(".bnav button")) b.onclick = () => {
-    pickTab({ home: "home", shift: tabOk(shiftTab) ? shiftTab : "card", point: "point", plaza: "plaza", menu: "menu" }[b.dataset.g]);
+    pickTab({ home: "home", shift: tabOk(shiftTab) ? shiftTab : "card", point: "point", plaza: "plaza", learn: "learn", menu: "menu" }[b.dataset.g]);
   };
   // the bar never moves with a finger: a swipe on it (or on the message above it) is stopped here, as an iPhone
   // ignores touch-action for the page's own bounce (taps still reach the buttons)
@@ -4310,15 +4375,27 @@ window.addEventListener("error", function (e) {
   $("tab-card").onclick = () => pickTab("card");
   $("tab-hope").onclick = () => pickTab("hope");
   $("m-hope").onclick = () => pickTab(tab === "hope" ? "card" : "hope");
-  $("m-train").onclick = () => pickTab(tab === "train" ? "card" : "train");
+  $("m-train").onclick = () => pickTab(tab === "train" ? (window.TC_LEARN ? "learn" : "card") : "train");
+  // with the 研修 tab (代表 first), 研修予約 is opened from it and this button is the way back there;
+  // without it, 研修予約 stays a button on the シフト screen as before
+  function trainBtn(t) {
+    $("m-train").hidden = window.TC_LEARN ? t !== "train" : GROUP[t] !== "shift";
+    $("m-train").textContent = window.TC_LEARN ? "‹ 研修に戻る" : t === "train" ? "‹ シフト表に戻る" : "研修予約";
+  }
+  function applyLearn() {
+    GROUP.train = window.TC_LEARN ? "learn" : "shift";
+    document.querySelector('.bnav [data-g="learn"]').hidden = !window.TC_LEARN;
+    trainBtn(tab);
+    if (!tabOk(tab)) setTab("card");
+  }
   // 常勤 staff hand in no shift wishes, so they never see that tab; 社員 send no invoice and hand in no wishes:
   // they get their 給与明細 instead
   // 代表 has no 勤務形態 and sees every tab
-  const tabOk = (t) => (t === "tei" && !!window.TC_TEI) || t === "card" || t === "train" || t === "home" || t === "menu" || t === "notice" || t === "point" || t === "invite" || t === "plaza" || t === "mypage" || (window.TC_REP ? t !== "inv" : false) || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
+  const tabOk = (t) => (t === "tei" && !!window.TC_TEI) || t === "card" || t === "train" || (t === "learn" && !!window.TC_LEARN) || t === "home" || t === "menu" || t === "notice" || t === "point" || t === "invite" || t === "plaza" || t === "mypage" || (window.TC_REP ? t !== "inv" : false) || (window.TC_WORK === "社員" ? t === "pay" : t === "inv" || (t === "hope" && window.TC_WORK !== "常勤"));
   function applyWork() {
     $("tab-hope").hidden = !tabOk("hope"); $("tab-inv").hidden = !tabOk("inv"); $("tab-pay").hidden = !tabOk("pay");
     $("m-hope").hidden = !(GROUP[tab] === "shift" && tabOk("hope"));
-    $("m-train").hidden = GROUP[tab] !== "shift";
+    trainBtn(tab);
     if (!tabOk(tab)) setTab("card");
   }
   $("tab-inv").onclick = () => pickTab("inv");
@@ -4839,7 +4916,7 @@ window.addEventListener("error", function (e) {
   }
 
   let view = new Date(); view = new Date(view.getFullYear(), view.getMonth(), 1);
-  const tabView = { home: view, train: view, tei: view, menu: view, notice: view, point: view, invite: view, plaza: view, mypage: view, card: view, inv: new Date(view.getFullYear(), view.getMonth() - 1, 1), pay: new Date(view.getFullYear(), view.getMonth() - 1, 1), hope: new Date(view.getFullYear(), view.getMonth() + 1, 1) };
+  const tabView = { home: view, train: view, learn: view, tei: view, menu: view, notice: view, point: view, invite: view, plaza: view, mypage: view, card: view, inv: new Date(view.getFullYear(), view.getMonth() - 1, 1), pay: new Date(view.getFullYear(), view.getMonth() - 1, 1), hope: new Date(view.getFullYear(), view.getMonth() + 1, 1) };
   const viewYm = () => `${view.getFullYear()}-${pad(view.getMonth() + 1)}`;
   function watchView() {
     if (!backend) return;
@@ -6418,7 +6495,7 @@ window.addEventListener("error", function (e) {
     if (!v) return;
     for (const k of Object.keys(tabView)) if (/^\d{4}-\d{2}$/.test(v.months?.[k] || "")) { const [y, m] = v.months[k].split("-").map(Number); tabView[k] = new Date(y, m - 1, 1); }
     view = tabView[tab];
-    setTab(["card", "inv", "hope", "train", "pay", "menu", "point", "plaza", "invite", "tei", "mypage"].includes(v.tab) && tabOk(v.tab) ? v.tab : "home");
+    setTab(["card", "inv", "hope", "train", "learn", "pay", "menu", "point", "plaza", "invite", "tei", "mypage"].includes(v.tab) && tabOk(v.tab) ? v.tab : "home");
   }
   // the admin screen's tab (請求書 only for 運営) and months
   function adoptAdminView(v) {
@@ -6521,6 +6598,7 @@ window.addEventListener("error", function (e) {
     window.TC_NAME = me.name; window.TC_WORK = me.workType || "";
     window.TC_ADMIN = !!me.admin; window.TC_OWNER = !!me.owner; window.TC_REP = !!me.rep; window.TC_CONTRACT = me.contractAsk !== false; window.TC_TEST = !!me.test; window.TC_NEED_NAME = !!me.needName;
     window.TC_TEI = !!me.tei; $("m-tei").hidden = !me.tei;
+    window.TC_LEARN = !!me.learn; applyLearn();
     // what is tried out by 代表 first (提案, the shop's carrier, the new 研修チケット, the upright-only note) hangs on this
     document.body.classList.toggle("tei-on", !!me.tei);
     $("logout").hidden = false; $("chpass").hidden = false;
@@ -6573,7 +6651,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.5.9", APP_DATE = "2026-11-08";
+  const APP_VER = "2.6.0", APP_DATE = "2026-11-08";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
