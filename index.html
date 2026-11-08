@@ -638,6 +638,22 @@ body:has(#member-ui:not([hidden])) .brand-btns { display: none; }
 /* same square-cornered button as the 戻る on the day sheet, so the viewer reads as part of the app */
 .viewer-close { position: fixed; top: 12px; right: 12px; z-index: 2; color: var(--ink); font-weight: 500; box-shadow: 0 1px 3px rgb(0 0 0 / .25); }
 .invoice { width: 720px; min-height: 1018px; margin: 0 auto; background: var(--doc-bg); color: var(--doc-ink); padding: 56px 56px 48px; font-family: var(--f-doc); font-size: 13px; line-height: 1.7; box-shadow: 0 2px 6px rgb(0 0 0 / .1), 0 18px 40px -16px rgb(0 0 0 / .3); display: flex; flex-direction: column; gap: 26px; }
+/* 支払調書: the same sheet as the invoice, laid out as the form's table */
+.paystmt { gap: 16px; }
+.paystmt .pyt-ttl { text-align: center; font-size: 19px; font-weight: 700; letter-spacing: .08em; }
+.paystmt .pyt-copy { text-align: right; font-size: 12px; margin-top: -10px; }
+.paystmt .pyt-t { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.paystmt .pyt-t th, .paystmt .pyt-t td { border: 1px solid #555; padding: 7px 9px; text-align: left; vertical-align: middle; background: #fff; color: #1a1a1a; }
+.paystmt .pyt-t th { background: #f0eee8; font-weight: 700; white-space: nowrap; }
+.paystmt .pyt-t th.pyt-v { width: 26px; writing-mode: vertical-rl; text-align: center; letter-spacing: .2em; padding: 8px 4px; }
+.paystmt .pyt-t .r { text-align: right; font-family: var(--f-num); white-space: nowrap; }
+.paystmt .pyt-sub { font-weight: 700; font-size: 13px; margin-top: 6px; }
+.paystmt .pyt-m td, .paystmt .pyt-m th { padding: 5px 9px; }
+.paystmt .pyt-sum td { font-weight: 700; background: #f7f5f0; }
+.paystmt .pyt-note { font-size: 11.5px; color: var(--doc-soft); margin: 0; }
+.pyt-card { display: grid; gap: 8px; }
+.pyt-hint span { display: block; word-break: keep-all; }
+.pyt-btns { display: flex; flex-wrap: wrap; gap: 8px; }
 .invoice .ttl { text-align: center; font-size: 28px; letter-spacing: .6em; font-weight: 700; padding-left: .6em; }
 .invoice .meta { display: grid; grid-template-columns: auto auto; justify-content: end; gap: 0 14px; font-size: 12px; }
 .invoice .meta dt { color: var(--doc-soft); } .invoice .meta dd { margin: 0; }
@@ -2968,10 +2984,18 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
       <div class="actions">
         <button type="button" class="btn okay" id="a-submit">提出する</button>
         <button type="button" class="btn okay" id="a-paid" hidden>入金を確認しました</button>
+        <button type="button" class="btn" id="a-pdf" hidden>請求書PDFを見る・保存する</button>
         <button type="button" class="btn danger" id="a-undo" hidden>提出を取り消す</button>
       </div>
       <p class="hint inv-note">提出すると、この内容の請求書PDFがThemisに届きます。</p>
       <div class="msg" id="inv-msg" role="status" aria-live="polite"></div>
+    </div>
+
+    <!-- 支払調書: a year of what Themis paid, for the person's own 確定申告 (shown whatever the month above) -->
+    <div class="fs-card pyt-card" id="pyt-card">
+      <h3 class="fs-h">支払調書（確定申告用）</h3>
+      <p class="hint pyt-hint"><span>1年間に支払われた報酬と、</span><span>引かれた源泉徴収税の合計です。</span></p>
+      <div class="pyt-btns" id="pyt-btns"></div>
     </div>
   </section>
 
@@ -2982,7 +3006,7 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
       <button type="button" class="menu-item" id="tab-pay" hidden><b>給与明細</b><small>毎月の給与明細を見る</small></button>
       <button type="button" class="menu-item" id="tab-inv"><b>請求書</b><small>毎月の請求書を作って提出</small></button>
       <button type="button" class="menu-item" id="m-tei" hidden><b>提案</b><small>お客さまに合うプランと副商材を出す</small></button>
-      <button type="button" class="menu-item" id="m-push" hidden><b>通知を受け取る</b><small id="m-push-s">出勤・退勤の打刻忘れを、スマホに知らせます</small></button>
+      <button type="button" class="menu-item" id="m-push" hidden><b>通知を受け取る</b><small id="m-push-s">打刻忘れやありがとうを、スマホに知らせる</small></button>
       <button type="button" class="menu-item" id="m-ask"><b>お問い合わせ</b><small>Themisに質問・連絡する</small></button>
     </div>
     <div class="menu-list">
@@ -3588,7 +3612,7 @@ window.addEventListener("error", function (e) {
   const LR_BASE = "https://themis-portal.github.io/kenshu/";
   // はじめに: what everyone on 業務委託 needs first (their tax), ahead of the sales videos
   const LR_VIDEOS = [
-    ["はじめに", "tax", "税金の納め方とやること", 247], ["はじめに", "shinkoku", "確定申告のやり方", 250],
+    ["はじめに", "tax", "税金の納め方とやること", 277], ["はじめに", "shinkoku", "確定申告のやり方", 259],
     ["docomo", "docomo-plan", "ドコモのプランとすすめ方", 551], ["docomo", "docomo-dcard", "dカードのすすめ方", 484], ["docomo", "docomo-hikari", "ドコモ光のすすめ方", 528], ["docomo", "docomo-denki", "ドコモでんきのすすめ方", 383],
     ["au", "au-plan", "auのプランとすすめ方", 556], ["au", "au-card", "au PAY カードのすすめ方", 391], ["au", "au-hikari", "auひかりのすすめ方", 682], ["au", "au-denki", "auでんきのすすめ方", 341],
     ["SoftBank", "sb-plan", "ソフトバンクのプランとすすめ方", 510], ["SoftBank", "sb-card", "PayPayカードのすすめ方", 401], ["SoftBank", "sb-hikari", "ソフトバンク光のすすめ方", 518], ["SoftBank", "sb-denki", "おうちでんきのすすめ方", 373],
@@ -3871,29 +3895,56 @@ window.addEventListener("error", function (e) {
   function paintPush() {
     const on = typeof Notification !== "undefined" && Notification.permission === "granted" && !!pushHad();
     $("m-push").querySelector("b").textContent = on ? "通知：オン" : "通知を受け取る";
-    $("m-push-s").textContent = on ? "出勤・退勤の打刻忘れが、この端末に届きます" : "出勤・退勤の打刻忘れを、スマホに知らせます";
+    $("m-push-s").textContent = on ? "この端末に通知が届きます" : "打刻忘れやありがとうを、スマホに知らせる";
   }
-  $("m-push").onclick = async () => {
+  const pushCan = () => "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
+  // the permission is asked first, straight from the tap (an iPhone allows the question only then)
+  async function pushEnable() {
     const ios = /iPhone|iPad|iPod/.test(navigator.userAgent), app = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
-    if (!("Notification" in window) || !("serviceWorker" in navigator) || !("PushManager" in window)) {
+    if (!pushCan()) {
       msg(ios && !app ? "iPhoneは、Safariの共有ボタンから「ホーム画面に追加」したアプリで開くと、通知を受け取れます。" : "この端末やブラウザでは、通知を受け取れません。");
       return;
     }
-    if (!FCM_CFG || !FCM_VAPID) { msg("通知はまだ準備中です。"); return; }
+    if (await Notification.requestPermission() !== "granted") { msg("通知はオフのままです。設定でオンにできます。"); paintPush(); return; }
+    if (await pushSync(false)) msg("通知をオンにしました。この端末に届きます。");
+    paintPush();
+  }
+  // the phone's FCM token handed to the server: after 許可, and (quiet) on each opening once a day or when it changed,
+  // so the server always holds a token that works
+  const pushAtKey = "tc_push_at";
+  async function pushSync(quiet) {
     const reg = await navigator.serviceWorker.getRegistration();
-    if (!reg) { msg("通知は、ホーム画面に追加したアプリ（themis-portal.github.io）で受け取れます。"); return; }
-    if (await Notification.requestPermission() !== "granted") { msg("通知が許可されませんでした。スマホの設定で、このアプリの通知をオンにしてください。"); paintPush(); return; }
+    if (!reg) { if (!quiet) msg("通知は、ホーム画面に追加したアプリ（themis-portal.github.io）で受け取れます。"); return false; }
     try {
       if (!window.firebase) { await loadScript(FCM_SDK + "firebase-app-compat.js"); await loadScript(FCM_SDK + "firebase-messaging-compat.js"); }
       if (!firebase.apps.length) firebase.initializeApp(FCM_CFG);
       const t = await firebase.messaging().getToken({ vapidKey: FCM_VAPID, serviceWorkerRegistration: reg });
       if (!t) throw new Error("no token");
-      await call("api_pushSave", t, true);
-      try { localStorage.setItem(pushKey, t); } catch (e) {}
-      msg("通知をオンにしました。出勤・退勤の打刻を忘れたときに、この端末に届きます。");
-    } catch (e) { msg("通知をオンにできませんでした。時間をおいて、もう一度押してください。"); }
-    paintPush();
-  };
+      let at = 0;
+      try { at = Number(localStorage.getItem(pushAtKey)) || 0; } catch (e) {}
+      if (!quiet || t !== pushHad() || Date.now() - at > 86400000) {
+        await call("api_pushSave", t, true);
+        try { localStorage.setItem(pushKey, t); localStorage.setItem(pushAtKey, String(Date.now())); } catch (e) {}
+      }
+      return true;
+    } catch (e) { if (!quiet) msg("通知をオンにできませんでした。時間をおいて、もう一度押してください。"); return false; }
+  }
+  $("m-push").onclick = () => pushEnable();
+  // 通知 is a must: on every opening, until it is on, the one question comes back with no 「あとで」; when the phone
+  // said no, how to turn it on is shown instead. Once on, the token is kept fresh without a word
+  let pushAsked = false;
+  function pushAsk(tries = 0) {
+    if (pushAsked || !pushCan()) return;
+    if (Notification.permission === "granted") { pushAsked = true; pushSync(true).then(paintPush); return; }
+    // waits while any sheet is open (a question, a day's record, はじめに, …)
+    if (document.querySelector(".modal-bg:not([hidden])") || mode !== "member") { if (tries < 40) setTimeout(() => pushAsk(tries + 1), 3000); return; }
+    pushAsked = true;
+    if (Notification.permission === "denied") {
+      ask("通知がオフになっています", "スマホの設定から、Themis Portal の\n通知をオンにしてください。", "わかった", false, null);
+      return;
+    }
+    ask("通知をオンにしてください", "打刻忘れ、ありがとう、研修の予約、\n請求書のことを、スマホに知らせます。", "オンにする", false, null).then((yes) => { if (yes) pushEnable(); });
+  }
   $("nt-home-post").onclick = () => showNotice("post", null, "home");
   $("m-invite").onclick = () => pickTab("invite");
   $("m-tei").onclick = () => pickTab("tei");
@@ -5288,11 +5339,14 @@ window.addEventListener("error", function (e) {
     // nothing to see until Themis has set the amount
     const noAmt = st === "draft" && inv.fixedAmount == null;
     $("inv-locked").hidden = !noAmt;
-    for (const el of $("p-inv").children) if (!el.matches(".inv-head, #inv-locked")) el.style.display = noAmt ? "none" : "";
+    for (const el of $("p-inv").children) if (!el.matches(".inv-head, #inv-locked, #pyt-card")) el.style.display = noAmt ? "none" : "";
     const locked = st !== "draft";
     $("fs-set").disabled = locked;
     // Themis marks the payment; the member then confirms the money arrived. A paid invoice can no longer be withdrawn
     $("a-submit").hidden = locked; $("a-paid").hidden = !(st === "paid" && !inv.confirmedOn); $("a-undo").hidden = st !== "submitted";
+    // the invoice as sent can be opened and kept by the person too
+    $("a-pdf").hidden = !(locked && inv.pdfUrl);
+    paintPs();
     // a draft can go out only once Themis's amount is in it
     $("a-submit").disabled = inv.fixedAmount == null;
     $("b-wh").checked = v.whOn;
@@ -5375,6 +5429,47 @@ window.addEventListener("error", function (e) {
     if (!tp) return v;
     const lines = v.lines.filter((l) => l.name !== "TP報酬").map((l, i) => i ? l : { ...l, price: l.price + tp, amount: l.amount + tp });
     return { ...v, lines };
+  }
+  // the person's own invoice as sent, from Drive, in the PDF viewer (its ダウンロード saves it)
+  $("a-pdf").onclick = () => {
+    const ym = viewYm(), [y, m] = ym.split("-").map(Number);
+    viewPdf(`${y}年${m}月分の請求書`, async () => b64Bytes(await call("api_myInvPdf", ym)), `請求書_${ym.replace("-", "")}.pdf`);
+  };
+  // 支払調書: this year and last (from 2026, when Themis began paying); the sheet is drawn here and shown as a PDF
+  function paintPs() {
+    const now = new Date().getFullYear(), years = [now, now - 1].filter((y) => y >= 2026);
+    const key = years.join(",");
+    if ($("pyt-btns").dataset.k === key) return;
+    $("pyt-btns").dataset.k = key;
+    $("pyt-btns").innerHTML = years.map((y) => `<button type="button" class="btn" data-pyt="${y}">${y}年分を見る</button>`).join("");
+    for (const b of $("pyt-btns").querySelectorAll("[data-pyt]")) b.onclick = () => {
+      const y = Number(b.dataset.pyt);
+      viewPdf(`${y}年分の支払調書`, async () => {
+        const s = JSON.parse(await call("api_payStmt", y));
+        return b64Bytes(await buildPdf(null, null, payStmtHTML(s), "invoice paystmt"));
+      }, `支払調書_${y}年分.pdf`);
+    };
+  }
+  // 報酬、料金、契約金及び賞金の支払調書 (the person's copy: no マイナンバー), and the months it is made of
+  function payStmtHTML(s) {
+    const n = (v) => Number(v || 0).toLocaleString("ja-JP"), wa = s.year - 2018;
+    const a = s.addr || {}, addr = [a.zip ? "〒" + a.zip : "", a.address, a.building].filter(Boolean).join(" ");
+    const p = s.payer || {}, paddr = [p.zip ? "〒" + p.zip : "", p.address].filter(Boolean).join(" ");
+    const mon = (ym) => { const [y, m] = ym.split("-").map(Number); return `${y}年${m}月分`; };
+    const pay = (x) => { if (x.paidOn) return jDate(x.paidOn); const [y, m] = x.ym.split("-").map(Number); return `${m === 12 ? y + 1 : y}年${m === 12 ? 1 : m + 1}月末（予定）`; };
+    return `<div class="pyt-ttl">令和${wa}年分　報酬、料金、契約金及び賞金の支払調書</div><div class="pyt-copy">本人控え</div>
+      <table class="pyt-t"><tr><th rowspan="2" class="pyt-v">支払を受ける者</th><th>住所（居所）</th><td colspan="3">${esc(addr) || "（未登録）"}</td></tr>
+        <tr><th>氏名</th><td colspan="3">${esc(s.name)}</td></tr>
+        <tr><th colspan="2">区分</th><th>細目</th><th>支払金額</th><th>源泉徴収税額</th></tr>
+        <tr><td colspan="2">外交員報酬</td><td>業務委託料</td><td class="r">${n(s.gross)} 円</td><td class="r">${n(s.wh)} 円</td></tr>
+        <tr><th colspan="2">摘要</th><td colspan="3">${s.tax ? `支払金額には、消費税等 ${n(s.tax)} 円を含みます。<br>` : ""}${s.months.length ? `対象：${mon(s.months[0].ym)}〜${mon(s.months[s.months.length - 1].ym)}（${s.months.length}か月）` : "この年の支払いはありません。"}</td></tr>
+        <tr><th rowspan="2" class="pyt-v">支払者</th><th>住所（所在地）</th><td colspan="3">${esc(paddr)}${p.tel ? `　電話 ${esc(p.tel)}` : ""}</td></tr>
+        <tr><th>名称</th><td colspan="3">${esc(p.name)}</td></tr></table>
+      <div class="pyt-sub">月ごとの内訳</div>
+      <table class="pyt-t pyt-m"><tr><th>対象月</th><th>支払日</th><th>報酬（税込）</th><th>源泉徴収税額</th></tr>
+        ${s.months.map((x) => `<tr><td>${mon(x.ym)}</td><td>${pay(x)}</td><td class="r">${n(x.gross)} 円</td><td class="r">${n(x.wh)} 円</td></tr>`).join("")}
+        <tr class="pyt-sum"><td colspan="2">合計</td><td class="r">${n(s.gross)} 円</td><td class="r">${n(s.wh)} 円</td></tr></table>
+      <p class="pyt-note">提出した請求書の金額から作っています。マイナンバーは記載していません。<br>確定申告では、支払金額を収入に、源泉徴収税額を「源泉徴収税額」の欄に入れてください。</p>`;
   }
   // 「提出する」 builds the PDF here; the server files it in Drive, where Themis opens it from 報酬・給与 (no email)
   $("a-submit").onclick = async () => {
@@ -6653,7 +6748,7 @@ window.addEventListener("error", function (e) {
     window.TC_ADMIN = !!me.admin; window.TC_OWNER = !!me.owner; window.TC_REP = !!me.rep; window.TC_CONTRACT = me.contractAsk !== false; window.TC_TEST = !!me.test; window.TC_NEED_NAME = !!me.needName;
     window.TC_TEI = !!me.tei; $("m-tei").hidden = !me.tei;
     window.TC_LEARN = !!me.learn; applyLearn();
-    $("m-push").hidden = !me.push; if (me.push) paintPush();
+    $("m-push").hidden = !me.push; if (me.push) { paintPush(); setTimeout(pushAsk, 2500); }
     // what is tried out by 代表 first (提案, the shop's carrier, the new 研修チケット, the upright-only note) hangs on this
     document.body.classList.toggle("tei-on", !!me.tei);
     $("logout").hidden = false; $("chpass").hidden = false;
@@ -6962,7 +7057,10 @@ window.addEventListener("error", function (e) {
   // noText: the other button's words (戻る when left out); a tap outside the box answers null
   const ASK_NO = $("ask-no").textContent;
   function ask(title, body, okText, danger, noText) {
+    // noText null: only the one button, and a tap beside the box does not close it (a question that must be answered)
+    const only = noText === null;
     $("ask-h").textContent = title; $("ask-body").textContent = body; $("ask-no").textContent = noText || ASK_NO;
+    $("ask-no").hidden = only; $("ask-yes").style.gridColumn = only ? "1 / -1" : "";
     $("ask-yes").textContent = okText; $("ask-yes").className = `btn ${danger ? "danger armed" : "primary"}`;
     $("ask-sheet").querySelector(".modal").classList.toggle("danger", !!danger);
     $("ask-sheet").hidden = false;
@@ -6970,7 +7068,7 @@ window.addEventListener("error", function (e) {
       const done = (v) => { $("ask-sheet").hidden = true; res(v); };
       $("ask-yes").onclick = () => done(true);
       $("ask-no").onclick = () => done(false);
-      $("ask-sheet").onclick = (e) => { if (e.target === $("ask-sheet")) done(noText ? null : false); };
+      $("ask-sheet").onclick = (e) => { if (e.target === $("ask-sheet") && !only) done(noText ? null : false); };
     });
   }
   $("chpass").onclick = async () => {
