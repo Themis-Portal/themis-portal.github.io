@@ -1527,21 +1527,25 @@ body:not(.no-trip) .month-nav .m-acts { flex-direction: column; align-items: fle
 #p-learn[hidden] { display: none; }
 .lr-h { margin: 6px 0 0; }
 .lr-grp { display: grid; gap: 8px; margin-top: 8px; }
-.lr-g { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 54px; padding: 10px 16px; border: 1px solid rgb(255 255 255 / .12); border-radius: 14px; background: rgb(255 255 255 / .06); color: var(--ink); text-align: left; }
-.lr-g b { flex: 1; font-size: 16px; letter-spacing: .04em; }
-.lr-g small { color: var(--ink-soft); font-size: 12px; }
-.lr-chev { width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-3px); transition: transform .2s; }
-.lr-g[aria-expanded="true"] .lr-chev { transform: rotate(225deg) translateY(-3px); }
+/* the 研修予約 card and the group headings share the マイページ card's shape, kept low: name over a small line, the arrow on the right */
+#p-learn .sx-open { padding: 12px 16px; }
+#p-learn .sx-open b { font-size: 16px; }
+.lr-hint span { display: block; word-break: keep-all; }
+#p-learn .lr-g { grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; min-height: 52px; }
+#p-learn .lr-g b, #p-learn .lr-g small { grid-column: auto; }
+.lr-g .sx-chev { grid-column: 3; grid-row: 1; transform: rotate(45deg); transition: transform .2s; }
+.lr-g[aria-expanded="true"] .sx-chev { transform: rotate(225deg); }
 .lr-list { display: grid; gap: 8px; padding-left: 10px; }
 .lr-list[hidden] { display: none; }
 .lr-item { display: grid; gap: 8px; min-width: 0; }
-.lr-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 14px; border: 1px solid rgb(255 255 255 / .1); border-radius: 14px; background: rgb(255 255 255 / .04); color: var(--ink); text-align: left; }
+.lr-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 8px 14px; border: 1px solid var(--plate-line); border-radius: var(--r); background: var(--plate); color: var(--plate-ink); text-align: left; font: inherit; }
+.lr-row .lr-meta b { color: #fff; word-break: keep-all; }
 .lr-row[aria-expanded="true"] { border-color: rgb(196 168 255 / .5); background: rgb(155 107 255 / .14); }
 .lr-play { position: relative; flex: none; width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #ff8fc8, #a98bff); }
 .lr-play::after { content: ""; position: absolute; left: 13px; top: 10px; border-style: solid; border-width: 7px 0 7px 11px; border-color: transparent transparent transparent #0b0814; }
 .lr-row[aria-expanded="true"] .lr-play::after { left: 11px; top: 11px; height: 12px; border: 0; border-left: 4px solid #0b0814; border-right: 4px solid #0b0814; box-sizing: content-box; width: 4px; }
 .lr-video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; background: #000; }
-.lr-meta { flex: 1; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; }
+.lr-meta { flex: 1; display: grid; gap: 1px; min-width: 0; }
 .lr-meta b { font-size: 15px; min-width: 0; }
 .lr-meta small { flex: none; color: var(--ink-soft); font-size: 12px; }
 #p-train { display: grid; gap: 12px; }
@@ -3009,7 +3013,7 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
 
   <!-- 研修: the way to 研修予約 on top, then the 研修資料 videos by company -->
   <section class="panel" id="p-learn" aria-label="研修" hidden>
-    <button type="button" class="sx-hero lr-hero" data-go-trn><span class="sx-cap">TRAINING</span><b>研修予約</b><small>研修チケットで、研修担当との研修を予約する</small><i class="sx-chev" aria-hidden="true"></i></button>
+    <button type="button" class="sx-hero sx-open lr-hero" data-go-trn><span class="sx-cap">TRAINING</span><b>研修予約</b><small>研修チケットで、研修担当との研修を予約する</small><i class="sx-chev" aria-hidden="true"></i></button>
     <div id="lr-body"></div>
   </section>
 
@@ -3595,9 +3599,9 @@ window.addEventListener("error", function (e) {
     const list = LR_VIDEOS.filter(([g]) => !(g === "はじめに" && window.TC_WORK === "社員"));
     const groups = [...new Set(list.map(([g]) => g))];
     // each group (はじめに, docomo, …) is a heading that opens its list on a tap; which ones are open is kept while the page stays
-    $("lr-body").innerHTML = `<h4 class="bl-h lr-h">研修資料</h4><p class="hint">見出しをタップすると動画の一覧が開きます。題名をタップすると、その下で再生します。音が出るので、まわりに気をつけてください。</p>` +
+    $("lr-body").innerHTML = `<h4 class="bl-h lr-h">研修資料</h4><p class="hint lr-hint"><span>見出しをタップすると、一覧が開きます。</span><span>題名をタップすると、その下で再生します。</span></p>` +
       groups.map((g) => { const vs = list.filter((v) => v[0] === g), on = lrGroups.has(g);
-        return `<section class="lr-grp" data-g="${esc(g)}"><button type="button" class="lr-g" aria-expanded="${on}"><b>${esc(g)}</b><small>${vs.length}本</small><i class="lr-chev" aria-hidden="true"></i></button><div class="lr-list"${on ? "" : " hidden"}>` + vs.map(([, f, t, s]) =>
+        return `<section class="lr-grp" data-g="${esc(g)}"><button type="button" class="sx-hero sx-open lr-g" aria-expanded="${on}"><b>${esc(g)}</b><small>動画 ${vs.length}本</small><i class="sx-chev" aria-hidden="true"></i></button><div class="lr-list"${on ? "" : " hidden"}>` + vs.map(([, f, t, s]) =>
         `<div class="lr-item" data-lr="${f}"><button type="button" class="lr-row" aria-expanded="false"><i class="lr-play" aria-hidden="true"></i>` +
         `<span class="lr-meta"><b>${esc(t)}</b><small>${Math.floor(s / 60)}分${String(s % 60).padStart(2, "0")}秒</small></span></button></div>`).join("") + `</div></section>`; }).join("");
     lrOpen = null;
