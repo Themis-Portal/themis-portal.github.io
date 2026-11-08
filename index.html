@@ -1527,8 +1527,13 @@ body:not(.no-trip) .month-nav .m-acts { flex-direction: column; align-items: fle
 #p-learn[hidden] { display: none; }
 .lr-h { margin: 6px 0 0; }
 .lr-grp { display: grid; gap: 8px; margin-top: 8px; }
-.lr-g { margin: 0; font-size: 13px; letter-spacing: .08em; color: var(--ink-soft); }
-.lr-list { display: grid; gap: 8px; }
+.lr-g { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 54px; padding: 10px 16px; border: 1px solid rgb(255 255 255 / .12); border-radius: 14px; background: rgb(255 255 255 / .06); color: var(--ink); text-align: left; }
+.lr-g b { flex: 1; font-size: 16px; letter-spacing: .04em; }
+.lr-g small { color: var(--ink-soft); font-size: 12px; }
+.lr-chev { width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-3px); transition: transform .2s; }
+.lr-g[aria-expanded="true"] .lr-chev { transform: rotate(225deg) translateY(-3px); }
+.lr-list { display: grid; gap: 8px; padding-left: 10px; }
+.lr-list[hidden] { display: none; }
 .lr-item { display: grid; gap: 8px; min-width: 0; }
 .lr-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 14px; border: 1px solid rgb(255 255 255 / .1); border-radius: 14px; background: rgb(255 255 255 / .04); color: var(--ink); text-align: left; }
 .lr-row[aria-expanded="true"] { border-color: rgb(196 168 255 / .5); background: rgb(155 107 255 / .14); }
@@ -3589,13 +3594,22 @@ window.addEventListener("error", function (e) {
     // 社員 are not on 業務委託, so the tax videos under はじめに are not theirs
     const list = LR_VIDEOS.filter(([g]) => !(g === "はじめに" && window.TC_WORK === "社員"));
     const groups = [...new Set(list.map(([g]) => g))];
-    $("lr-body").innerHTML = `<h4 class="bl-h lr-h">研修資料</h4><p class="hint">題名をタップすると、その下で再生します。音が出るので、まわりに気をつけてください。</p>` +
-      groups.map((g) => `<section class="lr-grp"><h5 class="lr-g">${esc(g)}</h5><div class="lr-list">` + list.filter((v) => v[0] === g).map(([, f, t, s]) =>
+    // each group (はじめに, docomo, …) is a heading that opens its list on a tap; which ones are open is kept while the page stays
+    $("lr-body").innerHTML = `<h4 class="bl-h lr-h">研修資料</h4><p class="hint">見出しをタップすると動画の一覧が開きます。題名をタップすると、その下で再生します。音が出るので、まわりに気をつけてください。</p>` +
+      groups.map((g) => { const vs = list.filter((v) => v[0] === g), on = lrGroups.has(g);
+        return `<section class="lr-grp" data-g="${esc(g)}"><button type="button" class="lr-g" aria-expanded="${on}"><b>${esc(g)}</b><small>${vs.length}本</small><i class="lr-chev" aria-hidden="true"></i></button><div class="lr-list"${on ? "" : " hidden"}>` + vs.map(([, f, t, s]) =>
         `<div class="lr-item" data-lr="${f}"><button type="button" class="lr-row" aria-expanded="false"><i class="lr-play" aria-hidden="true"></i>` +
-        `<span class="lr-meta"><b>${esc(t)}</b><small>${Math.floor(s / 60)}分${String(s % 60).padStart(2, "0")}秒</small></span></button></div>`).join("") + `</div></section>`).join("");
+        `<span class="lr-meta"><b>${esc(t)}</b><small>${Math.floor(s / 60)}分${String(s % 60).padStart(2, "0")}秒</small></span></button></div>`).join("") + `</div></section>`; }).join("");
     lrOpen = null;
     for (const b of $("lr-body").querySelectorAll(".lr-row")) b.onclick = () => { const it = b.closest(".lr-item"); if (lrOpen === it) lrStop(); else lrPlay(it); };
+    for (const b of $("lr-body").querySelectorAll(".lr-g")) b.onclick = () => {
+      const sec = b.closest(".lr-grp"), g = sec.dataset.g, on = b.getAttribute("aria-expanded") !== "true";
+      if (!on && lrOpen && sec.contains(lrOpen)) lrStop();
+      b.setAttribute("aria-expanded", on); sec.querySelector(".lr-list").hidden = !on;
+      if (on) lrGroups.add(g); else lrGroups.delete(g);
+    };
   }
+  const lrGroups = new Set();
   // one video at a time, opened under its title: opening another (or tapping the title again) closes the last one
   function lrPlay(item) {
     lrStop();
