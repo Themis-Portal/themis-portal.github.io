@@ -2982,6 +2982,7 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
       <button type="button" class="menu-item" id="tab-pay" hidden><b>給与明細</b><small>毎月の給与明細を見る</small></button>
       <button type="button" class="menu-item" id="tab-inv"><b>請求書</b><small>毎月の請求書を作って提出</small></button>
       <button type="button" class="menu-item" id="m-tei" hidden><b>提案</b><small>お客さまに合うプランと副商材を出す</small></button>
+      <button type="button" class="menu-item" id="m-push" hidden><b>通知を受け取る</b><small id="m-push-s">出勤・退勤の打刻忘れを、スマホに知らせます</small></button>
       <button type="button" class="menu-item" id="m-ask"><b>お問い合わせ</b><small>Themisに質問・連絡する</small></button>
     </div>
     <div class="menu-list">
@@ -3858,6 +3859,41 @@ window.addEventListener("error", function (e) {
   }
   $("nt-unread").onclick = () => { showNotice("list", null, "home"); loadInbox(); };
   $("m-ask").onclick = () => showNotice("new", null, "menu");
+
+  // ---- 通知: notices on the phone's own screen (Firebase Cloud Messaging; sent by Code.gs pushWatch_) ----
+  // FCM_CFG and FCM_VAPID are the Firebase web app's public settings; until they are in, the button says so.
+  // The phone's FCM token is kept on the server (api_pushSave) and, to show 「オン」, in this browser (tc_push)
+  const FCM_CFG = { apiKey: "AIzaSyC4U-t9CgozQsNKln8NPe7H2Mh-dF0_GE8", authDomain: "themis-portal-fb994.firebaseapp.com", projectId: "themis-portal-fb994",
+    storageBucket: "themis-portal-fb994.firebasestorage.app", messagingSenderId: "388133602206", appId: "1:388133602206:web:b9cbc6bed3ee0e08cc0c8f" };
+  const FCM_VAPID = "BM_zOvN1f4TQu4cqxFfECM-E6lExdQO9a-1tTcbydGy_SEmJ8wWkhCO0CBk0PUuqwyO2vxpFVSyQsxjSoHE4IqA", FCM_SDK = "https://www.gstatic.com/firebasejs/10.12.2/";
+  const pushKey = "tc_push";
+  const pushHad = () => { try { return localStorage.getItem(pushKey) || ""; } catch (e) { return ""; } };
+  function paintPush() {
+    const on = typeof Notification !== "undefined" && Notification.permission === "granted" && !!pushHad();
+    $("m-push").querySelector("b").textContent = on ? "通知：オン" : "通知を受け取る";
+    $("m-push-s").textContent = on ? "出勤・退勤の打刻忘れが、この端末に届きます" : "出勤・退勤の打刻忘れを、スマホに知らせます";
+  }
+  $("m-push").onclick = async () => {
+    const ios = /iPhone|iPad|iPod/.test(navigator.userAgent), app = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+    if (!("Notification" in window) || !("serviceWorker" in navigator) || !("PushManager" in window)) {
+      msg(ios && !app ? "iPhoneは、Safariの共有ボタンから「ホーム画面に追加」したアプリで開くと、通知を受け取れます。" : "この端末やブラウザでは、通知を受け取れません。");
+      return;
+    }
+    if (!FCM_CFG || !FCM_VAPID) { msg("通知はまだ準備中です。"); return; }
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) { msg("通知は、ホーム画面に追加したアプリ（themis-portal.github.io）で受け取れます。"); return; }
+    if (await Notification.requestPermission() !== "granted") { msg("通知が許可されませんでした。スマホの設定で、このアプリの通知をオンにしてください。"); paintPush(); return; }
+    try {
+      if (!window.firebase) { await loadScript(FCM_SDK + "firebase-app-compat.js"); await loadScript(FCM_SDK + "firebase-messaging-compat.js"); }
+      if (!firebase.apps.length) firebase.initializeApp(FCM_CFG);
+      const t = await firebase.messaging().getToken({ vapidKey: FCM_VAPID, serviceWorkerRegistration: reg });
+      if (!t) throw new Error("no token");
+      await call("api_pushSave", t, true);
+      try { localStorage.setItem(pushKey, t); } catch (e) {}
+      msg("通知をオンにしました。出勤・退勤の打刻を忘れたときに、この端末に届きます。");
+    } catch (e) { msg("通知をオンにできませんでした。時間をおいて、もう一度押してください。"); }
+    paintPush();
+  };
   $("nt-home-post").onclick = () => showNotice("post", null, "home");
   $("m-invite").onclick = () => pickTab("invite");
   $("m-tei").onclick = () => pickTab("tei");
@@ -6617,6 +6653,7 @@ window.addEventListener("error", function (e) {
     window.TC_ADMIN = !!me.admin; window.TC_OWNER = !!me.owner; window.TC_REP = !!me.rep; window.TC_CONTRACT = me.contractAsk !== false; window.TC_TEST = !!me.test; window.TC_NEED_NAME = !!me.needName;
     window.TC_TEI = !!me.tei; $("m-tei").hidden = !me.tei;
     window.TC_LEARN = !!me.learn; applyLearn();
+    $("m-push").hidden = !me.push; if (me.push) paintPush();
     // what is tried out by 代表 first (提案, the shop's carrier, the new 研修チケット, the upright-only note) hangs on this
     document.body.classList.toggle("tei-on", !!me.tei);
     $("logout").hidden = false; $("chpass").hidden = false;
