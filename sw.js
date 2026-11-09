@@ -1,4 +1,4 @@
-const CACHE = "themis-portal-20261108144504";
+const CACHE = "themis-portal-20261109201414";
 const SHELL = ["./", "./index.html", "./config.js", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/apple-touch-icon.png"];
 self.addEventListener("install", (e) => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).catch(() => {})); });
 self.addEventListener("activate", (e) => e.waitUntil(
@@ -16,7 +16,7 @@ self.addEventListener("fetch", (e) => {
 self.addEventListener("push", (e) => {
   let d = {};
   try { const j = e.data ? e.data.json() : {}; d = j.data || j.notification || j; } catch (x) { d = { body: e.data ? e.data.text() : "" }; }
-  e.waitUntil(self.registration.showNotification(d.title || "Themis Portal", { body: d.body || "", tag: d.tag || undefined, icon: "./icons/icon-192.png", badge: "./icons/icon-192.png", data: { url: "./" } }));
+  e.waitUntil(self.registration.showNotification(d.title || "Themis Portal", { body: d.body || "", tag: d.tag || undefined, renotify: !!d.tag, vibrate: [200, 100, 200], icon: "./icons/icon-192.png", badge: "./icons/icon-192.png", data: { url: "./" } }));
 });
 self.addEventListener("notificationclick", (e) => {
   e.notification.close();

@@ -3612,11 +3612,11 @@ window.addEventListener("error", function (e) {
   const LR_BASE = "https://themis-portal.github.io/kenshu/";
   // はじめに: what everyone on 業務委託 needs first (their tax), ahead of the sales videos
   const LR_VIDEOS = [
-    ["はじめに", "tax", "税金の納め方とやること", 277], ["はじめに", "shinkoku", "確定申告のやり方", 259],
-    ["docomo", "docomo-plan", "ドコモのプランとすすめ方", 551], ["docomo", "docomo-dcard", "dカードのすすめ方", 484], ["docomo", "docomo-hikari", "ドコモ光のすすめ方", 528], ["docomo", "docomo-denki", "ドコモでんきのすすめ方", 383],
-    ["au", "au-plan", "auのプランとすすめ方", 556], ["au", "au-card", "au PAY カードのすすめ方", 391], ["au", "au-hikari", "auひかりのすすめ方", 682], ["au", "au-denki", "auでんきのすすめ方", 341],
-    ["SoftBank", "sb-plan", "ソフトバンクのプランとすすめ方", 510], ["SoftBank", "sb-card", "PayPayカードのすすめ方", 401], ["SoftBank", "sb-hikari", "ソフトバンク光のすすめ方", 518], ["SoftBank", "sb-denki", "おうちでんきのすすめ方", 373],
-    ["端末", "galaxy", "Galaxyのすすめ方", 425], ["端末", "pixel", "Pixelのすすめ方", 376],
+    ["はじめに", "tax", "税金の納め方とやること", 306], ["はじめに", "shinkoku", "確定申告のやり方", 233],
+    ["docomo", "docomo-plan", "ドコモのプランとすすめ方", 495], ["docomo", "docomo-dcard", "dカードのすすめ方", 439], ["docomo", "docomo-hikari", "ドコモ光のすすめ方", 476], ["docomo", "docomo-denki", "ドコモでんきのすすめ方", 344],
+    ["au", "au-plan", "auのプランとすすめ方", 512], ["au", "au-card", "au PAY カードのすすめ方", 341], ["au", "au-hikari", "auひかりのすすめ方", 632], ["au", "au-denki", "auでんきのすすめ方", 303],
+    ["SoftBank", "sb-plan", "ソフトバンクのプランとすすめ方", 468], ["SoftBank", "sb-card", "PayPayカードのすすめ方", 361], ["SoftBank", "sb-hikari", "ソフトバンク光のすすめ方", 474], ["SoftBank", "sb-denki", "おうちでんきのすすめ方", 341],
+    ["端末", "galaxy", "Galaxyのすすめ方", 374], ["端末", "pixel", "Pixelのすすめ方", 331],
   ];
   let lrOpen = null;
   function renderLearn() {
@@ -3720,13 +3720,19 @@ window.addEventListener("error", function (e) {
   const ntAt = (s) => { const m = /^\d{4}[-/](\d{1,2})[-/](\d{1,2}) (\d{1,2}):(\d{2})/.exec(s || ""); return m ? `${Number(m[1])}/${Number(m[2])} ${m[3].padStart(2, "0")}:${m[4]}` : ""; };
   // ホーム: 「未読のお知らせが〇件あります」 at the top (only while there are some), the newest five under the clock,
   // and a dot on ホーム in the bar so it is seen from every screen
+  // メニュー has a red dot for an お問い合わせ waiting (管理者) or a 請求書 ready to submit; 請求書 has one too
+  function paintMenuDot() {
+    const ready = (window.TC_INVREADY || []).length > 0, open = (inbox.admin && inbox.askOpen) || 0;
+    document.querySelector('.bnav [data-g="menu"]').classList.toggle("has-new", open > 0 || ready);
+    $("tab-inv").classList.toggle("has-new", ready);
+  }
   function paintBell() {
     const n = inbox.items.filter((x) => x.unread).length;
     $("nt-unread-row").hidden = !n; $("nt-unread-n").textContent = n > 99 ? "99+" : String(n);
     document.querySelector('.bnav [data-g="home"]').classList.toggle("has-new", n > 0);
     // 管理者以上: お問い合わせ waiting for an answer mark メニュー › 管理者画面 › 問い合わせ
     const open = (inbox.admin && inbox.askOpen) || 0;
-    document.querySelector('.bnav [data-g="menu"]').classList.toggle("has-new", open > 0);
+    paintMenuDot();
     $("m-admin").classList.toggle("has-new", open > 0);
     $("ad-tabs").querySelector('[data-t="ask"]').classList.toggle("has-new", open > 0);
     // every お知らせ, in a low box that scrolls inside itself; 運営・代表 post a new one from the button beside the title
@@ -5486,6 +5492,7 @@ window.addEventListener("error", function (e) {
       const b64 = await buildPdf(ym, pdfView(v));
       const url = await call("api_submit", ym, b64);
       inv.snapshot = v; inv.status = "submitted"; inv.submittedOn = dayKey(new Date()); inv.pdfUrl = url;
+      window.TC_INVREADY = (window.TC_INVREADY || []).filter((x) => x !== ym); paintMenuDot();
       renderInvoice();
       const kept = await persist("inv-" + ym);
       if (kept) { await busyDone("提出しました", `${y}年${m}月分　${yen(v.total)}`); invMsg("Themisに提出しました。"); } else busyOff();
@@ -6749,6 +6756,7 @@ window.addEventListener("error", function (e) {
     window.TC_TEI = !!me.tei; $("m-tei").hidden = !me.tei;
     window.TC_LEARN = !!me.learn; applyLearn();
     $("m-push").hidden = !me.push; if (me.push) { paintPush(); setTimeout(pushAsk, 2500); }
+    window.TC_INVREADY = me.invReady || []; paintMenuDot();
     // what is tried out by 代表 first (提案, the shop's carrier, the new 研修チケット, the upright-only note) hangs on this
     document.body.classList.toggle("tei-on", !!me.tei);
     $("logout").hidden = false; $("chpass").hidden = false;
@@ -6801,7 +6809,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.6.0", APP_DATE = "2026-11-08";
+  const APP_VER = "2.6.0", APP_DATE = "2026-11-09";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
