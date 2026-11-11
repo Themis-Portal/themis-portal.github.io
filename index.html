@@ -3613,9 +3613,9 @@ window.addEventListener("error", function (e) {
   // はじめに: what everyone on 業務委託 needs first (their tax), ahead of the sales videos
   const LR_VIDEOS = [
     ["はじめに", "tax", "税金の納め方とやること", 306], ["はじめに", "shinkoku", "確定申告のやり方", 233],
-    ["docomo", "docomo-plan", "ドコモのプランとすすめ方", 495], ["docomo", "docomo-dcard", "dカードのすすめ方", 439], ["docomo", "docomo-hikari", "ドコモ光のすすめ方", 476], ["docomo", "docomo-denki", "ドコモでんきのすすめ方", 344],
-    ["au", "au-plan", "auのプランとすすめ方", 512], ["au", "au-card", "au PAY カードのすすめ方", 341], ["au", "au-hikari", "auひかりのすすめ方", 632], ["au", "au-denki", "auでんきのすすめ方", 303],
-    ["SoftBank", "sb-plan", "ソフトバンクのプランとすすめ方", 468], ["SoftBank", "sb-card", "PayPayカードのすすめ方", 361], ["SoftBank", "sb-hikari", "ソフトバンク光のすすめ方", 474], ["SoftBank", "sb-denki", "おうちでんきのすすめ方", 341],
+    ["docomo", "docomo-plan", "ドコモのプランとすすめ方", 497], ["docomo", "docomo-dcard", "dカードのすすめ方", 439], ["docomo", "docomo-hikari", "ドコモ光のすすめ方", 472], ["docomo", "docomo-denki", "ドコモでんきのすすめ方", 344],
+    ["au", "au-plan", "auのプランとすすめ方", 514], ["au", "au-card", "au PAY カードのすすめ方", 341], ["au", "au-hikari", "auひかりのすすめ方", 637], ["au", "au-denki", "auでんきのすすめ方", 303],
+    ["SoftBank", "sb-plan", "ソフトバンクのプランとすすめ方", 470], ["SoftBank", "sb-card", "PayPayカードのすすめ方", 361], ["SoftBank", "sb-hikari", "ソフトバンク光のすすめ方", 471], ["SoftBank", "sb-denki", "おうちでんきのすすめ方", 341],
     ["端末", "galaxy", "Galaxyのすすめ方", 374], ["端末", "pixel", "Pixelのすすめ方", 331],
   ];
   let lrOpen = null;
@@ -6809,7 +6809,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.6.0", APP_DATE = "2026-11-09";
+  const APP_VER = "2.6.1", APP_DATE = "2026-11-11";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
