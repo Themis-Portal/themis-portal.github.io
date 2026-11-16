@@ -1559,21 +1559,24 @@ body:not(.no-trip) .month-nav .m-acts { flex-direction: column; align-items: fle
 .lr-tab[aria-selected="true"] { background: var(--c); border-color: var(--c); color: #fff; box-shadow: 0 4px 14px color-mix(in srgb, var(--c) 40%, transparent); }
 .lr-tab[aria-selected="true"] small { color: rgb(255 255 255 / .85); }
 [data-c="docomo"] { --c: #cc0033; } [data-c="au"] { --c: #eb5505; } [data-c="sb"] { --c: #8a96a8; } [data-c="dev"] { --c: #1aa39a; } [data-c="base"] { --c: #8b6bff; }
-/* the videos: the cover picture with a play mark and the length, the title under it; two to a row when there is room */
-.lr-list { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+/* the videos: the cover picture with a play mark and the length, two to a row (more on a wide screen); the one
+   playing takes the whole row */
+.lr-list { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 900px) { .lr-list { gap: 14px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); } }
 .lr-item { display: grid; gap: 6px; min-width: 0; align-content: start; }
-.lr-thumb { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; padding: 0; border: 0; border-radius: 14px; overflow: hidden; background: #000;
+.lr-item.lr-on { grid-column: 1 / -1; }
+.lr-thumb { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: #000;
   box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c) 70%, transparent); cursor: pointer; }
 .lr-thumb[hidden] { display: none; }
-.lr-cover { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: 8px; padding: 14px 18px 26px; text-align: center;
+.lr-cover { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: 3px; padding: 6px 8px 16px; text-align: center;
   background: radial-gradient(120% 90% at 85% 0%, color-mix(in srgb, var(--c) 55%, transparent), transparent 60%), radial-gradient(90% 80% at 0% 100%, color-mix(in srgb, var(--c) 30%, transparent), transparent 65%), #120d1f; }
-.lr-cover small { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: rgb(255 255 255 / .7); }
-.lr-cover b { font-size: clamp(18px, 5.6vw, 24px); line-height: 1.35; font-weight: 900; color: #fff; word-break: keep-all; overflow-wrap: anywhere; text-wrap: balance; }
-.lr-thumb::before { content: ""; position: absolute; inset: auto 0 0 0; height: 5px; background: var(--c); }
-.lr-play { position: absolute; left: 10px; bottom: 14px; width: 40px; height: 40px; border-radius: 50%; background: rgb(0 0 0 / .55); box-shadow: 0 0 0 2px rgb(255 255 255 / .85); }
-.lr-play::after { content: ""; position: absolute; left: 15px; top: 12px; border-style: solid; border-width: 8px 0 8px 13px; border-color: transparent transparent transparent #fff; }
-.lr-dur { position: absolute; right: 10px; bottom: 20px; padding: 1px 7px; border-radius: 6px; background: rgb(0 0 0 / .7); color: #fff; font-size: 12px; font-weight: 700; }
-.lr-video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; background: #000; }
+.lr-cover small { font-size: 9px; font-weight: 700; letter-spacing: .04em; color: rgb(255 255 255 / .7); }
+.lr-cover b { font-size: clamp(12px, 3.5vw, 16px); line-height: 1.3; font-weight: 900; color: #fff; word-break: keep-all; overflow-wrap: anywhere; text-wrap: balance; }
+.lr-thumb::before { content: ""; position: absolute; inset: auto 0 0 0; height: 4px; background: var(--c); }
+.lr-play { position: absolute; left: 6px; bottom: 9px; width: 24px; height: 24px; border-radius: 50%; background: rgb(0 0 0 / .55); box-shadow: 0 0 0 1.5px rgb(255 255 255 / .85); }
+.lr-play::after { content: ""; position: absolute; left: 9px; top: 7px; border-style: solid; border-width: 5px 0 5px 8px; border-color: transparent transparent transparent #fff; }
+.lr-dur { position: absolute; right: 6px; bottom: 10px; padding: 0 5px; border-radius: 5px; background: rgb(0 0 0 / .7); color: #fff; font-size: 10px; font-weight: 700; }
+.lr-video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; background: #000; }
 #p-train { display: grid; gap: 12px; }
 #p-train[hidden] { display: none; }
 .trn-card { background: var(--card); border: 1px solid var(--rule); border-radius: var(--r); padding: 16px; display: grid; gap: 10px; }
@@ -3013,7 +3016,7 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
 
   <section class="panel menu" id="p-menu" aria-label="メニュー" hidden>
     <!-- 友達を招待: its own lit box at the top, so it is seen -->
-    <button type="button" class="menu-invite" id="m-invite"><span class="mi-gift" aria-hidden="true"><i class="ico ico-gift" aria-hidden="true"></i></span><span><b>友達を招待する</b><small>友達も自分も <em>5,000TP</em>。さらに毎月 <em>5,000TP</em> のチャンス</small></span></button>
+    <button type="button" class="menu-invite" id="m-invite"><span class="mi-gift" aria-hidden="true"><i class="ico ico-gift" aria-hidden="true"></i></span><span><b>友達を招待する</b><small>友達が3か月働いたら <em>5,000TP以上</em> もらえる</small></span></button>
     <div class="menu-list">
       <button type="button" class="menu-item" id="tab-pay" hidden><b>給与明細</b><small>毎月の給与明細を見る</small></button>
       <button type="button" class="menu-item" id="tab-inv"><b>請求書</b><small>毎月の請求書を作って提出</small></button>
@@ -3673,6 +3676,7 @@ window.addEventListener("error", function (e) {
     v.className = "lr-video"; v.controls = true; v.playsInline = true; v.preload = "metadata";
     v.setAttribute("playsinline", ""); v.poster = LR_BASE + f + ".jpg"; v.src = LR_BASE + f + ".mp4";
     item.querySelector(".lr-thumb").hidden = true;
+    item.classList.add("lr-on");
     item.prepend(v);
     lrOpen = item;
     v.play().catch(() => {});
@@ -3684,6 +3688,7 @@ window.addEventListener("error", function (e) {
     if (v) { v.pause(); v.removeAttribute("src"); v.load(); v.remove(); }
     const t = it.querySelector(".lr-thumb");
     if (t) t.hidden = false;
+    it.classList.remove("lr-on");
   }
 
   // ---- tabs + month ----
@@ -4392,16 +4397,20 @@ window.addEventListener("error", function (e) {
   }, 1000);
   function renderInvite() {
     const typed = $("iv-in")?.value || "", typing = document.activeElement?.id === "iv-in";
-    const v = invite, bonus = tpN(v?.bonus || 5000), welcome = tpN(v?.welcome || 5000), days = v?.days || 20;
+    const v = invite, min = tpN(v?.min || 5000), need = v?.need || 3, days = v?.days || 20;
+    // each person invited: the months counted so far, then waiting for Themis, then the TP sent
+    const ivStep = (x) => x.step === "done" ? (x.tp ? `招待特典 ${tpN(x.tp)}TP をお届けしました` : "招待特典をお届けしました")
+      : x.step === "ready" ? `${need}か月になりました。招待特典をお届けする準備をしています`
+      : `月${days}日以上の出勤 ${x.months || 0}／${need}か月`;
     // ?v= makes LINE fetch the share image again (it keeps the old one per URL)
     const url = window.TC_API ? location.origin + location.pathname + "?v=3" : "";
     $("iv-body").innerHTML =
-      `<div class="iv-hero"><span class="iv-cap">INVITE FRIENDS</span><h2>友達を招待して<br>毎月 <em>${bonus}TP</em> もらおう</h2>` +
-      `<p>あなたの招待コードで友達がメンバーになり、月${days}日以上出勤すると、翌月に友達とあなたに <b>${welcome}TP</b> ずつ届きます。その次の月からも、友達が月${days}日以上出勤した月は、あなたに毎月 <b>${bonus}TP</b>（${bonus}円分）のボーナスが届きます。何人でも招待できます。</p>` +
+      `<div class="iv-hero"><span class="iv-cap">INVITE FRIENDS</span><h2>友達を招待して<br><em>${min}TP以上</em> もらおう</h2>` +
+      `<p>あなたの招待コードで友達がメンバーになり、月${days}日以上出勤した月が${need}か月になると、あなたに招待特典 <b>${min}TP以上</b>（${min}円分以上）が届きます。金額はThemisが決めます。何人でも招待できます。</p>` +
       `<div class="iv-code"><span>あなたの招待コード</span><b class="num" id="iv-code">${v ? esc(v.code) : "……"}</b></div>` +
       `<div class="iv-acts"><button type="button" class="btn primary" id="iv-copy"${v ? "" : " disabled"}>コードをコピー</button>` +
       (navigator.share ? `<button type="button" class="btn iv-share" id="iv-share"${v ? "" : " disabled"}>友達に送る</button>` : "") + `</div></div>` +
-      `<h4 class="bl-h">招待した人</h4>` + (v?.invited?.length ? `<div class="tp-list">` + v.invited.map((x) => `<div><span><b>${esc(x.name)}</b>さん<br><span class="muted">${esc(ntAt(x.since))}から　月${days}日以上の出勤で ${bonus}TP</span></span></div>`).join("") + `</div>`
+      `<h4 class="bl-h">招待した人</h4>` + (v?.invited?.length ? `<div class="tp-list">` + v.invited.map((x) => `<div><span><b>${esc(x.name)}</b>さん<br><span class="muted">${esc(ntAt(x.since))}から　${esc(ivStep(x))}</span></span></div>`).join("") + `</div>`
         : `<p class="hint">まだいません。招待コードを送ってみましょう。</p>`) +
       // the input is shown only to those Themis chose (メンバー › 招待コード); a code already entered still shows
       (v?.show === false && !(v.entered && v.entered.status !== "却下") ? "" :
@@ -4413,7 +4422,7 @@ window.addEventListener("error", function (e) {
         : `<form class="iv-enter" id="iv-form"><div class="iv-enter-h"><b>招待コードを入力</b>` +
           (v?.untilMs ? `<span class="iv-count">残り <b class="num" id="iv-count">${ivLeft(v.untilMs)}</b></span>` : "") + `</div>` +
           `<div class="iv-enter-row"><input type="text" id="iv-in" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="AB12CD" aria-label="招待コード"><button type="submit" class="btn primary">送る</button></div>` +
-          `<p class="iv-enter-note">Themisが認証すると、あなたと友達に <b>${welcome}TP</b> が付与されます。${v?.entered ? "（前に入れたコードは承認されませんでした）" : ""}</p></form>`));
+          `<p class="iv-enter-note">Themisが確認します。招待してくれた友達へのお礼になります。${v?.entered ? "（前に入れたコードは承認されませんでした）" : ""}</p></form>`));
     if ($("iv-in") && typed) { $("iv-in").value = typed; if (typing) $("iv-in").focus(); }
     const text = () => `Themis Portal の招待コード：${v.code}${url ? `\n${url}` : ""}`;
     if ($("iv-copy")) $("iv-copy").onclick = async () => { const ok = await copyText(v.code); $("iv-copy").textContent = ok ? "コピーしました" : "コピーできませんでした"; setTimeout(() => { if ($("iv-copy")) $("iv-copy").textContent = "コードをコピー"; }, 1600); };
@@ -6798,7 +6807,8 @@ window.addEventListener("error", function (e) {
     window.TC_ADMIN = !!me.admin; window.TC_OWNER = !!me.owner; window.TC_REP = !!me.rep; window.TC_CONTRACT = me.contractAsk !== false; window.TC_TEST = !!me.test; window.TC_NEED_NAME = !!me.needName;
     window.TC_TEI = !!me.tei; $("m-tei").hidden = !me.tei;
     window.TC_LEARN = !!me.learn; applyLearn();
-    $("m-push").hidden = !me.push; if (me.push) { paintPush(); setTimeout(pushAsk, 2500); }
+    // 通知 has no line in メニュー: it is asked for on every opening until it is on (pushAsk)
+    if (me.push) { paintPush(); setTimeout(pushAsk, 2500); }
     window.TC_INVREADY = me.invReady || []; paintMenuDot();
     // what is tried out by 代表 first (提案, the shop's carrier, the new 研修チケット, the upright-only note) hangs on this
     document.body.classList.toggle("tei-on", !!me.tei);
@@ -6852,7 +6862,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.9.1", APP_DATE = "2026-11-16";
+  const APP_VER = "2.10.0", APP_DATE = "2026-11-17";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -8231,17 +8241,24 @@ window.addEventListener("error", function (e) {
   // (the log is shown here only, to 運営 and 代表)
   // the last read is drawn at once and the fresh one replaces it when it arrives
   let tpAdCache = null;
-  // 友達招待: the codes entered, waiting for 許可 / 却下, and the ones allowed (停止 ends the monthly bonus)
+  // 友達招待: the codes entered, waiting for 許可 / 却下; the ones whose 招待特典 is to be sent (the TP typed here,
+  // INVITE_MIN or more); and the ones still counting their months (停止 ends one)
   let ivAd = null;
   const ivAdHTML = () => {
     if (!ivAd) return `<h4 class="bl-h">友達招待の申請</h4><p class="hint">読み込んでいます…</p>`;
+    const days = ivAd.days || 20, need = ivAd.need || 3, min = ivAd.min || 5000;
     const wait = ivAd.list.filter((x) => x.status === "申請中"), on = ivAd.list.filter((x) => x.status === "許可");
+    const ready = on.filter((x) => x.step === "ready"), count = on.filter((x) => x.step === "count");
     return `<h4 class="bl-h">友達招待の申請</h4>` + (wait.length ? `<div class="tp-list">` + wait.map((x) =>
         `<div><span><b>${esc(x.inviteeName)}</b>さん ← 招待：${esc(x.inviterName)}さん<br><span class="muted">${esc(ntAt(x.at))} 入力</span></span>` +
         `<span class="ad-acts"><button type="button" class="tool" data-iv-ok="${esc(x.id)}">許可</button><button type="button" class="tool danger" data-iv-ng="${esc(x.id)}">却下</button></span></div>`).join("") + `</div>`
       : `<p class="hint">いま申請はありません。</p>`) +
-      (on.length ? `<h4 class="bl-h">招待ボーナス中（月${ivAd.days || 20}日以上出勤で ${tpN(ivAd.bonus)}TP）</h4><div class="tp-list">` + on.map((x) =>
-        `<div><span><b>${esc(x.inviterName)}</b>さん → ${esc(x.inviteeName)}さん<br><span class="muted">${esc(ntAt(x.approvedAt))}から</span></span>` +
+      (ready.length ? `<h4 class="bl-h">招待特典の配布待ち（${tpN(min)}TP以上）</h4>` + ready.map((x) =>
+        `<div class="tp-card"><b>${esc(x.inviterName)}さんへ招待特典</b><p class="hint">${esc(x.inviteeName)}さんが月${days}日以上の出勤 ${need}か月になりました</p>` +
+        `<div class="tp-row"><span class="tp-in"><input type="number" inputmode="numeric" min="${min}" step="1" value="${min}" data-iv-amt="${esc(x.id)}" aria-label="${esc(x.inviterName)}さんに送るTP"><small>TP</small></span>` +
+        `<button type="button" class="btn primary" data-iv-pay="${esc(x.id)}">送る</button></div></div>`).join("") : "") +
+      (count.length ? `<h4 class="bl-h">招待特典まで数えている人（月${days}日以上の出勤 ${need}か月で配布待ちへ）</h4><div class="tp-list">` + count.map((x) =>
+        `<div><span><b>${esc(x.inviterName)}</b>さん → ${esc(x.inviteeName)}さん<br><span class="muted">${esc(ntAt(x.approvedAt))}から　${Math.min(x.months || 0, need)}／${need}か月</span></span>` +
         `<span class="ad-acts"><button type="button" class="tool danger" data-iv-stop="${esc(x.id)}">停止</button></span></div>`).join("") + `</div>` : "");
   };
   async function loadIvAd() {
@@ -8256,11 +8273,18 @@ window.addEventListener("error", function (e) {
     };
     const who = (id) => ivAd.list.find((x) => x.id === id);
     for (const b of $("ad-body").querySelectorAll("[data-iv-ok]")) b.onclick = () => { const x = who(b.dataset.ivOk);
-      act(x.id, "ok", "招待を許可しますか？", `${x.inviteeName}さんが月${ivAd.days || 20}日以上出勤した月があると（今月の分から）、翌月に${x.inviteeName}さんと${x.inviterName}さんに ${tpN(ivAd.welcome || 5000)}TP ずつ届きます。その次の月からは、月${ivAd.days || 20}日以上出勤した月ごとに${x.inviterName}さんに ${tpN(ivAd.bonus)}TP が付きます`, "許可する", false, "許可しました。"); };
+      act(x.id, "ok", "招待を許可しますか？", `${x.inviteeName}さんが月${ivAd.days || 20}日以上出勤した月を（今月の分から）数えます。${ivAd.need || 3}か月になると、ここに配布待ちで出ます。金額（${tpN(ivAd.min || 5000)}TP以上）を入れて、${x.inviterName}さんに送ってください。`, "許可する", false, "許可しました。"); };
+    for (const b of $("ad-body").querySelectorAll("[data-iv-pay]")) b.onclick = async () => {
+      const x = who(b.dataset.ivPay), inp = $("ad-body").querySelector(`[data-iv-amt="${x.id}"]`), n = Number(inp.value), min = ivAd.min || 5000;
+      if (!Number.isInteger(n) || n < min) { adMsg(`金額は ${tpN(min)}TP 以上で入れてください。`); inp.focus(); return; }
+      if (!await ask("招待特典を送りますか？", `${x.inviterName}さんに ${tpN(n)}TP を送ります（${x.inviteeName}さんの招待の特典）。お知らせの「受け取る」から受け取れます。`, "送る", false)) return;
+      b.disabled = true;
+      try { await call("api_inviteReward", x.id, n); adMsg(`${x.inviterName}さんに ${tpN(n)}TP を送りました。`); loadIvAd(); adPoints(); } catch (e) { b.disabled = false; adMsg(errText(e)); }
+    };
     for (const b of $("ad-body").querySelectorAll("[data-iv-ng]")) b.onclick = () => { const x = who(b.dataset.ivNg);
       act(x.id, "ng", "招待を却下しますか？", `${x.inviteeName}さんが入れた、${x.inviterName}さんの招待コードを認めません。`, "却下する", true, "却下しました。"); };
     for (const b of $("ad-body").querySelectorAll("[data-iv-stop]")) b.onclick = () => { const x = who(b.dataset.ivStop);
-      act(x.id, "stop", "招待ボーナスを停止しますか？", `${x.inviterName}さんへの毎月のボーナス（${x.inviteeName}さんの分）を止めます。`, "停止する", true, "停止しました。"); };
+      act(x.id, "stop", "招待特典を停止しますか？", `${x.inviteeName}さんの分の、${x.inviterName}さんへの招待特典を止めます。`, "停止する", true, "停止しました。"); };
   }
   async function adPoints() {
     loadIvAd();
