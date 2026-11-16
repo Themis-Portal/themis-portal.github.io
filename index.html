@@ -1103,7 +1103,7 @@ body.gate #scroller { overflow: hidden; }
 .ad-amount { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-soft); }
 .ad-amount > span, .ad-amount > button { flex: none; white-space: nowrap; }
 .ad-amount .ad-fixed { font-size: 17px; color: var(--ink); }
-.ad-amount input { flex: 1 1 7em; min-width: 6em; font: inherit; font-family: var(--f-num); font-size: 15px; padding: 6px 8px; border: 1px solid var(--rule); border-radius: 8px; background: var(--paper); color: var(--ink); }
+.ad-amount input { flex: 1 1 7em; min-width: 6em; font: inherit; font-family: var(--f-num); font-size: 16px; padding: 6px 8px; border: 1px solid var(--rule); border-radius: 8px; background: var(--paper); color: var(--ink); }
 /* a person card that opens their calendar */
 button.ad-card.ad-link { font: inherit; color: inherit; text-align: left; cursor: pointer; width: 100%; }
 button.ad-card.ad-link:hover { border-color: var(--accent); }
@@ -1547,28 +1547,33 @@ body:not(.no-trip) .month-nav .m-acts { flex-direction: column; align-items: fle
 #p-learn { display: grid; gap: 12px; }
 #p-learn[hidden] { display: none; }
 .lr-h { margin: 6px 0 0; }
-.lr-grp { display: grid; gap: 8px; margin-top: 8px; }
 /* the 研修予約 card and the group headings share the マイページ card's shape, kept low: name over a small line, the arrow on the right */
 #p-learn .sx-open { padding: 12px 16px; }
 #p-learn .sx-open b { font-size: 16px; }
 .lr-hint span { display: block; word-break: keep-all; }
-#p-learn .lr-g { grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; min-height: 52px; }
-#p-learn .lr-g b, #p-learn .lr-g small { grid-column: auto; }
-.lr-g .sx-chev { grid-column: 3; grid-row: 1; transform: rotate(45deg); transition: transform .2s; }
-.lr-g[aria-expanded="true"] .sx-chev { transform: rotate(225deg); }
-.lr-list { display: grid; gap: 8px; padding-left: 10px; }
-.lr-list[hidden] { display: none; }
-.lr-item { display: grid; gap: 8px; min-width: 0; }
-.lr-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 8px 14px; border: 1px solid var(--plate-line); border-radius: var(--r); background: var(--plate); color: var(--plate-ink); text-align: left; font: inherit; }
-.lr-row .lr-meta b { color: #fff; word-break: keep-all; }
-.lr-row[aria-expanded="true"] { border-color: rgb(196 168 255 / .5); background: rgb(155 107 255 / .14); }
-.lr-play { position: relative; flex: none; width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #ff8fc8, #a98bff); }
-.lr-play::after { content: ""; position: absolute; left: 13px; top: 10px; border-style: solid; border-width: 7px 0 7px 11px; border-color: transparent transparent transparent #0b0814; }
-.lr-row[aria-expanded="true"] .lr-play::after { left: 11px; top: 11px; height: 12px; border: 0; border-left: 4px solid #0b0814; border-right: 4px solid #0b0814; box-sizing: content-box; width: 4px; }
+/* the groups as tabs side by side (two rows on a narrow phone), each in its company's color */
+.lr-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 14px; }
+.lr-tab { --c: #a98bff; flex: 1 1 calc(33% - 8px); min-width: 0; min-height: 48px; display: grid; place-items: center; gap: 0; padding: 6px 8px; border-radius: 12px;
+  border: 1.5px solid color-mix(in srgb, var(--c) 55%, transparent); background: color-mix(in srgb, var(--c) 12%, var(--plate)); color: var(--plate-ink); font: inherit; font-weight: 800; font-size: 14px; }
+.lr-tab small { font-size: 11px; font-weight: 600; color: var(--ink-soft); }
+.lr-tab[aria-selected="true"] { background: var(--c); border-color: var(--c); color: #fff; box-shadow: 0 4px 14px color-mix(in srgb, var(--c) 40%, transparent); }
+.lr-tab[aria-selected="true"] small { color: rgb(255 255 255 / .85); }
+[data-c="docomo"] { --c: #cc0033; } [data-c="au"] { --c: #eb5505; } [data-c="sb"] { --c: #8a96a8; } [data-c="dev"] { --c: #1aa39a; } [data-c="base"] { --c: #8b6bff; }
+/* the videos: the cover picture with a play mark and the length, the title under it; two to a row when there is room */
+.lr-list { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.lr-item { display: grid; gap: 6px; min-width: 0; align-content: start; }
+.lr-thumb { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; padding: 0; border: 0; border-radius: 14px; overflow: hidden; background: #000;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c) 70%, transparent); cursor: pointer; }
+.lr-thumb[hidden] { display: none; }
+.lr-cover { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: 8px; padding: 14px 18px 26px; text-align: center;
+  background: radial-gradient(120% 90% at 85% 0%, color-mix(in srgb, var(--c) 55%, transparent), transparent 60%), radial-gradient(90% 80% at 0% 100%, color-mix(in srgb, var(--c) 30%, transparent), transparent 65%), #120d1f; }
+.lr-cover small { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: rgb(255 255 255 / .7); }
+.lr-cover b { font-size: clamp(18px, 5.6vw, 24px); line-height: 1.35; font-weight: 900; color: #fff; word-break: keep-all; overflow-wrap: anywhere; text-wrap: balance; }
+.lr-thumb::before { content: ""; position: absolute; inset: auto 0 0 0; height: 5px; background: var(--c); }
+.lr-play { position: absolute; left: 10px; bottom: 14px; width: 40px; height: 40px; border-radius: 50%; background: rgb(0 0 0 / .55); box-shadow: 0 0 0 2px rgb(255 255 255 / .85); }
+.lr-play::after { content: ""; position: absolute; left: 15px; top: 12px; border-style: solid; border-width: 8px 0 8px 13px; border-color: transparent transparent transparent #fff; }
+.lr-dur { position: absolute; right: 10px; bottom: 20px; padding: 1px 7px; border-radius: 6px; background: rgb(0 0 0 / .7); color: #fff; font-size: 12px; font-weight: 700; }
 .lr-video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 14px; background: #000; }
-.lr-meta { flex: 1; display: grid; gap: 1px; min-width: 0; }
-.lr-meta b { font-size: 15px; min-width: 0; }
-.lr-meta small { flex: none; color: var(--ink-soft); font-size: 12px; }
 #p-train { display: grid; gap: 12px; }
 #p-train[hidden] { display: none; }
 .trn-card { background: var(--card); border: 1px solid var(--rule); border-radius: var(--r); padding: 16px; display: grid; gap: 10px; }
@@ -3421,6 +3426,19 @@ window.addEventListener("error", function (e) {
   const $ = (id) => document.getElementById(id);
   // the page scrolls inside #scroller, never the window itself
   const SC = $("scroller"), scrollToY = (y) => SC.scrollTo(0, y || 0);
+  // a field being typed in is kept above the phone's keyboard: the page scrolls inside #scroller, which the phone does
+  // not always move by itself, so once the keyboard is up (the visible area shrinks) the field is brought into view
+  {
+    const typing = (el) => el && el.matches?.("input:not([type=checkbox]):not([type=radio]):not([type=hidden]), textarea") && SC.contains(el);
+    const keep = () => {
+      const el = document.activeElement;
+      if (!typing(el)) return;
+      const vv = window.visualViewport, bottom = vv ? vv.offsetTop + vv.height : innerHeight, r = el.getBoundingClientRect();
+      if (r.bottom > bottom - 16 || r.top < 70) SC.scrollBy({ top: r.bottom - bottom + Math.min(140, (bottom - r.height) / 2), behavior: "smooth" });
+    };
+    document.addEventListener("focusin", (e) => { if (typing(e.target)) { setTimeout(keep, 350); setTimeout(keep, 700); } });
+    window.visualViewport?.addEventListener("resize", () => setTimeout(keep, 50));
+  }
   const pad = (n) => String(n).padStart(2, "0");
   const dayKey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   const ymOf = (key) => key.slice(0, 7);
@@ -3630,30 +3648,32 @@ window.addEventListener("error", function (e) {
     // 社員 are not on 業務委託, so the tax videos under はじめに are not theirs
     const list = LR_VIDEOS.filter(([g]) => !(g === "はじめに" && window.TC_WORK === "社員"));
     const groups = [...new Set(list.map(([g]) => g))];
-    // each group (はじめに, docomo, …) is a heading that opens its list on a tap; which ones are open is kept while the page stays
-    $("lr-body").innerHTML = `<h4 class="bl-h lr-h">研修資料</h4><p class="hint lr-hint"><span>見出しをタップすると、一覧が開きます。</span><span>題名をタップすると、その下で再生します。</span></p>` +
-      groups.map((g) => { const vs = list.filter((v) => v[0] === g), on = lrGroups.has(g);
-        return `<section class="lr-grp" data-g="${esc(g)}"><button type="button" class="sx-hero sx-open lr-g" aria-expanded="${on}"><b>${esc(g)}</b><small>動画 ${vs.length}本</small><i class="sx-chev" aria-hidden="true"></i></button><div class="lr-list"${on ? "" : " hidden"}>` + vs.map(([, f, t, s]) =>
-        `<div class="lr-item" data-lr="${f}"><button type="button" class="lr-row" aria-expanded="false"><i class="lr-play" aria-hidden="true"></i>` +
-        `<span class="lr-meta"><b>${esc(t)}</b><small>${Math.floor(s / 60)}分${String(s % 60).padStart(2, "0")}秒</small></span></button></div>`).join("") + `</div></section>`; }).join("");
+    if (!groups.includes(lrSel)) lrSel = groups[0];
+    // the groups (はじめに, docomo, …) are tabs side by side in each company's color; the picked one shows its videos as
+    // cards with the cover picture, and tapping the cover plays the video in its place
+    const vs = list.filter((v) => v[0] === lrSel);
+    $("lr-body").innerHTML = `<h4 class="bl-h lr-h">研修資料</h4><p class="hint lr-hint"><span>上で会社を選んで、</span><span>動画の画像をタップすると再生します。</span></p>` +
+      `<div class="lr-tabs" role="tablist">` + groups.map((g) => `<button type="button" class="lr-tab" role="tab" data-g="${esc(g)}" data-c="${LR_COLOR[g] || "base"}" aria-selected="${g === lrSel}">${esc(g)}<small>${list.filter((v) => v[0] === g).length}本</small></button>`).join("") + `</div>` +
+      `<div class="lr-list" data-c="${LR_COLOR[lrSel] || "base"}">` + vs.map(([, f, t, s]) =>
+        `<div class="lr-item" data-lr="${f}"><button type="button" class="lr-thumb" aria-label="${esc(t)}を再生"><span class="lr-cover"><small>株式会社Themis 研修</small><b>${lrTitle(t)}</b></span>` +
+        `<i class="lr-play" aria-hidden="true"></i><span class="lr-dur">${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}</span></button></div>`).join("") + `</div>`;
     lrOpen = null;
-    for (const b of $("lr-body").querySelectorAll(".lr-row")) b.onclick = () => { const it = b.closest(".lr-item"); if (lrOpen === it) lrStop(); else lrPlay(it); };
-    for (const b of $("lr-body").querySelectorAll(".lr-g")) b.onclick = () => {
-      const sec = b.closest(".lr-grp"), g = sec.dataset.g, on = b.getAttribute("aria-expanded") !== "true";
-      if (!on && lrOpen && sec.contains(lrOpen)) lrStop();
-      b.setAttribute("aria-expanded", on); sec.querySelector(".lr-list").hidden = !on;
-      if (on) lrGroups.add(g); else lrGroups.delete(g);
-    };
+    for (const b of $("lr-body").querySelectorAll(".lr-thumb")) b.onclick = () => lrPlay(b.closest(".lr-item"));
+    for (const b of $("lr-body").querySelectorAll(".lr-tab")) b.onclick = () => { if (b.dataset.g === lrSel) return; lrStop(); lrSel = b.dataset.g; renderLearn(); };
   }
-  const lrGroups = new Set();
-  // one video at a time, opened under its title: opening another (or tapping the title again) closes the last one
+  let lrSel = "";
+  // the title on the cover breaks only between words: before すすめ方 / やり方 / やること and before （…）
+  const lrTitle = (t) => esc(t).replace(/(の|と)(すすめ方|やり方|やること|納め方)/g, "$1<wbr>$2").replace(/（/g, "<wbr>（");
+  // each company's color on its tab and cards (only a color, no logo)
+  const LR_COLOR = { "はじめに": "base", docomo: "docomo", au: "au", SoftBank: "sb", "端末": "dev" };
+  // one video at a time, played where its cover was: starting another (or changing the tab) stops the last one
   function lrPlay(item) {
     lrStop();
     const f = item.dataset.lr, v = document.createElement("video");
     v.className = "lr-video"; v.controls = true; v.playsInline = true; v.preload = "metadata";
     v.setAttribute("playsinline", ""); v.poster = LR_BASE + f + ".jpg"; v.src = LR_BASE + f + ".mp4";
-    item.append(v);
-    item.querySelector(".lr-row").setAttribute("aria-expanded", "true");
+    item.querySelector(".lr-thumb").hidden = true;
+    item.prepend(v);
     lrOpen = item;
     v.play().catch(() => {});
   }
@@ -3662,7 +3682,8 @@ window.addEventListener("error", function (e) {
     const it = lrOpen, v = it.querySelector("video");
     lrOpen = null;
     if (v) { v.pause(); v.removeAttribute("src"); v.load(); v.remove(); }
-    it.querySelector(".lr-row")?.setAttribute("aria-expanded", "false");
+    const t = it.querySelector(".lr-thumb");
+    if (t) t.hidden = false;
   }
 
   // ---- tabs + month ----
@@ -6831,7 +6852,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.9.0", APP_DATE = "2026-11-16";
+  const APP_VER = "2.9.1", APP_DATE = "2026-11-16";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -7471,6 +7492,8 @@ window.addEventListener("error", function (e) {
   // columns of 請求書一覧: 0 氏名 · 4 状態 · 6 入金日 · 7 PDF · 9 本人の入金確認 · 10 Themisが設定した金額 · 11 本人が足した金額
   // A confirmed amount shows as text with 修正; the ids being corrected are kept here until 金額を確定 is pressed again
   const adAmtEdit = new Set();
+  // what is typed but not yet confirmed (member id: text), so the list drawn again (coming back to the app, pull to refresh) keeps it
+  const adAmtTyped = {};
   // 報酬・給与: 社員 get a payslip (給与明細), everyone else sends an invoice as before
   function adInv() {
     const ym = adMonth.inv, byName = Object.fromEntries(adData.invs.map((r) => [r[0], r]));
@@ -7499,7 +7522,7 @@ window.addEventListener("error", function (e) {
           (k === "none" || k === "nobill"
             ? (r?.[10] && !adAmtEdit.has(m.id)
               ? `<div class="ad-amount"><b class="num ad-fixed">${yen(num(r[10]))}</b><span>（税込）で確定</span><button type="button" class="tool" data-fix>修正</button></div>`
-              : `<div class="ad-amount"><input type="number" min="0" step="1" inputmode="numeric" placeholder="例：200000" value="${esc(r?.[10] || "")}" aria-label="${esc(m.name)}さんの請求金額（税込）">` +
+              : `<div class="ad-amount"><input type="number" min="0" step="1" inputmode="numeric" placeholder="例：200000" value="${esc(adAmtTyped[ym + m.id] ?? (r?.[10] || ""))}" aria-label="${esc(m.name)}さんの請求金額（税込）">` +
                 `<span>円（税込）</span><button type="button" class="tool" data-amount>金額を確定</button></div>`)
             : `<div class="ad-acts">${r[7] ? `<button type="button" class="tool" data-pdf>請求書PDFを見る</button><button type="button" class="tool" data-dl>ダウンロード</button>` : ""}` +
             (k === "sent" ? `<button type="button" class="tool" data-unsubmit>提出を取り消す</button><button type="button" class="btn primary sm" data-paid>入金完了</button>` : `<span class="hint">入金 ${esc(r[6])}${r[9] ? `・確認 ${esc(r[9].slice(0, 10))}` : ""}</span><button type="button" class="tool" data-unpaid>取り消す</button>`) + `</div>`) +
@@ -7507,6 +7530,7 @@ window.addEventListener("error", function (e) {
       }).join("") + `</div>`).join("");
     const card = (b) => b.closest(".ad-card");
     payWire(ym, pays);
+    for (const i of $("ad-body").querySelectorAll(".ad-amount input")) i.oninput = () => { adAmtTyped[ym + card(i).dataset.id] = i.value; };
     const invFile = (name) => `請求書_${ym.replace("-", "")}_${name}.pdf`;
     for (const b of $("ad-body").querySelectorAll("[data-pdf]")) b.onclick = () => showPdf(`${card(b).dataset.name}さんの請求書（${ymLabel(ym)}分）`, card(b).dataset.id, "inv", ym, invFile(card(b).dataset.name));
     for (const b of $("ad-body").querySelectorAll("[data-dl]")) b.onclick = () => busyBtn(b, () => downloadPdf(card(b).dataset.id, "inv", ym, invFile(card(b).dataset.name)));
@@ -7546,7 +7570,7 @@ window.addEventListener("error", function (e) {
         // keep the copy on screen in step: a row now exists for this person as a 下書き with the amount
         const r = byName[name] || (adData.invs[adData.invs.push([name, ym, "", "", "下書き", "", "", "", "", "", ""]) - 1]);
         r[10] = v;
-        adAmtEdit.delete(c.dataset.id);
+        adAmtEdit.delete(c.dataset.id); delete adAmtTyped[ym + c.dataset.id];
         blData = blPending = null;   // the 報酬 in 売上 is read again
         adChanged(); adMsg(v ? `${name}さんの${ymLabel(ym)}分の請求金額を ${Number(v).toLocaleString("ja-JP")}円 で確定しました。` +
           (got ? `スマホに通知を送りました（${got}台）。` : "通知はオフなので、スマホには届いていません。本人に伝えてください。") : `${name}さんの設定金額を消しました。`);
