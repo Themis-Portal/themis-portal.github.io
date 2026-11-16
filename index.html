@@ -616,8 +616,13 @@ body:has(#member-ui:not([hidden])) .brand-btns { display: none; }
 /* a message said off the ホーム screen shows for a moment just above the bar */
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(70px + env(safe-area-inset-bottom, 0px)); z-index: 9500; width: max-content; max-width: min(92vw, 520px);
   background: var(--ink); color: var(--card); font-size: 13.5px; line-height: 1.5; padding: 10px 14px; border-radius: 12px; box-shadow: 0 6px 18px rgb(0 0 0 / .25); }
-.same-last { font-weight: 700; }
-.set-sum { margin: 0; font-size: 13px; color: var(--ink-soft); background: var(--paper); border-radius: 8px; padding: 8px 10px; }
+.set-h { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.set-h .fs-h { margin: 0; }
+.set-sum { margin: 0; font-size: 13px; background: var(--paper); border-radius: 8px; padding: 6px 12px; display: grid; }
+.set-sum > div { display: grid; grid-template-columns: 6.5em 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--rule); }
+.set-sum > div:last-child { border-bottom: 0; }
+.set-sum dt { color: var(--ink-soft); }
+.set-sum dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; word-break: keep-all; }
 .set-sum[hidden], .set-body[hidden] { display: none; }
 .set-body { display: grid; gap: inherit; }
 .extra button { border: 1px solid var(--rule); background: transparent; color: var(--ink-soft); }
@@ -2936,10 +2941,9 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
 
     <div class="forms">
       <fieldset id="fs-set"><div class="fs-card">
-        <h3 class="fs-h">毎月共通の設定</h3>
-        <!-- most months nothing here changes: ticked, it folds down to a one-line summary; unticked, it opens for changes -->
-        <label class="check same-last"><input type="checkbox" id="b-same"> 登録済みの内容で請求する</label>
-        <p class="set-sum" id="set-sum"></p>
+        <div class="set-h"><h3 class="fs-h">毎月共通の設定</h3><button type="button" class="tool" id="b-same" hidden>変更する</button></div>
+        <!-- most months nothing here changes: once everything is in, it stays closed and only shows what is set; 変更する opens it -->
+        <dl class="set-sum" id="set-sum"></dl>
         <div class="set-body" id="set-body">
         <div class="f">請求先<span class="fixed-to">株式会社Themis 御中</span></div>
         <label class="f">あなたの氏名・屋号<input id="b-from" type="text" maxlength="60"></label>
@@ -2954,9 +2958,7 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
           <label class="f">電話番号<input id="b-tel" type="tel" inputmode="tel" autocomplete="off" maxlength="15" placeholder="090-1234-5678"></label>
         </div>
         <label class="f">登録番号（インボイス・任意）<input id="b-reg" type="text" maxlength="14" placeholder="T1234567890123" inputmode="latin"></label>
-        <label class="f">支払期限
-          <select id="b-due"><option value="next-end">翌月末</option><option value="next-15">翌月15日</option><option value="next2-end">翌々月末</option></select>
-        </label>
+        <div class="f">支払期限<span class="fixed-to">翌月末</span><input id="b-due" type="hidden" value="next-end"></div>
         <label class="check"><input id="b-wh" type="checkbox"> 源泉徴収税を差し引く</label>
         <p class="hint">外交員報酬の計算です。税込の合計金額から12万円を引いた額に10.21%を掛けます。合計金額が12万円以下の月は、チェックが自動で外れます。</p>
         <div class="grp">
@@ -2992,6 +2994,11 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
     </div>
 
     <!-- 支払調書: a year of what Themis paid, for the person's own 確定申告 (shown whatever the month above) -->
+    <div class="fs-card pyt-card" id="past-card">
+      <h3 class="fs-h">これまでの請求書</h3>
+      <p class="hint">提出した請求書のPDFを、月ごとに見て保存できます。</p>
+      <div class="pyt-btns" id="past-btns"><button type="button" class="btn" id="past-load">一覧を出す</button></div>
+    </div>
     <div class="fs-card pyt-card" id="pyt-card">
       <h3 class="fs-h">支払調書（確定申告用）</h3>
       <p class="hint pyt-hint"><span>1年間に支払われた報酬と、</span><span>引かれた源泉徴収税の合計です。</span></p>
@@ -5072,10 +5079,10 @@ window.addEventListener("error", function (e) {
   // ---- invoice math ----
   // 外交員報酬（営業代行）: (税込の支払金額 − 12万円) × 10.21%、1円未満切り捨て
   const withholding = (base) => Math.max(0, Math.floor((base - 120000) * 0.1021));
-  function dueFrom(ym, rule) {
+  // every invoice is due at the end of the next month (the old choices 翌月15日 / 翌々月末 are no longer offered)
+  function dueFrom(ym) {
     const [y, m] = ym.split("-").map(Number);
-    const d = rule === "next-15" ? new Date(y, m, 15) : rule === "next2-end" ? new Date(y, m + 2, 0) : new Date(y, m + 1, 0);
-    return dayKey(d);
+    return dayKey(new Date(y, m + 1, 0));
   }
   const lastDay = (ym) => { const [y, m] = ym.split("-").map(Number); return dayKey(new Date(y, m, 0)); };
 
@@ -5100,7 +5107,7 @@ window.addEventListener("error", function (e) {
     const whOn = b.wh !== false && gross > 120000;
     const wh = whOn ? withholding(gross) : 0;
     return {
-      ym, no: inv.no || `${ym.replace("-", "")}-001`, issueDate: inv.date || (dayKey(new Date()) > lastDay(ym) ? dayKey(new Date()) : lastDay(ym)), dueDate: dueFrom(ym, b.due),
+      ym, no: inv.no || `${ym.replace("-", "")}-001`, issueDate: inv.date || (dayKey(new Date()) > lastDay(ym) ? dayKey(new Date()) : lastDay(ym)), dueDate: dueFrom(ym),
       subject: inv.subject || `${y}年${m}月分 業務委託料`, note: "",
       to: CLIENT, from: b.from || "", addr: b.addr || "", reg: b.reg || "", bank: b.bank || "",
       days, minutes, lines, gross, subtotal, taxRate, tax, wh, whOn, total: gross - wh,
@@ -5226,18 +5233,21 @@ window.addEventListener("error", function (e) {
     syncSfx();
     setSummary();
   }
-  // 毎月共通の設定 folds to one line while 先月と同じ is ticked; it starts ticked once the settings are complete
+  // 毎月共通の設定 stays closed, showing what is set, once the settings are complete; 変更する opens it, 閉じる folds it again
   let sameLast = null;
   function setSummary() {
     const b = doc("billing"), ready = !!(b.from && b.bank);
-    // the quick copy from the last visit already knows the settings are complete, so the box is ticked from the start
+    // the quick copy from the last visit already knows the settings are complete, so it is closed from the start
     if (sameLast === null && (backend || ready)) sameLast = ready;
     const on = !!sameLast && ready;
-    $("b-same").checked = on; $("b-same").disabled = !ready;
+    $("b-same").hidden = !ready; $("b-same").textContent = on ? "変更する" : "閉じる";
     $("set-body").hidden = on; $("set-sum").hidden = !on;
-    $("set-sum").textContent = on ? `${b.from}　/　振込先：${b.bank}` : "";
+    const a = [b.zip ? "〒" + b.zip : "", b.address, b.building].filter(Boolean).join(" ");
+    $("set-sum").innerHTML = on ? [["氏名・屋号", b.from], ["住所", a], ["電話番号", b.tel], ["登録番号", b.reg || "なし"], ["支払期限", "翌月末"],
+      ["源泉徴収税", b.wh !== false ? "差し引く（12万円をこえる月）" : "差し引かない"], ["振込先", String(b.bank || "").replace(/\n/g, " ")]]
+      .map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v || "未入力")}</dd></div>`).join("") : "";
   }
-  $("b-same").addEventListener("change", () => { sameLast = $("b-same").checked; setSummary(); });
+  $("b-same").addEventListener("click", () => { sameLast = !sameLast; setSummary(); });
   const billEdited = (k) => { const b = doc("billing"); b[k] = $("b-" + k).value.trim(); composeBilling(b); saveSoon("billing"); renderInvoice(); };
   for (const k of BILL) {
     $("b-" + k).addEventListener("input", () => billEdited(k));
@@ -5345,7 +5355,7 @@ window.addEventListener("error", function (e) {
     // nothing to see until Themis has set the amount
     const noAmt = st === "draft" && inv.fixedAmount == null;
     $("inv-locked").hidden = !noAmt;
-    for (const el of $("p-inv").children) if (!el.matches(".inv-head, #inv-locked, #pyt-card")) el.style.display = noAmt ? "none" : "";
+    for (const el of $("p-inv").children) if (!el.matches(".inv-head, #inv-locked, #pyt-card, #past-card")) el.style.display = noAmt ? "none" : "";
     const locked = st !== "draft";
     $("fs-set").disabled = locked;
     // Themis marks the payment; the member then confirms the money arrived. A paid invoice can no longer be withdrawn
@@ -5441,6 +5451,18 @@ window.addEventListener("error", function (e) {
     const ym = viewYm(), [y, m] = ym.split("-").map(Number);
     viewPdf(`${y}年${m}月分の請求書`, async () => b64Bytes(await call("api_myInvPdf", ym)), `請求書_${ym.replace("-", "")}.pdf`);
   };
+  // これまでの請求書: every month the person has sent, newest first, each opening the PDF Themis received
+  $("past-load").onclick = () => busyBtn($("past-load"), async () => {
+    let yms;
+    try { yms = JSON.parse(await call("api_myInvList")); } catch (e) { msg(errText(e)); return; }
+    const box = $("past-btns");
+    if (!yms.length) { box.innerHTML = `<p class="hint">まだ提出した請求書はありません。</p>`; return; }
+    box.innerHTML = yms.map((ym) => { const [y, m] = ym.split("-").map(Number); return `<button type="button" class="btn" data-past="${ym}">${y}年${m}月分</button>`; }).join("");
+    for (const b of box.querySelectorAll("[data-past]")) b.onclick = () => {
+      const ym = b.dataset.past, [y, m] = ym.split("-").map(Number);
+      viewPdf(`${y}年${m}月分の請求書`, async () => b64Bytes(await call("api_myInvPdf", ym)), `請求書_${ym.replace("-", "")}.pdf`);
+    };
+  });
   // 支払調書: this year and last (from 2026, when Themis began paying); the sheet is drawn here and shown as a PDF
   function paintPs() {
     const now = new Date().getFullYear(), years = [now, now - 1].filter((y) => y >= 2026);
@@ -6809,7 +6831,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.8.0", APP_DATE = "2026-11-14";
+  const APP_VER = "2.9.0", APP_DATE = "2026-11-16";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -7472,6 +7494,8 @@ window.addEventListener("error", function (e) {
         const r = byName[m.name], k = stOf(m);
         return `<div class="ad-card${k === "nobill" ? " dim" : ""}" data-id="${esc(m.id)}" data-name="${esc(m.name)}">` +
           `<div class="ad-card-h"><span>${numName(i, m.name)}</span><span class="st st-${{ nobill: "none", none: "late", sent: "work", paid: "late", ok: "done" }[k]}">${label[k]}</span></div>` +
+          // whose phone does not take the notices: they see the red dot only once they open the app
+          ((k === "none" || k === "nobill") && !m.push ? `<p class="hint">通知オフ：スマホに通知が届きません（アプリを開くと赤い丸で気づけます）</p>` : "") +
           (k === "none" || k === "nobill"
             ? (r?.[10] && !adAmtEdit.has(m.id)
               ? `<div class="ad-amount"><b class="num ad-fixed">${yen(num(r[10]))}</b><span>（税込）で確定</span><button type="button" class="tool" data-fix>修正</button></div>`
@@ -7518,13 +7542,14 @@ window.addEventListener("error", function (e) {
       const c = card(b), name = c.dataset.name, v = c.querySelector(".ad-amount input").value.trim();
       adMsg(`${name}さんの金額を確定しています…`);
       try {
-        await call("api_adminSetAmount", c.dataset.id, ym, v);
+        const got = Number(await call("api_adminSetAmount", c.dataset.id, ym, v)) || 0;
         // keep the copy on screen in step: a row now exists for this person as a 下書き with the amount
         const r = byName[name] || (adData.invs[adData.invs.push([name, ym, "", "", "下書き", "", "", "", "", "", ""]) - 1]);
         r[10] = v;
         adAmtEdit.delete(c.dataset.id);
         blData = blPending = null;   // the 報酬 in 売上 is read again
-        adChanged(); adMsg(v ? `${name}さんの${ymLabel(ym)}分の請求金額を ${Number(v).toLocaleString("ja-JP")}円 で確定しました。` : `${name}さんの設定金額を消しました。`);
+        adChanged(); adMsg(v ? `${name}さんの${ymLabel(ym)}分の請求金額を ${Number(v).toLocaleString("ja-JP")}円 で確定しました。` +
+          (got ? `スマホに通知を送りました（${got}台）。` : "通知はオフなので、スマホには届いていません。本人に伝えてください。") : `${name}さんの設定金額を消しました。`);
       } catch (e) { adMsg(errText(e)); }
     });
   }
