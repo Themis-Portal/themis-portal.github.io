@@ -429,6 +429,9 @@ input::placeholder, textarea::placeholder { color: var(--ink-soft); opacity: .6;
 .inv-actions { display: grid; gap: 8px; }
 .inv-actions .inv-note { margin: -2px 0 0; text-align: center; }
 .inv-actions .msg:empty { display: none; }
+.inv-need { margin: 0; padding: 10px 14px; border-radius: 10px; font-size: 14px; font-weight: 700; line-height: 1.6; color: #d93b52; background: color-mix(in srgb, #d93b52 12%, transparent); border: 1px solid color-mix(in srgb, #d93b52 45%, transparent); }
+.inv-need.flash { animation: invFlash .5s 2; }
+@keyframes invFlash { 50% { background: color-mix(in srgb, #d93b52 30%, transparent); } }
 .inv-actions .actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .inv-actions .btn { flex: 1 1 auto; padding: 13px 16px; font-size: 15px; }
 fieldset:disabled .f input, fieldset:disabled .f textarea, fieldset:disabled .f select, fieldset:disabled .extra input { border-color: var(--rule); }
@@ -2991,6 +2994,7 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
 
     <!-- sending (or confirming the payment) comes after the invoice has been looked over -->
     <div class="inv-actions">
+      <p class="inv-need" id="inv-need" role="status" hidden></p>
       <div class="actions">
         <button type="button" class="btn okay" id="a-submit">提出する</button>
         <button type="button" class="btn okay" id="a-paid" hidden>入金を確認しました</button>
@@ -3640,7 +3644,7 @@ window.addEventListener("error", function (e) {
   const LR_BASE = "https://themis-portal.github.io/kenshu/";
   // はじめに: what everyone on 業務委託 needs first (their tax), ahead of the sales videos
   const LR_VIDEOS = [
-    ["はじめに", "tax", "税金の納め方とやること", 306], ["はじめに", "shinkoku", "確定申告のやり方", 233],
+    ["はじめに", "tax", "税金の納め方とやること", 337], ["はじめに", "shinkoku", "確定申告のやり方", 233],
     ["docomo", "docomo-plan", "ドコモのプランとすすめ方", 497], ["docomo", "docomo-dcard", "dカードのすすめ方", 451], ["docomo", "docomo-hikari", "ドコモ光のすすめ方", 472], ["docomo", "docomo-denki", "ドコモでんきのすすめ方", 343], ["docomo", "docomo-raku", "らくらくスマートフォンのすすめ方", 315],
     ["au", "au-plan", "auのプランとすすめ方", 514], ["au", "au-card", "au PAY カードのすすめ方", 341], ["au", "au-hikari", "auひかりのすすめ方", 637], ["au", "au-denki", "auでんきのすすめ方", 303], ["au", "au-raku", "らくらくスマートフォンのすすめ方", 305], ["au", "uq-basio", "BASIOのすすめ方（UQモバイル）", 296],
     ["SoftBank", "sb-plan", "ソフトバンクのプランとすすめ方", 470], ["SoftBank", "sb-card", "PayPayカードのすすめ方", 374], ["SoftBank", "sb-hikari", "ソフトバンク光のすすめ方", 470], ["SoftBank", "sb-denki", "おうちでんきのすすめ方", 341], ["SoftBank", "sb-simple", "シンプルスマホのすすめ方", 317], ["SoftBank", "ym-kantan", "かんたんスマホのすすめ方（ワイモバイル）", 312],
@@ -5395,6 +5399,8 @@ window.addEventListener("error", function (e) {
     paintPs();
     // a draft can go out only once Themis's amount is in it
     $("a-submit").disabled = inv.fixedAmount == null;
+    const need = st === "draft" && !noAmt ? invNeed(ym) : "";
+    $("inv-need").textContent = need; $("inv-need").hidden = !need;
     $("b-wh").checked = v.whOn;
     $("b-wh").disabled = v.gross <= 120000;
     const key = JSON.stringify([v, inv.fixedAmount == null]);
@@ -5529,13 +5535,28 @@ window.addEventListener("error", function (e) {
         <tr class="pyt-sum"><td colspan="2">合計</td><td class="r">${n(s.gross)} 円</td><td class="r">${n(s.wh)} 円</td></tr></table>
       <p class="pyt-note">提出した請求書の金額から作っています。マイナンバーは記載していません。<br>確定申告では、支払金額を収入に、源泉徴収税額を「源泉徴収税額」の欄に入れてください。</p>`;
   }
+  // 2026-11-17 the owner: when the invoice can't go out yet, say in words why, above the button (before it is pressed)
+  const INV_NEED = [["from", "氏名・屋号"], ["address", "住所"], ["tel", "電話番号"], ["bankName", "銀行名"], ["branch", "支店名"], ["acctNo", "口座番号"], ["acctName", "口座名義"]];
+  function invNeed(ym) {
+    if (ym >= ymOf(dayKey(new Date()))) return "今月の請求書は、月が明けてから提出できます。";
+    if (doc("inv-" + ym).fixedAmount == null) return "請求金額がまだ入力されていません。Themisが金額を入力すると提出できます。";
+    const b = doc("billing"), has = (k) => String(b[k] || "").trim() !== "";
+    // an old record kept only the bank as one text: that still counts as filled in
+    const oldBank = !!b.bank && !BANK.some((k) => k !== "acctType" && has(k));
+    const miss = INV_NEED.filter(([k]) => !has(k) && !(oldBank && BANK.includes(k))).map(([, t]) => t);
+    return miss.length ? `まだ入力されていないところがあります（${miss.join("・")}）。上の「毎月共通の設定」で入力すると、提出できます。` : "";
+  }
   // 「提出する」 builds the PDF here; the server files it in Drive, where Themis opens it from 報酬・給与 (no email)
   $("a-submit").onclick = async () => {
-    const ym = viewYm(), inv = doc("inv-" + ym), b = doc("billing");
+    const ym = viewYm(), inv = doc("inv-" + ym);
     const v = computeInvoice(ym, Date.now());
-    if (ym >= ymOf(dayKey(new Date()))) { invMsg("今月以降の請求書は提出できません。月が明けてから提出してください。"); return; }
-    if (inv.fixedAmount == null) { invMsg("請求金額がまだ入力されていません。Themisが金額を入力してから提出してください。"); return; }
-    if (!(b.from && b.bank)) { invMsg("氏名・振込先を入力してから提出してください。"); return; }
+    const need = invNeed(ym);
+    if (need) {
+      const p = $("inv-need"); p.textContent = need; p.hidden = false; invMsg("");
+      p.classList.remove("flash"); void p.offsetWidth; p.classList.add("flash");
+      p.scrollIntoView({ block: "center", behavior: "smooth" });
+      return;
+    }
     const [y, m] = ym.split("-").map(Number);
     if (!await ask(`${y}年${m}月分の請求書を提出しますか？`, `ご請求金額 ${yen(v.total)}。この内容の請求書PDFがThemisに届きます。`, "提出する")) return;
     $("a-submit").disabled = true; invMsg("");
@@ -6862,7 +6883,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.10.1", APP_DATE = "2026-11-17";
+  const APP_VER = "2.10.2", APP_DATE = "2026-11-17";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -8480,7 +8501,8 @@ window.addEventListener("error", function (e) {
       : blEdit.tax === "in" ? row("小計（税込）", t.subtotal) + row("うち消費税（10%）", t.tax) : row("小計", t.subtotal))
       + (num(blEdit.transport) ? row("交通費", num(blEdit.transport)) : "") + row("合計請求額", t.total, "tot");
   }
-  $("bl-add").onclick = () => { blEdit.items.push(blankLine()); blItems(); $("bl-items").lastElementChild.querySelector(".bl-name").focus(); };
+  // 2026-11-17 the owner: a line added with ＋ starts with 「〇月業務委託費」 too (the month before the 請求日)
+  $("bl-add").onclick = () => { blEdit.items.push({ ...blankLine(), name: `${workMonth($("bl-date").value)}月業務委託費` }); blItems(); $("bl-items").lastElementChild.querySelector(".bl-name").focus(); };
   $("bl-tax").onchange = blSum;
   $("bl-transport").oninput = blSum;
   // 請求日 and お支払期限 as 年・月・日 pulldowns (last year to next year); a new 請求日 moves the 期限 to the next month's end
