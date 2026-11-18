@@ -3976,8 +3976,10 @@ window.addEventListener("error", function (e) {
   // 通知 is a must: on every opening, until it is on, the one question comes back with no 「あとで」; when the phone
   // said no, how to turn it on is shown instead. Once on, the token is kept fresh without a word
   let pushAsked = false;
+  // 2026-11-17 the owner: no 通知 on a PC (only phones and tablets are asked; an iPad can say "Macintosh")
+  const pushPc = () => !/iPhone|iPad|iPod|Android/.test(navigator.userAgent) && !(/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
   function pushAsk(tries = 0) {
-    if (pushAsked || !pushCan()) return;
+    if (pushAsked || !pushCan() || pushPc()) return;
     if (Notification.permission === "granted") { pushAsked = true; pushSync(true).then(paintPush); return; }
     // waits while any sheet is open (a question, a day's record, はじめに, …)
     if (document.querySelector(".modal-bg:not([hidden])") || mode !== "member") { if (tries < 40) setTimeout(() => pushAsk(tries + 1), 3000); return; }
@@ -5130,7 +5132,8 @@ window.addEventListener("error", function (e) {
     const days = monthRows(ym).filter((x) => x.r?.in).length;
     // TP used as 報酬 is a line of its own, apart from the 業務委託料
     const tpUsed = (inv.tpLines || []).filter((t) => t.kind === "use").reduce((s, t) => s + (Number(t.amount) || 0), 0);
-    const lines = [{ name: `${y}年${m}月分 業務委託料（稼働 ${days}日）`, qty: "1", unitLabel: "式", price: amount, amount }];
+    // 2026-11-18 the owner: the invoice doesn't say how many days were worked
+    const lines = [{ name: `${y}年${m}月分 業務委託料`, qty: "1", unitLabel: "式", price: amount, amount }];
     if (tpUsed) lines.push({ name: "TP報酬", qty: "1", unitLabel: "式", price: tpUsed, amount: tpUsed });
     // every amount is entered tax-inclusive; the 10% portion is backed out of the total
     const gross = lines.reduce((s, l) => s + l.amount, 0);
@@ -5414,7 +5417,7 @@ window.addEventListener("error", function (e) {
     return `<h3 class="fs-h">請求書の内容</h3>` +
       (fixed ? "" : `<p class="is-wait">請求金額はThemisが入力します。入力されると表示され、提出できるようになります。</p>`) +
       `<div class="is-total"><span>ご請求金額<small>税込${v.whOn ? "・源泉徴収後" : ""}</small></span><b class="num">${fixed ? yen(v.total) : "—"}</b></div>` +
-      `<div class="is-meta">` + [["請求番号", esc(v.no)], ["請求日", esc(v.issueDate.slice(5).replace("-", "/"))], ["稼働日数", `${v.days}日`], ["支払期限", esc(v.dueDate.slice(5).replace("-", "/"))]]
+      `<div class="is-meta">` + [["請求番号", esc(v.no)], ["請求日", esc(v.issueDate.slice(5).replace("-", "/"))], ["稼働日数", v.days ? `${v.days}日` : "—"], ["支払期限", esc(v.dueDate.slice(5).replace("-", "/"))]]
         .map(([t, d]) => `<div><span>${t}</span><b class="num">${d}</b></div>`).join("") + `</div>` +
       `<div class="is-lines">` + row("業務委託料", fixed ? yen(v.lines[0].amount) : "—") +
       (tpLine ? `<div class="is-row tp"><span><i class="tp-coin" aria-hidden="true">TP</i>TP報酬</span><b class="num">＋${yen(tpLine.amount)}</b></div>` : "") +
@@ -6883,7 +6886,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.10.2", APP_DATE = "2026-11-17";
+  const APP_VER = "2.10.3", APP_DATE = "2026-11-18";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -7526,6 +7529,35 @@ window.addEventListener("error", function (e) {
   // what is typed but not yet confirmed (member id: text), so the list drawn again (coming back to the app, pull to refresh) keeps it
   const adAmtTyped = {};
   // 報酬・給与: 社員 get a payslip (給与明細), everyone else sends an invoice as before
+  // 2026-11-18 the owner (the members agreed): invoices already sent lose 「（稼働 ○日）」 too. The card shows only while
+  // some still have it; each PDF is drawn again here from what was sent, so amounts and dates stay as they were
+  let ivDays = null, ivDaysBusy = false;
+  function paintIvDays() {
+    const box = $("iv-days"), list = ivDays || [];
+    if (!box) return;
+    box.innerHTML = list.length ? `<div class="tp-card"><b>提出済みの請求書から稼働日数を消す（${list.length}件）</b><p class="hint">品目の「（稼働 ○日）」だけを消して、PDFを作り直します。金額と日付は変わりません。前のPDFは削除します。</p><button type="button" class="btn primary" id="iv-days-go">まとめて直す</button></div>` : "";
+    if (!list.length) return;
+    $("iv-days-go").onclick = async () => {
+      if (!await ask(`${list.length}件の請求書を直しますか？`, "品目の「（稼働 ○日）」を消して、請求書PDFを作り直します。前のPDFは削除します。", "直す")) return;
+      busyOn("請求書を直しています", "PDFを作り直しています");
+      let done = 0;
+      try {
+        for (const x of [...ivDays]) {
+          const v = { ...x.snapshot, lines: x.snapshot.lines.map((l) => ({ ...l, name: String(l.name).replace(/（稼働\s*\d+日）/g, "") })) };
+          await call("api_adminInvDaysFix", x.id, x.ym, await buildPdf(x.ym, pdfView(v)));
+          ivDays = ivDays.filter((y) => y !== x); done++;
+        }
+        busyOff(); adMsg(`${done}件の請求書を直しました。`);
+      } catch (e) { busyOff(); adMsg(`${done}件を直したところで止まりました。もう一度押すと続きから直します。${errText(e)}`); }
+      paintIvDays();
+    };
+  }
+  function loadIvDays() {
+    if (ivDays) { paintIvDays(); return; }
+    if (ivDaysBusy || !adData.owner) return;
+    ivDaysBusy = true;
+    call("api_adminInvDays").then((s) => { ivDays = JSON.parse(s); paintIvDays(); }).catch(() => {}).finally(() => { ivDaysBusy = false; });
+  }
   function adInv() {
     const ym = adMonth.inv, byName = Object.fromEntries(adData.invs.map((r) => [r[0], r]));
     const pays = adData.pays || {};
@@ -7541,7 +7573,7 @@ window.addEventListener("error", function (e) {
     };
     const cnt = (k) => live.filter((m) => !m.test && stOf(m) === k).length;
     const label = { nobill: "請求なし", none: "未提出", sent: "提出済み", paid: "入金完了・本人の確認待ち", ok: "本人が入金を確認済み" };
-    $("ad-body").innerHTML = payCards(staff, pays) + (live.length ? `<h4 class="bl-h">業務委託の請求書</h4>` : "") +
+    $("ad-body").innerHTML = `<div id="iv-days"></div>` + payCards(staff, pays) + (live.length ? `<h4 class="bl-h">業務委託の請求書</h4>` : "") +
       `<div class="ad-stats">` + [["未提出", "none"], ["提出済み", "sent"], ["確認待ち", "paid"], ["確認済み", "ok"]]
         .map(([t, k]) => `<div class="ad-stat${k === "sent" && cnt(k) ? " warn" : ""}"><span>${t}</span><b class="num">${cnt(k)}</b></div>`).join("") + `</div>` +
       byWork(live).map(([t, g]) => `<h3 class="ad-grp">${esc(groupName(t))}（${g.length}人）</h3><div class="ad-cards">` + g.map((m, i) => {
@@ -7589,6 +7621,7 @@ window.addEventListener("error", function (e) {
           $("ad-dlg").hidden = true; adChanged(); adMsg(`${name}さんの提出を取り消しました。`);
         });
     };
+    loadIvDays();
     for (const b of $("ad-body").querySelectorAll("[data-fix]")) b.onclick = () => {
       adAmtEdit.add(card(b).dataset.id); adInv();
       document.querySelector(`.ad-card[data-id="${CSS.escape(card(b).dataset.id)}"] .ad-amount input`)?.focus();
