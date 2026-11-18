@@ -5396,7 +5396,7 @@ window.addEventListener("error", function (e) {
     const locked = st !== "draft";
     $("fs-set").disabled = locked;
     // Themis marks the payment; the member then confirms the money arrived. A paid invoice can no longer be withdrawn
-    $("a-submit").hidden = locked; $("a-paid").hidden = !(st === "paid" && !inv.confirmedOn); $("a-undo").hidden = st !== "submitted";
+    $("a-submit").hidden = locked; $("a-paid").hidden = !(st === "paid" && !inv.confirmedOn); $("a-undo").hidden = st !== "submitted" || !!inv.past;
     // the invoice as sent can be opened and kept by the person too
     $("a-pdf").hidden = !(locked && inv.pdfUrl);
     paintPs();
@@ -6886,7 +6886,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.10.3", APP_DATE = "2026-11-18";
+  const APP_VER = "2.11.0", APP_DATE = "2026-11-19";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -7558,6 +7558,46 @@ window.addEventListener("error", function (e) {
     ivDaysBusy = true;
     call("api_adminInvDays").then((s) => { ivDays = JSON.parse(s); paintIvDays(); }).catch(() => {}).finally(() => { ivDaysBusy = false; });
   }
+  // 2026-11-19 the owner: the invoices of June to September go in once, from a file made on the owner's PC. Names and
+  // amounts are only in that file, not in this public page. The card goes away when all of it has been read
+  let ivPast = null, ivPastBusy = false;
+  function paintIvPast() {
+    const box = $("iv-past");
+    if (!box) return;
+    box.innerHTML = ivPast === false ? `<div class="tp-card"><b>6〜9月の請求書を入れる</b><p class="hint">PCで、用意したファイル「アプリ取り込み_6-9月請求書.json」を選びます。アプリにいる人の分だけ入ります。すでにアプリにある月は変えません。本人に通知は届きません。</p><input type="file" id="iv-past-file" accept=".json,application/json" hidden><button type="button" class="btn primary" id="iv-past-go">ファイルを選ぶ</button></div>` : "";
+    if (ivPast !== false) return;
+    $("iv-past-go").onclick = () => $("iv-past-file").click();
+    $("iv-past-file").onchange = async (e) => {
+      const f = e.target.files[0];
+      e.target.value = "";
+      if (!f) return;
+      let list;
+      try { list = JSON.parse(await f.text()).invoices; if (!Array.isArray(list) || !list.length) throw 0; }
+      catch (err) { adMsg("このファイルは読めませんでした。「アプリ取り込み_6-9月請求書.json」を選んでください。"); return; }
+      if (!await ask(`${list.length}件の請求書を入れますか？`, "PDFと金額をアプリに入れます。すでにある月と、アプリにいない人の分は入れません。", "入れる")) return;
+      busyOn("請求書を入れています", "PDFを送っています。しばらくお待ちください");
+      const got = { done: 0, exists: 0 }, none = new Set();
+      let at = 0;
+      try {
+        for (const x of list) {
+          const r = await call("api_adminInvImport", x.name, x.ym, x.rec, x.pdf);
+          if (r === "nomember") none.add(x.name); else got[r]++;
+          at++;
+        }
+        await call("api_adminInvPast", true);
+        ivPast = true; paintIvPast();
+        await adLoad(true).catch(() => {});   // the month's list now shows them; it also clears the message line
+        busyOff();
+        adMsg(`${got.done}件を入れました。` + (got.exists ? `すでにあった${got.exists}件はそのままです。` : "") + (none.size ? `アプリにいない人：${[...none].join("、")}さん。` : ""));
+      } catch (err) { busyOff(); adMsg(`${at}件目まで進んで止まりました。もう一度ファイルを選ぶと続きから入ります。${errText(err)}`); }
+    };
+  }
+  function loadIvPast() {
+    if (ivPast !== null) { paintIvPast(); return; }
+    if (ivPastBusy || !adData.owner) return;
+    ivPastBusy = true;
+    call("api_adminInvPast").then((v) => { ivPast = !!v; paintIvPast(); }).catch(() => {}).finally(() => { ivPastBusy = false; });
+  }
   function adInv() {
     const ym = adMonth.inv, byName = Object.fromEntries(adData.invs.map((r) => [r[0], r]));
     const pays = adData.pays || {};
@@ -7573,7 +7613,7 @@ window.addEventListener("error", function (e) {
     };
     const cnt = (k) => live.filter((m) => !m.test && stOf(m) === k).length;
     const label = { nobill: "請求なし", none: "未提出", sent: "提出済み", paid: "入金完了・本人の確認待ち", ok: "本人が入金を確認済み" };
-    $("ad-body").innerHTML = `<div id="iv-days"></div>` + payCards(staff, pays) + (live.length ? `<h4 class="bl-h">業務委託の請求書</h4>` : "") +
+    $("ad-body").innerHTML = `<div id="iv-past"></div><div id="iv-days"></div>` + payCards(staff, pays) + (live.length ? `<h4 class="bl-h">業務委託の請求書</h4>` : "") +
       `<div class="ad-stats">` + [["未提出", "none"], ["提出済み", "sent"], ["確認待ち", "paid"], ["確認済み", "ok"]]
         .map(([t, k]) => `<div class="ad-stat${k === "sent" && cnt(k) ? " warn" : ""}"><span>${t}</span><b class="num">${cnt(k)}</b></div>`).join("") + `</div>` +
       byWork(live).map(([t, g]) => `<h3 class="ad-grp">${esc(groupName(t))}（${g.length}人）</h3><div class="ad-cards">` + g.map((m, i) => {
@@ -7622,6 +7662,7 @@ window.addEventListener("error", function (e) {
         });
     };
     loadIvDays();
+    loadIvPast();
     for (const b of $("ad-body").querySelectorAll("[data-fix]")) b.onclick = () => {
       adAmtEdit.add(card(b).dataset.id); adInv();
       document.querySelector(`.ad-card[data-id="${CSS.escape(card(b).dataset.id)}"] .ad-amount input`)?.focus();
