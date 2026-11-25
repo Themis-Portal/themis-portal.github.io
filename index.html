@@ -2876,7 +2876,7 @@ body.tei-on .shift-today.small.has-car .st-label { padding-right: 0; }
   </section>
   <!-- ホーム: the お知らせ board under the clock; only its inside scrolls -->
   <section class="nt-home" id="nt-home" aria-label="お知らせ">
-    <div class="nt-home-h"><span class="nt-pin" aria-hidden="true"><i class="ico ico-mega" aria-hidden="true"></i></span><b>お知らせ</b><span class="nt-home-n" id="nt-home-n" hidden></span><button type="button" class="nt-home-post" id="nt-home-post" hidden>＋ お知らせを出す</button></div>
+    <div class="nt-home-h"><span class="nt-pin" aria-hidden="true"><i class="ico ico-mega" aria-hidden="true"></i></span><b>お知らせ</b><span class="nt-home-n" id="nt-home-n" hidden></span></div>
     <div class="nt-board" id="nt-home-list"></div>
   </section>
 
@@ -3772,10 +3772,9 @@ window.addEventListener("error", function (e) {
     paintMenuDot();
     $("m-admin").classList.toggle("has-new", open > 0);
     $("ad-tabs").querySelector('[data-t="ask"]').classList.toggle("has-new", open > 0);
-    // every お知らせ, in a low box that scrolls inside itself; 運営・代表 post a new one from the button beside the title
+    // every お知らせ, in a low box that scrolls inside itself (2026-11-25 no posting from the app: the owner posts お知らせ through Claude)
     const board = $("nt-home-list"), top = inbox.items;
     $("nt-home-n").hidden = !n; $("nt-home-n").textContent = `未読 ${n}`;
-    $("nt-home-post").hidden = !inbox.owner;
     board.innerHTML = top.length ? top.map((x) => `<div class="nt-note${x.unread ? " new" : ""}" data-k="${ntKind(x)}">` + ntRow(x, x.unread) + `</div>`).join("")
       : `<p class="nt-empty">お知らせはまだありません。</p>`;
     for (const b of board.querySelectorAll("[data-open]")) b.onclick = () => ntPop(inbox.items.find((y) => y.id === b.dataset.open), "home");
@@ -3990,7 +3989,6 @@ window.addEventListener("error", function (e) {
     }
     ask("通知をオンにしてください", "打刻忘れ、ありがとう、研修の予約、\n請求書のことを、スマホに知らせます。", "オンにする", false, null).then((yes) => { if (yes) pushEnable(); });
   }
-  $("nt-home-post").onclick = () => showNotice("post", null, "home");
   $("m-invite").onclick = () => pickTab("invite");
   $("m-tei").onclick = () => pickTab("tei");
   // ---- ポイント（TP）: 1TP = 1円; 50TP for each day's 稼働実績 after 退勤; used TP_STEP at a time ----
@@ -4447,8 +4445,8 @@ window.addEventListener("error", function (e) {
   function renderNotice() {
     const box = $("nt-body"), items = inbox.items, it = items.find((x) => x.id === nt.id);
     if (nt.view === "list") {
-      // お問い合わせ is started from メニュー, not here; only 運営 and 代表 post お知らせ, from the top row beside 戻る
-      $("sub-act").innerHTML = inbox.owner ? `<button type="button" class="tool" data-nt="post">＋ お知らせを出す</button>` : "";
+      // お問い合わせ is started from メニュー, not here; お知らせ are not posted from the app (2026-11-25, the owner posts them through Claude)
+      $("sub-act").innerHTML = "";
       // each one keeps its 未読 mark until it is confirmed (確認する / 受け取る) or, an お問い合わせ, opened
       box.innerHTML = `<div class="nt-list">` + (items.length ? items.map((x) => ntRow(x, x.unread)).join("")
         : `<p class="nt-empty">お知らせはまだありません。</p>`) + `</div>`;
@@ -6886,7 +6884,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.11.2", APP_DATE = "2026-11-21";
+  const APP_VER = "2.11.3", APP_DATE = "2026-11-25";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -8313,12 +8311,10 @@ window.addEventListener("error", function (e) {
     const pages = Math.max(1, Math.ceil(list.length / AD_PAGE));
     adPage.nt = Math.min(adPage.nt, pages - 1);
     const shown = list.slice(adPage.nt * AD_PAGE, adPage.nt * AD_PAGE + AD_PAGE);
-    $("ad-body").innerHTML = `<form class="nt-form nt-doc" id="ad-ntpost"><h3>お知らせを出す</h3><p class="hint">全員のホームのお知らせに届きます。</p>` + noticeFormHTML() + `</form>` +
-      `<div class="ad-paged"><h4 class="bl-h">出したお知らせ（${list.length}件）</h4>` + (list.length ? `<div class="adn-list">` + shown.map((x) =>
+    $("ad-body").innerHTML = `<div class="ad-paged"><h4 class="bl-h">出したお知らせ（${list.length}件）</h4>` + (list.length ? `<div class="adn-list">` + shown.map((x) =>
         `<div class="adn-row"><button type="button" class="adn-open" data-open="${esc(x.id)}"><b>${x.important ? `<span class="nt-tag imp">重要</span>` : ""}${x.reward > 0 ? `<span class="nt-tag tp">+${tpN(x.reward)}TP</span>` : ""}${esc(x.title)}</b>` +
         `<span class="adn-at num">${esc(ntAt(x.at))}</span></button><button type="button" class="tool danger adn-del" data-ntdel="${esc(x.id)}">削除</button></div>`).join("") + `</div>` +
         pagerHTML("nt", adPage.nt, list.length) : `<p class="hint">まだありません。</p>`) + `</div>`;
-    bindNoticeForm($("ad-ntpost"), () => { if (adTab === "notices") adNotices(); }, adMsg);
     for (const b of $("ad-body").querySelectorAll("[data-open]")) b.onclick = () => ntPop(list.find((x) => x.id === b.dataset.open), "home");
     for (const b of $("ad-body").querySelectorAll("[data-ntdel]")) b.onclick = async () => {
       const x = list.find((y) => y.id === b.dataset.ntdel);
