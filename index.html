@@ -4403,14 +4403,16 @@ window.addEventListener("error", function (e) {
     const typed = $("iv-in")?.value || "", typing = document.activeElement?.id === "iv-in";
     const v = invite, min = tpN(v?.min || 5000), need = v?.need || 3, days = v?.days || 20;
     // each person invited: the months counted so far, then waiting for Themis, then the TP sent
+    // from the need-th month on it comes every month (2026-11-25)
     const ivStep = (x) => x.step === "done" ? (x.tp ? `招待特典 ${tpN(x.tp)}TP をお届けしました` : "招待特典をお届けしました")
-      : x.step === "ready" ? `${need}か月になりました。招待特典をお届けする準備をしています`
-      : `月${days}日以上の出勤 ${x.months || 0}／${need}か月`;
+      : x.step === "ready" ? (x.paidN ? "今月の招待特典をお届けする準備をしています" : `${need}か月になりました。招待特典をお届けする準備をしています`)
+      : x.paidN ? `招待特典 合計 ${tpN(x.tp)}TP（${x.paidN}回）。月${days}日以上出勤した月は、毎月届きます`
+      : `月${days}日以上の出勤 ${Math.min(x.months || 0, need)}／${need}か月`;
     // ?v= makes LINE fetch the share image again (it keeps the old one per URL)
     const url = window.TC_API ? location.origin + location.pathname + "?v=3" : "";
     $("iv-body").innerHTML =
       `<div class="iv-hero"><span class="iv-cap">INVITE FRIENDS</span><h2>友達を招待して<br><em>${min}TP以上</em> もらおう</h2>` +
-      `<p>あなたの招待コードで友達がメンバーになり、月${days}日以上出勤した月が${need}か月になると、あなたに招待特典 <b>${min}TP以上</b>（${min}円分以上）が届きます。金額はThemisが決めます。何人でも招待できます。</p>` +
+      `<p>あなたの招待コードで友達がメンバーになり、月${days}日以上出勤した月が${need}か月になると、あなたに招待特典 <b>${min}TP以上</b>（${min}円分以上）が届きます。そのあとも、友達が月${days}日以上出勤した月は<b>毎月</b>届きます。金額はThemisが決めます。何人でも招待できます。</p>` +
       `<div class="iv-code"><span>あなたの招待コード</span><b class="num" id="iv-code">${v ? esc(v.code) : "……"}</b></div>` +
       `<div class="iv-acts"><button type="button" class="btn primary" id="iv-copy"${v ? "" : " disabled"}>コードをコピー</button>` +
       (navigator.share ? `<button type="button" class="btn iv-share" id="iv-share"${v ? "" : " disabled"}>友達に送る</button>` : "") + `</div></div>` +
@@ -6884,7 +6886,7 @@ window.addEventListener("error", function (e) {
   })();
   // the app's version, shown at the foot of メニュー. Raised with every release: the last number for fixes, the middle
   // one for new features, the first for a big renewal; a big update (middle or first) also gets an お知らせ (SEED_NOTICES in Code.gs)
-  const APP_VER = "2.11.3", APP_DATE = "2026-11-25";
+  const APP_VER = "2.12.0", APP_DATE = "2026-11-25";
   $("app-ver").textContent = `Themis Portal　バージョン ${APP_VER}（${APP_DATE.replace(/^(\d+)-0?(\d+)-0?(\d+)$/, "$1年$2月$3日")}）`;
   const standalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
   // iPhone, opened from the home screen with the page under the status bar: the page comes out shorter than the
@@ -8345,11 +8347,11 @@ window.addEventListener("error", function (e) {
         `<span class="ad-acts"><button type="button" class="tool" data-iv-ok="${esc(x.id)}">許可</button><button type="button" class="tool danger" data-iv-ng="${esc(x.id)}">却下</button></span></div>`).join("") + `</div>`
       : `<p class="hint">いま申請はありません。</p>`) +
       (ready.length ? `<h4 class="bl-h">招待特典の配布待ち（${tpN(min)}TP以上）</h4>` + ready.map((x) =>
-        `<div class="tp-card"><b>${esc(x.inviterName)}さんへ招待特典</b><p class="hint">${esc(x.inviteeName)}さんが月${days}日以上の出勤 ${need}か月になりました</p>` +
+        `<div class="tp-card"><b>${esc(x.inviterName)}さんへ招待特典${x.paidN ? `（${x.paidN + 1}回目）` : ""}</b><p class="hint">${x.paidN ? `${esc(x.inviteeName)}さんが${Number(String(x.waitYm).slice(5))}月も${days}日以上出勤しました` : `${esc(x.inviteeName)}さんが月${days}日以上の出勤 ${need}か月になりました`}${x.waitN > 1 ? `（ほかに${x.waitN - 1}か月分あります）` : ""}</p>` +
         `<div class="tp-row"><span class="tp-in"><input type="number" inputmode="numeric" min="${min}" step="1" value="${min}" data-iv-amt="${esc(x.id)}" aria-label="${esc(x.inviterName)}さんに送るTP"><small>TP</small></span>` +
         `<button type="button" class="btn primary" data-iv-pay="${esc(x.id)}">送る</button></div></div>`).join("") : "") +
-      (count.length ? `<h4 class="bl-h">招待特典まで数えている人（月${days}日以上の出勤 ${need}か月で配布待ちへ）</h4><div class="tp-list">` + count.map((x) =>
-        `<div><span><b>${esc(x.inviterName)}</b>さん → ${esc(x.inviteeName)}さん<br><span class="muted">${esc(ntAt(x.approvedAt))}から　${Math.min(x.months || 0, need)}／${need}か月</span></span>` +
+      (count.length ? `<h4 class="bl-h">招待特典を数えている人（月${days}日以上の出勤 ${need}か月目から、毎月配布待ちへ）</h4><div class="tp-list">` + count.map((x) =>
+        `<div><span><b>${esc(x.inviterName)}</b>さん → ${esc(x.inviteeName)}さん<br><span class="muted">${esc(ntAt(x.approvedAt))}から　${x.paidN ? `${x.paidN}回お届け済み（合計 ${tpN(x.paidTP)}TP）` : `${Math.min(x.months || 0, need)}／${need}か月`}</span></span>` +
         `<span class="ad-acts"><button type="button" class="tool danger" data-iv-stop="${esc(x.id)}">停止</button></span></div>`).join("") + `</div>` : "");
   };
   async function loadIvAd() {
@@ -8364,7 +8366,7 @@ window.addEventListener("error", function (e) {
     };
     const who = (id) => ivAd.list.find((x) => x.id === id);
     for (const b of $("ad-body").querySelectorAll("[data-iv-ok]")) b.onclick = () => { const x = who(b.dataset.ivOk);
-      act(x.id, "ok", "招待を許可しますか？", `${x.inviteeName}さんが月${ivAd.days || 20}日以上出勤した月を（今月の分から）数えます。${ivAd.need || 3}か月になると、ここに配布待ちで出ます。金額（${tpN(ivAd.min || 5000)}TP以上）を入れて、${x.inviterName}さんに送ってください。`, "許可する", false, "許可しました。"); };
+      act(x.id, "ok", "招待を許可しますか？", `${x.inviteeName}さんが月${ivAd.days || 20}日以上出勤した月を（今月の分から）数えます。${ivAd.need || 3}か月目から、条件を満たした月ごとにここに配布待ちで出ます。金額（${tpN(ivAd.min || 5000)}TP以上）を入れて、${x.inviterName}さんに送ってください。`, "許可する", false, "許可しました。"); };
     for (const b of $("ad-body").querySelectorAll("[data-iv-pay]")) b.onclick = async () => {
       const x = who(b.dataset.ivPay), inp = $("ad-body").querySelector(`[data-iv-amt="${x.id}"]`), n = Number(inp.value), min = ivAd.min || 5000;
       if (!Number.isInteger(n) || n < min) { adMsg(`金額は ${tpN(min)}TP 以上で入れてください。`); inp.focus(); return; }
